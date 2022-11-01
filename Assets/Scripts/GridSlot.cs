@@ -5,11 +5,14 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class GridSlot : XRSocketInteractor
 {
-    
-
     // Update is called once per frame
-    void Update()
+    protected override void OnSelectEntered(SelectEnterEventArgs args)
     {
-        
+        base.OnSelectEntered(args);
+        Transform building = args.interactableObject.transform;
+
+        //Debug.Log(building);
+
+        building.SetParent(GameObject.Find("GRID System").transform);
     }
 }
