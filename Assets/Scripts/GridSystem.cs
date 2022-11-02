@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GridSystem : MonoBehaviour
@@ -16,17 +17,24 @@ public class GridSystem : MonoBehaviour
     private Vector3 firstGridPos;
     private float tableHeight;
 
+    /// <summary>
+    /// Set interaction mode. Available mode: 0 - build mode, 1 - travel mode, 2 - view mode
+    /// </summary>
+    private int interactionMode;
+
+    private GameObject[] buildings;
+
+
     // Start is called before the first frame update
     void Start()
     {
-        buildModeObject = GameObject.Find("Build mode");
+        buildModeObject = GameObject.Find("BuildMode");
         thisTranform = gameObject.GetComponent<Transform>();
         tableHeight = gameObject.transform.position.y;
         widthGrid = getWidthGrid();
         firstGridPos = getFirstGridPos();
         spawnSlotInGrid();
-        StartCoroutine(Delaybruh());
-        StartCoroutine(Delayunbruh());
+        buildings = GameObject.FindGameObjectsWithTag("Building");
     }
 
     private Vector3 getFirstGridPos()
@@ -47,7 +55,8 @@ public class GridSystem : MonoBehaviour
         {
             for (int x=0; x < gridCount; x++)
             {
-                Instantiate(slotObject, pos, slotObject.transform.rotation, thisTranform);
+                GameObject gridSpawn = Instantiate(slotObject, pos, slotObject.transform.rotation, thisTranform);
+                gridSpawn.GetComponent<GridSlot>().SetCoordinate(x, z);
                 pos.x += widthGrid;
             }
             pos.x = firstGridPos.x;
@@ -55,14 +64,13 @@ public class GridSystem : MonoBehaviour
         }
     }
 
+    // Set by buttons
     public void resizeWorld()
     {
         gameObject.transform.position = Vector3.zero;
         gameObject.transform.localScale = new Vector3(worldSize, worldSize, worldSize);
         buildModeObject.SetActive(false);
     }
-
-
     public void originalSize()
     {
         gameObject.transform.position = new Vector3(0, tableHeight, 0);
@@ -70,15 +78,26 @@ public class GridSystem : MonoBehaviour
         buildModeObject.SetActive(true);
     }
 
-    private IEnumerator Delaybruh()
+    // Changing interaction mode 
+    public int getInteractionMode()
     {
-        yield return new WaitForSeconds(3);
-        resizeWorld();
+        return interactionMode;
     }
-
-    private IEnumerator Delayunbruh()
+    public void setInteractionMode(int mode)
     {
-        yield return new WaitForSeconds(8);
-        originalSize();
+        if (mode == 0)
+        {
+            for (int i = 0; i < buildings.Length; i++)
+            {
+                buildings[i].GetComponent<Building>().unfreezeAllMovement();
+            }
+        }
+        else if (mode == 1)
+        {
+            for (int i = 0; i < buildings.Length; i++)
+            {
+                buildings[i].GetComponent<Building>().freezeAllMovement();
+            }
+        }
     }
 }

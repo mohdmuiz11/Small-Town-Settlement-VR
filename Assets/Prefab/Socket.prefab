@@ -111,7 +111,7 @@ GameObject:
   - component: {fileID: 1353375327570955396}
   m_Layer: 0
   m_Name: Socket
-  m_TagString: Untagged
+  m_TagString: Slot
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -199,3 +199,5 @@ MonoBehaviour:
   m_SocketActive: 1
   m_InteractableHoverScale: 1
   m_RecycleDelayTime: 1
+  posX: 0
+  posZ: 0
