@@ -46,8 +46,12 @@ public class GridSlot : XRSocketInteractor
         Building building = args.interactable.GetComponent<Building>();
         Transform buildingTransform = args.interactableObject.transform;
 
-        building.SetTargetLayer();
-        buildingTransform.SetParent(gridSystem.transform);
+        //building.SetTargetLayer();
+        if (building != null)
+        {
+            building.SetToGrid(true);
+            buildingTransform.SetParent(gridSystem.transform);
+        }
     }
 
     protected override void OnSelectExited(SelectExitEventArgs args)
@@ -55,6 +59,8 @@ public class GridSlot : XRSocketInteractor
         base.OnSelectExited(args);
         Building building = args.interactable.GetComponent<Building>();
 
-        building.SetOriginalLayer();
+        if (building != null)
+            building.SetToGrid(false);
+        //building.SetOriginalLayer();
     }
 }
