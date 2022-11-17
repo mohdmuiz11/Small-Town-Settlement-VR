@@ -14,27 +14,14 @@ public class Building : XRGrabInteractable
     private TableUI tableUI;
     private GameObject tableUIObj;
     private bool isOnGrid;
-    //private GridSystem gridSystem;
-    private Rigidbody rb;
+    private GridSystem gridSystem;
 
     protected override void Awake()
     {
         base.Awake();
-        //gridSystem = GameObject.Find("GRID System").GetComponent<GridSystem>();
+        gridSystem = GameObject.Find("GRID System").GetComponent<GridSystem>();
         tableUIObj = GameObject.Find("Building UI");
         tableUI = tableUIObj.GetComponent<TableUI>();
-        rb = gameObject.GetComponent<Rigidbody>();
-    }
-
-
-    public void freezeAllMovement()
-    {
-        rb.constraints = RigidbodyConstraints.FreezeAll;
-    }
-
-    public void unfreezeAllMovement()
-    {
-        rb.constraints = RigidbodyConstraints.None;
     }
 
     protected override void OnHoverEntered(HoverEnterEventArgs args)
@@ -48,6 +35,12 @@ public class Building : XRGrabInteractable
         }
     }
 
+    // When travel mode is activated, the player should travel to this building
+    protected override void OnActivated(ActivateEventArgs args)
+    {
+        base.OnActivated(args);
+        gridSystem.ResizeWorld(playerTravelPos);
+    }
 
     public void SetToGrid(bool condition)
     {

@@ -3,9 +3,9 @@
 /// </summary>
 public interface IGridCoordinate
 {
-    int posX { get; }
-    int posZ { get; }
-    bool hasPlaced { get; }
+    int PosX { get; }
+    int PosZ { get; }
+    bool HasPlaced { get; }
 
     /// <summary>
     /// Set coordinate according to GRID coordinate system

@@ -11,9 +11,9 @@ public class SocketBuilding : XRSocketInteractor, IGridCoordinate
     [SerializeField] private int actualZ;
 
     //Store coordinate of the grid
-    public int posX { get; private set; }
-    public int posZ { get; private set; }
-    public bool hasPlaced { get; private set; }
+    public int PosX { get; private set; }
+    public int PosZ { get; private set; }
+    public bool HasPlaced { get; private set; }
 
     // Define GRID transform
     private Transform gridTransform;
@@ -25,13 +25,13 @@ public class SocketBuilding : XRSocketInteractor, IGridCoordinate
 
         gridTransform = GameObject.Find("GRID System").GetComponent<Transform>();
         //componentGridSystem = gridSystem.GetComponent<GridSystem>();
-        hasPlaced = false;
+        HasPlaced = false;
     }
 
     public void SetCoordinate(int x, int z)
     {
-        posX = x;
-        posZ = z;
+        PosX = x;
+        PosZ = z;
         actualX = x;
         actualZ = z;
     }
@@ -61,9 +61,9 @@ public class SocketBuilding : XRSocketInteractor, IGridCoordinate
             building.SetToGrid(placed);
             if (placed)
                 building.transform.parent = gridTransform;
-            hasPlaced = placed;
+            HasPlaced = placed;
         }
-        Debug.Log(hasPlaced);
+        Debug.Log(HasPlaced);
         //building.SetOriginalLayer();
     }
 }

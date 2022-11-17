@@ -16,14 +16,14 @@ public class Road : XRBaseInteractable, IGridCoordinate
     [SerializeField] private int actualZ;
 
     //Store coordinate of the grid
-    public int posX { get; private set; }
-    public int posZ { get; private set; }
-    public bool hasPlaced { get; private set; }
+    public int PosX { get; private set; }
+    public int PosZ { get; private set; }
+    public bool HasPlaced { get; private set; }
 
     public void SetCoordinate(int x, int z)
     {
-        posX = x;
-        posZ = z;
+        PosX = x;
+        PosZ = z;
         actualX = x;
         actualZ = z;
     }
@@ -31,7 +31,7 @@ public class Road : XRBaseInteractable, IGridCoordinate
     protected override void Awake()
     {
         base.Awake();
-        hasPlaced = false;
+        HasPlaced = false;
     }
 
     // When the controller hovers over to this gameObject, user can activate (by pressing trigger) to create road
@@ -39,15 +39,15 @@ public class Road : XRBaseInteractable, IGridCoordinate
     {
         base.OnActivated(args);
 
-        if (!hasPlaced)
+        if (!HasPlaced)
         {
             roadRenderer.sprite = roadType[1];
-            hasPlaced = true;
+            HasPlaced = true;
         }
-        else if (hasPlaced)
+        else if (HasPlaced)
         {
             roadRenderer.sprite = roadType[0];
-            hasPlaced = false;
+            HasPlaced = false;
         }
         
     }

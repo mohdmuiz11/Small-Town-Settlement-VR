@@ -24,13 +24,12 @@ public class GridSystem : MonoBehaviour
     private Vector3 firstGridPos;
     private float widthGrid;
     private float tableHeight;
+    private bool hasTraveled;
 
     /// <summary>
     /// Set interaction mode. Available mode: 0 - build mode, 1 - road mode, 2 - view mode (inside map)
     /// </summary>
     private int interactionMode = 0;
-
-    private GameObject[] buildings;
 
     void Start()
     {
@@ -41,7 +40,6 @@ public class GridSystem : MonoBehaviour
         rightController = GameObject.Find("RightHand Controller").GetComponent<XRBaseControllerInteractor>();
         leftControllerLayerSelect = GameObject.Find("LeftHand Controller").GetComponent<ControllerLayerSelect>();
         rightControllerLayerSelect = GameObject.Find("RightHand Controller").GetComponent<ControllerLayerSelect>();
-        buildings = GameObject.FindGameObjectsWithTag("Building");
 
         // Initiate variables from the start of the game
         playerOriginPos = playerTransform.position;
@@ -49,6 +47,7 @@ public class GridSystem : MonoBehaviour
         widthGrid = GetWidthGrid();
         firstGridPos = GetFirstGridPos();
         SpawnSlotInGrid();
+        hasTraveled = false;
     }
 
     // 
@@ -90,7 +89,7 @@ public class GridSystem : MonoBehaviour
             IGridCoordinate targetCoordinate = slots[i].GetComponent<IGridCoordinate>();
 
             // As long as the slot is not empty, replace them
-            if (!targetCoordinate.hasPlaced)
+            if (!targetCoordinate.HasPlaced)
             {
                 SlotSetCoordinate(replacePrefab, slots[i].transform.position, targetCoordinate);
                 Destroy(slots[i]);
@@ -100,24 +99,32 @@ public class GridSystem : MonoBehaviour
         // Set allowHoveredActivate state to each controller depending on replacePrefab
         if (replacePrefab.tag == "Slot")
         {
-            rightController.allowHoveredActivate = false;
-            leftController.allowHoveredActivate = false;
+            EnableHoverActivate(false);
         }
         else if (replacePrefab.tag == "Road")
         {
-            rightController.allowHoveredActivate = true;
-            leftController.allowHoveredActivate = true;
+            EnableHoverActivate(true);
         }
+    }
+
+    // Set both controller to activate interactables without grabbing it first via hover
+    private void EnableHoverActivate(bool condition)
+    {
+        rightController.allowHoveredActivate = condition;
+        leftController.allowHoveredActivate = condition;
     }
 
     // Set coordinate for slot, need gameObject, position, and coordinate
     private void SlotSetCoordinate(GameObject objPrefab, Vector3 worldPos, IGridCoordinate coordinate)
     {
         GameObject replaceSlot = Instantiate(objPrefab, worldPos, objPrefab.transform.rotation, transform);
-        replaceSlot.GetComponent<IGridCoordinate>().SetCoordinate(coordinate.posX, coordinate.posZ);
+        replaceSlot.GetComponent<IGridCoordinate>().SetCoordinate(coordinate.PosX, coordinate.PosZ);
     }
 
-    // Set by buttons
+    /// <summary>
+    /// Set the GRID system to real world size
+    /// </summary>
+    /// <param name="playerTravelPos">Pass a travel position</param>
     public void ResizeWorld(Transform playerTravelPos)
     {
         if (interactionMode == 1)
@@ -129,8 +136,13 @@ public class GridSystem : MonoBehaviour
         rightControllerLayerSelect.SetTeleportableLayer();
         playerTransform.position = playerTravelPos.position;
         SetInteractionMode(2);
+        hasTraveled = true;
     }
-    public void OriginalSize()
+
+    /// <summary>
+    /// Set GRID system to table size, and teleport player to origin point
+    /// </summary>
+    public void SetOriginalSize()
     {
         leftControllerLayerSelect.SetOriginalLayer();
         rightControllerLayerSelect.SetOriginalLayer();
@@ -138,6 +150,7 @@ public class GridSystem : MonoBehaviour
         gameObject.transform.position = new Vector3(0, tableHeight, 0);
         gameObject.transform.localScale = Vector3.one;
         buildModeObject.SetActive(true);
+        hasTraveled = false;
     }
 
     // Changing interaction mode 
@@ -147,32 +160,48 @@ public class GridSystem : MonoBehaviour
     }
 
     // Set interaction mode to do something
+    //TODO: Optimize code below
     public void SetInteractionMode(int mode)
     {
-        if (interactionMode == 2 && mode == 0) // view mode in the past and now set to build mode
-        {
-            OriginalSize();
-        }
         // Nak letak Building
-        else if (mode == 0 && interactionMode != 0)
+        if (mode == 0 && interactionMode != 0)
         {
-            for (int i = 0; i < buildings.Length; i++)
-            {
-                buildings[i].GetComponent<Building>().unfreezeAllMovement();
+            ConstraintAllBuildings(false);
+            if (interactionMode == 1)
                 ReplaceSlot(roadPrefab, socketBuildingPrefab);
+            else if (interactionMode == 2)
+            {
+                EnableHoverActivate(false);
+                if (hasTraveled) SetOriginalSize();
             }
         }
         // Nak letak road
         else if (mode == 1 && interactionMode != 1)
         {
-            for (int i = 0; i < buildings.Length; i++)
-            {
-                buildings[i].GetComponent<Building>().freezeAllMovement();
-                ReplaceSlot(socketBuildingPrefab, roadPrefab);
-            }
+            ConstraintAllBuildings(true);
+            ReplaceSlot(socketBuildingPrefab, roadPrefab);
+        }
+        else if (mode == 2 && interactionMode != 2)
+        {
+            ConstraintAllBuildings(true);
+            EnableHoverActivate(true);
         }
 
         interactionMode = mode;
+    }
+
+    // Freeze or unfreeze all building movement
+    private void ConstraintAllBuildings(bool constraint)
+    {
+        GameObject[] buildings = GameObject.FindGameObjectsWithTag("Building");
+
+        for (int i = 0; i < buildings.Length; i++)
+        {
+            if (constraint)
+                buildings[i].GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
+            else
+                buildings[i].GetComponent<Rigidbody>().constraints = RigidbodyConstraints.None;
+        }
     }
 
     // For holding player's position just in case
