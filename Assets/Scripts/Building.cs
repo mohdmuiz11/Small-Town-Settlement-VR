@@ -1,10 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
-using TMPro;
-using UnityEngine.UI;
 
+/// <summary>
+/// Building contains models and attributes needed for playing
+/// </summary>
 public class Building : XRGrabInteractable
 {
     [SerializeField] private string buildingName;
@@ -13,15 +12,16 @@ public class Building : XRGrabInteractable
     [SerializeField] private Transform playerTravelPos;
 
     private TableUI tableUI;
-    [SerializeField] private GameObject tableUIObj;
+    private GameObject tableUIObj;
     private bool isOnGrid;
-    private GridSystem gridSystem;
+    //private GridSystem gridSystem;
     private Rigidbody rb;
 
     protected override void Awake()
     {
         base.Awake();
-        gridSystem = GameObject.Find("GRID System").GetComponent<GridSystem>();
+        //gridSystem = GameObject.Find("GRID System").GetComponent<GridSystem>();
+        tableUIObj = GameObject.Find("Building UI");
         tableUI = tableUIObj.GetComponent<TableUI>();
         rb = gameObject.GetComponent<Rigidbody>();
     }
@@ -52,7 +52,7 @@ public class Building : XRGrabInteractable
     public void SetToGrid(bool condition)
     {
         isOnGrid = condition;
-        if (!condition)
+        if (!condition && tableUIObj != null)
         {
             tableUIObj.SetActive(false);
         }

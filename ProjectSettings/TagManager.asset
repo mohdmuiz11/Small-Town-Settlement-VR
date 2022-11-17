@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Slot
   - Building
+  - Road
   layers:
   - Default
   - TransparentFX

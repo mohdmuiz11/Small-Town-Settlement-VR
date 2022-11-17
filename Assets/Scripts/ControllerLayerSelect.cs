@@ -2,12 +2,12 @@ using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
 /// <summary>
-/// Set the interaction layer of an interactor
+/// Set the interaction layer of an interactor, select via inspector because idk how to set actual layer lol
 /// </summary>
 public class ControllerLayerSelect : MonoBehaviour
 {
     [Tooltip("The layer that's switched to")]
-    public InteractionLayerMask selectGridLayer = 0;
+    public InteractionLayerMask selectRoadLayer = 0;
     public InteractionLayerMask teleportableLayer = 0;
 
     private XRBaseInteractor interactor = null;
@@ -19,9 +19,9 @@ public class ControllerLayerSelect : MonoBehaviour
         originalLayer = interactor.interactionLayers;
     }
 
-    public void SetSelectGridLayer()
+    public void SetRoadLayer()
     {
-        interactor.interactionLayers = selectGridLayer;
+        interactor.interactionLayers = selectRoadLayer;
     }
     public void SetTeleportableLayer()
     {

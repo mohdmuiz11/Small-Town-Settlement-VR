@@ -1,9 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
+/// <summary>
+/// For display information on the building itself
+/// </summary>
 public class TableUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI nameText;
@@ -15,6 +16,7 @@ public class TableUI : MonoBehaviour
 
     void Start()
     {
+        gameObject.SetActive(false);
         gridSystem = GameObject.Find("GRID System").GetComponent<GridSystem>();
     }
 
@@ -28,7 +30,7 @@ public class TableUI : MonoBehaviour
 
     public void TravelToBuilding()
     {
-        gridSystem.resizeWorld(playerTravelPos);
+        gridSystem.ResizeWorld(playerTravelPos);
     }
 
 }
