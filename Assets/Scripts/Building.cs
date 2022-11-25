@@ -39,7 +39,8 @@ public class Building : XRGrabInteractable
     protected override void OnActivated(ActivateEventArgs args)
     {
         base.OnActivated(args);
-        gridSystem.ResizeWorld(playerTravelPos);
+        if (gridSystem.GetInteractionMode() == 2)
+            gridSystem.ResizeWorld(playerTravelPos);
     }
 
     public void SetToGrid(bool condition)
@@ -49,5 +50,15 @@ public class Building : XRGrabInteractable
         {
             tableUIObj.SetActive(false);
         }
+    }
+
+    // Prevent from grabbing when set to travel, other just be normal
+    // BUG: the socket will produce hover mesh, which causes visual glitch
+    public override bool IsSelectableBy(IXRSelectInteractor interactor)
+    {
+        if (gridSystem.GetInteractionMode() == 2)
+            return false;
+        else
+            return base.IsSelectableBy(interactor);
     }
 }

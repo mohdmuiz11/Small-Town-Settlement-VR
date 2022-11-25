@@ -488,7 +488,6 @@ GameObject:
   - component: {fileID: 364578164}
   - component: {fileID: 364578163}
   - component: {fileID: 364578162}
-  - component: {fileID: 364578166}
   m_Layer: 0
   m_Name: LeftHand Controller
   m_TagString: Untagged
@@ -1051,22 +1050,6 @@ MonoBehaviour:
     m_Reference: {fileID: 7779212132400271959, guid: c348712bda248c246b8c49b3db54643f,
       type: 3}
   m_ButtonPressPoint: 0.5
---- !u!114 &364578166
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 364578160}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 12857866f69ec08488ba70bde4064793, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  selectRoadLayer:
-    m_Bits: 32
-  teleportableLayer:
-    m_Bits: 4
 --- !u!1 &401922745
 GameObject:
   m_ObjectHideFlags: 0
@@ -1906,7 +1889,6 @@ GameObject:
   - component: {fileID: 712900740}
   - component: {fileID: 712900739}
   - component: {fileID: 712900738}
-  - component: {fileID: 712900742}
   m_Layer: 0
   m_Name: RightHand Controller
   m_TagString: Untagged
@@ -2467,22 +2449,6 @@ MonoBehaviour:
     m_Reference: {fileID: 875253871413052681, guid: c348712bda248c246b8c49b3db54643f,
       type: 3}
   m_ButtonPressPoint: 0.5
---- !u!114 &712900742
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 712900736}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 12857866f69ec08488ba70bde4064793, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  selectRoadLayer:
-    m_Bits: 32
-  teleportableLayer:
-    m_Bits: 4
 --- !u!1 &718129588
 GameObject:
   m_ObjectHideFlags: 0
@@ -3023,7 +2989,43 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1046924379}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1741758162}
+        m_TargetAssemblyTypeName: GridSystem, Assembly-CSharp
+        m_MethodName: SetInteractionMode
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 364578160}
+        m_TargetAssemblyTypeName: GridSystem, Assembly-CSharp
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 712900736}
+        m_TargetAssemblyTypeName: GridSystem, Assembly-CSharp
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1046924379
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3656,7 +3658,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 364578166}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ControllerLayerSelect, Assembly-CSharp
         m_MethodName: SetOriginalLayer
         m_Mode: 1
@@ -3668,7 +3670,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 712900742}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ControllerLayerSelect, Assembly-CSharp
         m_MethodName: SetOriginalLayer
         m_Mode: 1
@@ -4261,7 +4263,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 712900742}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ControllerLayerSelect, Assembly-CSharp
         m_MethodName: SetRoadLayer
         m_Mode: 1
@@ -4273,7 +4275,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 364578166}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ControllerLayerSelect, Assembly-CSharp
         m_MethodName: SetRoadLayer
         m_Mode: 1
@@ -4374,6 +4376,10 @@ MonoBehaviour:
   roadPrefab: {fileID: 8499431134534229517, guid: 3113a1773d716d242943b52253e7bd10,
     type: 3}
   worldSize: 150
+  selectRoadLayer:
+    m_Bits: 32
+  selectTpLayer:
+    m_Bits: 4
 --- !u!1 &1893866935
 GameObject:
   m_ObjectHideFlags: 0

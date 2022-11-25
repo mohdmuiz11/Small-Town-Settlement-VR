@@ -51,4 +51,10 @@ public class Road : XRBaseInteractable, IGridCoordinate
         }
         
     }
+
+    // Since road is based on XRBaseInteractable, grab is enabled by default, so need to disable it first
+    public override bool IsSelectableBy(IXRSelectInteractor interactor)
+    {
+        return false;
+    }
 }

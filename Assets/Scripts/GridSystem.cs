@@ -13,22 +13,22 @@ public class GridSystem : MonoBehaviour
     [SerializeField] private GameObject roadPrefab;
     [SerializeField] private float worldSize = 100;
 
+    // Set interaction layers from the inspector, cus idk how to setup lol
+    [SerializeField] private InteractionLayerMask selectRoadLayer = 0;
+    [SerializeField] private InteractionLayerMask selectTpLayer = 0;
+    private InteractionLayerMask selectDefaultLayer = 0;
+
     // Private vars
     private XRBaseControllerInteractor leftController;
     private XRBaseControllerInteractor rightController;
-    private ControllerLayerSelect leftControllerLayerSelect;
-    private ControllerLayerSelect rightControllerLayerSelect;
     private Transform playerTransform;
     private GameObject buildModeObject;
+    private Quaternion playerOriginRot;
     private Vector3 playerOriginPos;
     private Vector3 firstGridPos;
     private float widthGrid;
     private float tableHeight;
     private bool hasTraveled;
-
-    /// <summary>
-    /// Set interaction mode. Available mode: 0 - build mode, 1 - road mode, 2 - view mode (inside map)
-    /// </summary>
     private int interactionMode = 0;
 
     void Start()
@@ -38,11 +38,12 @@ public class GridSystem : MonoBehaviour
         playerTransform = GameObject.Find("XR Rig").GetComponent<Transform>();
         leftController = GameObject.Find("LeftHand Controller").GetComponent<XRBaseControllerInteractor>();
         rightController = GameObject.Find("RightHand Controller").GetComponent<XRBaseControllerInteractor>();
-        leftControllerLayerSelect = GameObject.Find("LeftHand Controller").GetComponent<ControllerLayerSelect>();
-        rightControllerLayerSelect = GameObject.Find("RightHand Controller").GetComponent<ControllerLayerSelect>();
+        selectDefaultLayer = leftController.interactionLayers;
+        selectDefaultLayer = rightController.interactionLayers;
 
         // Initiate variables from the start of the game
         playerOriginPos = playerTransform.position;
+        playerOriginRot = playerTransform.rotation;
         tableHeight = gameObject.transform.position.y;
         widthGrid = GetWidthGrid();
         firstGridPos = GetFirstGridPos();
@@ -114,11 +115,29 @@ public class GridSystem : MonoBehaviour
         leftController.allowHoveredActivate = condition;
     }
 
+    // Set all sockets to not show hover mesh when travel mode is enabled. Very performance intensive
+    private void ToggleHoverMeshSocket(bool isHoverable)
+    {
+        GameObject[] sockets = GameObject.FindGameObjectsWithTag("Slot");
+
+        for (int i = 0; i < sockets.Length; i++)
+        {
+            sockets[i].GetComponent<SocketBuilding>().showInteractableHoverMeshes = isHoverable;
+        }
+    }
+
     // Set coordinate for slot, need gameObject, position, and coordinate
     private void SlotSetCoordinate(GameObject objPrefab, Vector3 worldPos, IGridCoordinate coordinate)
     {
         GameObject replaceSlot = Instantiate(objPrefab, worldPos, objPrefab.transform.rotation, transform);
         replaceSlot.GetComponent<IGridCoordinate>().SetCoordinate(coordinate.PosX, coordinate.PosZ);
+    }
+
+    // Set interaction layer for both controllers, easy peasy
+    private void SetControllerInteractionLayer(InteractionLayerMask layerMask)
+    {
+        leftController.interactionLayers = layerMask;
+        rightController.interactionLayers = layerMask;
     }
 
     /// <summary>
@@ -127,13 +146,14 @@ public class GridSystem : MonoBehaviour
     /// <param name="playerTravelPos">Pass a travel position</param>
     public void ResizeWorld(Transform playerTravelPos)
     {
+        // Make sure road selection is reset back to socket building
         if (interactionMode == 1)
             ReplaceSlot(roadPrefab, socketBuildingPrefab);
+
         gameObject.transform.position = Vector3.zero;
         gameObject.transform.localScale = new Vector3(worldSize, worldSize, worldSize);
         buildModeObject.SetActive(false);
-        leftControllerLayerSelect.SetTeleportableLayer();
-        rightControllerLayerSelect.SetTeleportableLayer();
+        SetControllerInteractionLayer(selectTpLayer);
         playerTransform.position = playerTravelPos.position;
         SetInteractionMode(2);
         hasTraveled = true;
@@ -144,46 +164,69 @@ public class GridSystem : MonoBehaviour
     /// </summary>
     public void SetOriginalSize()
     {
-        leftControllerLayerSelect.SetOriginalLayer();
-        rightControllerLayerSelect.SetOriginalLayer();
+        SetControllerInteractionLayer(selectDefaultLayer);
         playerTransform.position = playerOriginPos;
+        playerTransform.rotation = playerOriginRot;
         gameObject.transform.position = new Vector3(0, tableHeight, 0);
         gameObject.transform.localScale = Vector3.one;
         buildModeObject.SetActive(true);
         hasTraveled = false;
     }
 
-    // Changing interaction mode 
+    /// <summary>
+    /// Get value of current interaction mode
+    /// </summary>
+    /// <returns>Current interaction mode</returns>
     public int GetInteractionMode()
     {
         return interactionMode;
     }
 
-    // Set interaction mode to do something
-    //TODO: Optimize code below
+    /// <summary>
+    /// Set interaction mode. Available mode: 0 - build mode, 1 - road mode, 2 - view mode (inside map)
+    /// </summary>
+    /// <param name="mode">Set mode in integer, between 0-2</param>
     public void SetInteractionMode(int mode)
     {
         // Nak letak Building
         if (mode == 0 && interactionMode != 0)
         {
             ConstraintAllBuildings(false);
+            
+            // road -> building
             if (interactionMode == 1)
+            {
                 ReplaceSlot(roadPrefab, socketBuildingPrefab);
+                SetControllerInteractionLayer(selectDefaultLayer);
+            }
+            // travel -> building
             else if (interactionMode == 2)
             {
                 EnableHoverActivate(false);
+                ToggleHoverMeshSocket(true);
                 if (hasTraveled) SetOriginalSize();
             }
         }
         // Nak letak road
-        else if (mode == 1 && interactionMode != 1)
+        else if (mode == 1 && interactionMode != 1 && !hasTraveled)
         {
             ConstraintAllBuildings(true);
+            SetControllerInteractionLayer(selectRoadLayer);
             ReplaceSlot(socketBuildingPrefab, roadPrefab);
+            if (interactionMode == 2) mode = 2; //temporary fix
         }
+        // Nak teleport
         else if (mode == 2 && interactionMode != 2)
         {
             ConstraintAllBuildings(true);
+            ToggleHoverMeshSocket(false);
+            
+            // road -> travel
+            if (interactionMode == 1)
+            {
+                ReplaceSlot(roadPrefab, socketBuildingPrefab);
+                SetControllerInteractionLayer(selectDefaultLayer);
+            }
             EnableHoverActivate(true);
         }
 
