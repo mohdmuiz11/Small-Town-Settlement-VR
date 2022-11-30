@@ -15,13 +15,20 @@ public class Building : XRGrabInteractable
     private GameObject tableUIObj;
     private bool isOnGrid;
     private GridSystem gridSystem;
+    private SlotManager slotManager;
 
     protected override void Awake()
     {
         base.Awake();
         gridSystem = GameObject.Find("GRID System").GetComponent<GridSystem>();
+        slotManager = GameObject.Find("GRID System").GetComponent<SlotManager>();
         tableUIObj = GameObject.Find("Building UI");
         tableUI = tableUIObj.GetComponent<TableUI>();
+    }
+
+    private void Start()
+    {
+        transform.localScale = Vector3.one * slotManager.WidthGrid;
     }
 
     protected override void OnHoverEntered(HoverEnterEventArgs args)

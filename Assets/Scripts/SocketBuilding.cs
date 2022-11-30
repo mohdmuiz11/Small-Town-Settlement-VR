@@ -9,6 +9,7 @@ public class SocketBuilding : XRSocketInteractor, IGridCoordinate
     // For debug purposes
     [SerializeField] private int actualX;
     [SerializeField] private int actualZ;
+    
 
     //Store coordinate of the grid
     public int PosX { get; private set; }
@@ -63,7 +64,7 @@ public class SocketBuilding : XRSocketInteractor, IGridCoordinate
                 building.transform.parent = gridTransform;
             HasPlaced = placed;
         }
-        Debug.Log(HasPlaced);
+        //Debug.Log(HasPlaced);
         //building.SetOriginalLayer();
     }
 }

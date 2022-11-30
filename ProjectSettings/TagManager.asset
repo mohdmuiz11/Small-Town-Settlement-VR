@@ -4,9 +4,9 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Slot
   - Building
   - Road
+  - Socket
   layers:
   - Default
   - TransparentFX
