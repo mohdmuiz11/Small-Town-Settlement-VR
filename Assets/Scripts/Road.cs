@@ -24,6 +24,8 @@ public class Road : XRBaseInteractable, IGridCoordinate
     {
         PosX = x;
         PosZ = z;
+
+        // For debug purposes
         actualX = x;
         actualZ = z;
     }

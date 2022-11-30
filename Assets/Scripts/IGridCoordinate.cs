@@ -1,3 +1,4 @@
+using UnityEngine;
 /// <summary>
 /// Interface to aid GRID coordination system for slots
 /// </summary>
@@ -5,6 +6,10 @@ public interface IGridCoordinate
 {
     int PosX { get; }
     int PosZ { get; }
+
+    /// <summary>
+    /// Check if slot has occupied by road, building, event, or obstacle
+    /// </summary>
     bool HasPlaced { get; }
 
     /// <summary>
