@@ -7,14 +7,12 @@ using UnityEngine.XR.Interaction.Toolkit;
 public class GridSystem : MonoBehaviour
 {
     // Variables for game inspector
-    [SerializeField] private GameObject socketBuildingPrefab;
-    [SerializeField] private GameObject roadPrefab;
     [SerializeField] private float worldSize = 100;
 
     // Set interaction layers from the inspector, cus idk how to setup lol
-    [SerializeField] private InteractionLayerMask selectRoadLayer = 0;
-    [SerializeField] private InteractionLayerMask selectTpLayer = 0;
-    private InteractionLayerMask selectDefaultLayer = 0;
+    [SerializeField] private InteractionLayerMask selectRoadLayer = 0; // for roads
+    [SerializeField] private InteractionLayerMask selectTpLayer = 0; // teleportation in building
+    private InteractionLayerMask selectDefaultLayer = 0; // default int layer for both controller
 
     // Private vars
     private XRBaseControllerInteractor leftController;
@@ -85,15 +83,11 @@ public class GridSystem : MonoBehaviour
         if (mode == 0 && interactionMode != 0)
         {
             ConstraintAllBuildings(false);
+            slotManager.SwitchSlot("Socket");
+            SetControllerInteractionLayer(selectDefaultLayer);
 
-            // road -> building
-            if (interactionMode == 1)
-            {
-                slotManager.SwitchSlot("Socket");
-                SetControllerInteractionLayer(selectDefaultLayer);
-            }
             // travel -> building
-            else if (interactionMode == 2)
+            if (interactionMode == 2)
             {
                 EnableHoverActivate(false);
                 slotManager.ToggleHoverMeshSocket(true);
@@ -106,6 +100,7 @@ public class GridSystem : MonoBehaviour
             ConstraintAllBuildings(true);
             SetControllerInteractionLayer(selectRoadLayer);
             slotManager.SwitchSlot("Road");
+            EnableHoverActivate(true);
             if (interactionMode == 2) mode = 2; //temporary fix
         }
         // Nak teleport
@@ -113,11 +108,11 @@ public class GridSystem : MonoBehaviour
         {
             ConstraintAllBuildings(true);
             slotManager.ToggleHoverMeshSocket(false);
+            slotManager.SwitchSlot("Teleport");
 
             // road -> travel
             if (interactionMode == 1)
             {
-                slotManager.SwitchSlot("Teleport");
                 SetControllerInteractionLayer(selectDefaultLayer);
             }
             EnableHoverActivate(true);
@@ -150,7 +145,6 @@ public class GridSystem : MonoBehaviour
         buildModeObject.SetActive(false);
         SetControllerInteractionLayer(selectTpLayer);
         playerTransform.position = playerTravelPos.position;
-        SetInteractionMode(2);
         hasTraveled = true;
     }
 
@@ -159,7 +153,6 @@ public class GridSystem : MonoBehaviour
     /// </summary>
     public void SetOriginalSize()
     {
-        SetControllerInteractionLayer(selectDefaultLayer);
         playerTransform.position = playerOriginPos;
         playerTransform.rotation = playerOriginRot;
         gameObject.transform.position = new Vector3(0, tableHeight, 0);

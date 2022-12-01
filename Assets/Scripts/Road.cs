@@ -51,6 +51,7 @@ public class Road : XRBaseInteractable, IGridCoordinate
             roadRenderer.sprite = roadType[0];
             HasPlaced = false;
         }
+        //Debug.Log(HasPlaced);
         
     }
 

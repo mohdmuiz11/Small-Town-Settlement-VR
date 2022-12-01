@@ -46,7 +46,7 @@ public class Building : XRGrabInteractable
     protected override void OnActivated(ActivateEventArgs args)
     {
         base.OnActivated(args);
-        if (gridSystem.GetInteractionMode() == 2)
+        if (gridSystem.GetInteractionMode() == 2 && isOnGrid)
             gridSystem.ResizeWorld(playerTravelPos);
     }
 

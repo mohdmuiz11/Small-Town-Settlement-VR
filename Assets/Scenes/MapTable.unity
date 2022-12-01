@@ -290,7 +290,7 @@ RectTransform:
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 1315721962}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -854,7 +854,7 @@ MonoBehaviour:
   m_HoverTimeToSelect: 0.5
   m_EnableUIInteraction: 1
   m_AllowAnchorControl: 0
-  m_UseForceGrab: 1
+  m_UseForceGrab: 0
   m_RotateSpeed: 180
   m_TranslateSpeed: 1
   m_AnchorRotateReferenceFrame: {fileID: 0}
@@ -1413,7 +1413,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!114 &410087042
 MonoBehaviour:
@@ -1465,6 +1465,7 @@ Transform:
   m_Children:
   - {fileID: 1505813444}
   - {fileID: 828313932}
+  - {fileID: 1323836031}
   m_Father: {fileID: 1741758161}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2649,7 +2650,7 @@ Transform:
   - {fileID: 2124398260}
   - {fileID: 1313711681}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &828313931
 PrefabInstance:
@@ -2987,7 +2988,7 @@ RectTransform:
   m_Children:
   - {fileID: 2136103695}
   m_Father: {fileID: 1315721962}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -3260,30 +3261,6 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 2
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 364578160}
-        m_TargetAssemblyTypeName: GridSystem, Assembly-CSharp
-        m_MethodName: 
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 712900736}
-        m_TargetAssemblyTypeName: GridSystem, Assembly-CSharp
-        m_MethodName: 
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
-          m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -3585,8 +3562,8 @@ RectTransform:
   - {fileID: 37517546}
   - {fileID: 598865400}
   - {fileID: 603483986}
-  - {fileID: 58008270}
   - {fileID: 925239302}
+  - {fileID: 58008270}
   m_Father: {fileID: 1576565011}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3690,6 +3667,12 @@ MonoBehaviour:
   nameText: {fileID: 37517547}
   descriptionText: {fileID: 598865401}
   thumbnailImage: {fileID: 58008271}
+--- !u!4 &1323836031 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 3227f8a93ef93fa4eac678d61af90e6a,
+    type: 3}
+  m_PrefabInstance: {fileID: 1726895579}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1371755172
 GameObject:
   m_ObjectHideFlags: 0
@@ -3921,30 +3904,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: ControllerLayerSelect, Assembly-CSharp
-        m_MethodName: SetOriginalLayer
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: ControllerLayerSelect, Assembly-CSharp
-        m_MethodName: SetOriginalLayer
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!114 &1499432925
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4004,12 +3963,12 @@ PrefabInstance:
     - target: {fileID: 2988612450565834798, guid: d2b41843e3c0b024c8ad6115c1288ad0,
         type: 3}
       propertyPath: m_RootOrder
-      value: 6
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 2988612450565834798, guid: d2b41843e3c0b024c8ad6115c1288ad0,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.495
+      value: 0.5229
       objectReference: {fileID: 0}
     - target: {fileID: 2988612450565834798, guid: d2b41843e3c0b024c8ad6115c1288ad0,
         type: 3}
@@ -4019,7 +3978,7 @@ PrefabInstance:
     - target: {fileID: 2988612450565834798, guid: d2b41843e3c0b024c8ad6115c1288ad0,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -0.695
+      value: -0.6199
       objectReference: {fileID: 0}
     - target: {fileID: 2988612450565834798, guid: d2b41843e3c0b024c8ad6115c1288ad0,
         type: 3}
@@ -4177,7 +4136,7 @@ Transform:
   - {fileID: 1600664182}
   - {fileID: 1315721962}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1600664178
 GameObject:
@@ -4510,30 +4469,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: ControllerLayerSelect, Assembly-CSharp
-        m_MethodName: SetRoadLayer
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: ControllerLayerSelect, Assembly-CSharp
-        m_MethodName: SetRoadLayer
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!114 &1676666247
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4577,27 +4512,27 @@ PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Modification:
-    m_TransformParent: {fileID: 0}
+    m_TransformParent: {fileID: 507421583}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 3227f8a93ef93fa4eac678d61af90e6a,
         type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3227f8a93ef93fa4eac678d61af90e6a,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.001
+      value: 0.003
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3227f8a93ef93fa4eac678d61af90e6a,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.001
+      value: 0.003
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3227f8a93ef93fa4eac678d61af90e6a,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.001
+      value: 0.003
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3227f8a93ef93fa4eac678d61af90e6a,
         type: 3}
@@ -4607,7 +4542,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 3227f8a93ef93fa4eac678d61af90e6a,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.837
+      value: -0.0029999614
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3227f8a93ef93fa4eac678d61af90e6a,
         type: 3}
@@ -4627,7 +4562,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 3227f8a93ef93fa4eac678d61af90e6a,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 3227f8a93ef93fa4eac678d61af90e6a,
         type: 3}
@@ -4687,13 +4622,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1741758160}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.84, z: 0}
+  m_LocalPosition: {x: 0, y: 0.8377, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 507421583}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1741758162
 MonoBehaviour:
@@ -4707,10 +4642,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ed309730aeb1734897d735701375c13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  socketBuildingPrefab: {fileID: 8499431134534229517, guid: 861e142f7a65f934196115eed440b3eb,
-    type: 3}
-  roadPrefab: {fileID: 8499431134534229517, guid: 3113a1773d716d242943b52253e7bd10,
-    type: 3}
   worldSize: 150
   selectRoadLayer:
     m_Bits: 32
@@ -4734,6 +4665,25 @@ MonoBehaviour:
     type: 3}
   roadPrefab: {fileID: 8499431134534229517, guid: 3113a1773d716d242943b52253e7bd10,
     type: 3}
+  useElevation: 0
+  elevations:
+  - -0.03
+  - -0.03
+  - -0.03
+  - -0.03
+  - -0.03
+  - -0.0187
+  - -0.0168
+  - -0.0257
+  - -0.0107
+  - -0.0098
+  - -0.03
+  - -0.03
+  - -0.03
+  - -0.03
+  - -0.03
+  - -0.03
+  - -0.02
 --- !u!1001 &1779199841
 PrefabInstance:
   m_ObjectHideFlags: 0

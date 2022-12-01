@@ -17,15 +17,13 @@ public class SocketBuilding : XRSocketInteractor, IGridCoordinate
     public bool HasPlaced { get; private set; }
 
     // Define GRID transform
-    private Transform gridTransform;
-    //private GridSystem componentGridSystem;
+    private GridSystem gridSystem;
 
     protected override void Awake()
     {
         base.Awake();
 
-        gridTransform = GameObject.Find("GRID System").GetComponent<Transform>();
-        //componentGridSystem = gridSystem.GetComponent<GridSystem>();
+        gridSystem = GameObject.Find("GRID System").GetComponent<GridSystem>();
         HasPlaced = false;
     }
 
@@ -41,7 +39,7 @@ public class SocketBuilding : XRSocketInteractor, IGridCoordinate
     protected override void OnSelectEntered(SelectEnterEventArgs args)
     {
         base.OnSelectEntered(args);
-        Building building = args.interactableObject.colliders[0].GetComponent<Building>();
+        Building building = args.interactableObject.colliders[0].GetComponentInParent<Building>();
         BuildingIsPlaced(true, building);
     }
 
@@ -50,18 +48,18 @@ public class SocketBuilding : XRSocketInteractor, IGridCoordinate
     {
         base.OnSelectExited(args);
 
-        Building building = args.interactableObject.colliders[0].GetComponent<Building>();
+        Building building = args.interactableObject.colliders[0].GetComponentInParent<Building>();
         BuildingIsPlaced(false, building);
     }
 
     // Set conditions when the building is placed or not
     private void BuildingIsPlaced(bool placed, Building building)
     {
-        if (building != null)
+        if (building != null && gridSystem.GetInteractionMode() != 2)
         {
             building.SetToGrid(placed);
             if (placed)
-                building.transform.parent = gridTransform;
+                building.transform.parent = gridSystem.transform;
             HasPlaced = placed;
         }
         //Debug.Log(HasPlaced);

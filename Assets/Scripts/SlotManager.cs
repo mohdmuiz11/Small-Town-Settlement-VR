@@ -10,6 +10,10 @@ public class SlotManager : MonoBehaviour
     [SerializeField] private BoxCollider table;
     [SerializeField] private GameObject socketBuildingPrefab;
     [SerializeField] private GameObject roadPrefab;
+    [SerializeField] private bool useElevation; // use elevation according to model map
+
+    // Elevation profile - each grid has its own elevation from origin point to sea level (y-axis)
+    [SerializeField] private float[] elevations;
 
     // Initiate lists of slots and interactables
     private GameObject[] socketBuildings;
@@ -72,7 +76,19 @@ public class SlotManager : MonoBehaviour
     // Spawn the slot and then set coordinate
     private void SpawnSlot(GameObject objPrefab, Vector3 pos, int index, int x, int z, bool isVisible)
     {
-        GameObject slotSpawn = Instantiate(objPrefab, pos, objPrefab.transform.rotation, transform);
+        GameObject slotSpawn;
+
+        // Spawn slot with fixed elevations
+        if (index < elevations.Length && useElevation)
+        {
+            Vector3 elevatePos = new Vector3(pos.x, pos.y+elevations[index], pos.z);
+            slotSpawn = Instantiate(objPrefab, elevatePos, objPrefab.transform.rotation, transform);
+        }
+        else
+        {
+            slotSpawn = Instantiate(objPrefab, pos, objPrefab.transform.rotation, transform);
+        }
+
         slotSpawn.transform.localScale = new Vector3(WidthGrid, 0.1f, WidthGrid);
         slotSpawn.GetComponent<IGridCoordinate>().SetCoordinate(x, z);
         slotSpawn.SetActive(isVisible);
@@ -125,16 +141,15 @@ public class SlotManager : MonoBehaviour
         // Switch from socket/road -> teleport
         else if (type == "Teleport" && currentSlot != "Teleport")
         {
-            for (int i = 0; i < gridCount*gridCount; i++) // universal number known to man
+            for (int i = 0; i < gridCount * gridCount; i++) // universal number known to man
             {
                 bool occupiedRoad = roads[i].GetComponent<IGridCoordinate>().HasPlaced;
                 bool occupiedSocket = socketBuildings[i].GetComponent<IGridCoordinate>().HasPlaced;
 
-                if (!occupiedRoad || !occupiedSocket)
-                {
+                if (!occupiedRoad)
                     roads[i].SetActive(false);
+                if (!occupiedSocket)
                     socketBuildings[i].SetActive(false);
-                }
             }
 
             currentSlot = "Teleport";
