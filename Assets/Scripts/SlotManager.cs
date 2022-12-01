@@ -40,12 +40,6 @@ public class SlotManager : MonoBehaviour
         WidthGrid = (table.size.z) / (gridCount + 1);
         InitiateSlotList();
         currentSlot = socketBuildingPrefab.tag;
-
-        for (int i = 0; i < 4; i++)
-        {
-            bool bruh = true; if (i > 1) bruh = false;
-            if (i < 1) Debug.Log(bruh); else Debug.Log(bruh);
-        }
     }
 
     // get first world position of the grid
@@ -177,7 +171,7 @@ public class SlotManager : MonoBehaviour
     /// </summary>
     /// <param name="x">GRID Coordinate X</param>
     /// <param name="z">GRID Coordinate Y</param>
-    /// <returns>Condition of N, W, S, E.</returns>
+    /// <returns>Condition of N, E, S, W.</returns>
     public bool[] CheckSurrounding(int x, int z)
     {
         int size = 4;
@@ -213,5 +207,19 @@ public class SlotManager : MonoBehaviour
         }
 
         return surroundings;
+    }
+
+    /// <summary>
+    /// Trigger to update all roads.
+    /// </summary>
+    public void UpdateAllRoads()
+    {
+        for (int i = 0; i < roads.Length; i++)
+        {
+            Road road = roads[i].GetComponent<Road>();
+
+            if (road.HasPlaced)
+                road.RoadUpdate();
+        }
     }
 }
