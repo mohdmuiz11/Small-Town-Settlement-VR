@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -16,6 +17,7 @@ public class SlotManager : MonoBehaviour
     [SerializeField] private float[] elevations;
 
     // Initiate lists of slots and interactables
+    private List<GameObject> slots; // literally everything
     private GameObject[] socketBuildings;
     private GameObject[] roads;
     //private GameObject[] buildings;
@@ -32,11 +34,18 @@ public class SlotManager : MonoBehaviour
         // Initiate arrays
         socketBuildings = new GameObject[gridCount * gridCount];
         roads = new GameObject[gridCount * gridCount];
+        slots = new List<GameObject>();
 
         // Default state
         WidthGrid = (table.size.z) / (gridCount + 1);
         InitiateSlotList();
         currentSlot = socketBuildingPrefab.tag;
+
+        for (int i = 0; i < 4; i++)
+        {
+            bool bruh = true; if (i > 1) bruh = false;
+            if (i < 1) Debug.Log(bruh); else Debug.Log(bruh);
+        }
     }
 
     // get first world position of the grid
@@ -92,14 +101,12 @@ public class SlotManager : MonoBehaviour
         slotSpawn.transform.localScale = new Vector3(WidthGrid, 0.1f, WidthGrid);
         slotSpawn.GetComponent<IGridCoordinate>().SetCoordinate(x, z);
         slotSpawn.SetActive(isVisible);
+        slots.Add(slotSpawn);
+
         if (objPrefab.tag == "Socket")
-        {
             socketBuildings[index] = slotSpawn;
-        }
         else if (objPrefab.tag == "Road")
-        {
             roads[index] = slotSpawn;
-        }
     }
 
     /// <summary>
@@ -141,15 +148,12 @@ public class SlotManager : MonoBehaviour
         // Switch from socket/road -> teleport
         else if (type == "Teleport" && currentSlot != "Teleport")
         {
-            for (int i = 0; i < gridCount * gridCount; i++) // universal number known to man
+            foreach (var slot in slots)
             {
-                bool occupiedRoad = roads[i].GetComponent<IGridCoordinate>().HasPlaced;
-                bool occupiedSocket = socketBuildings[i].GetComponent<IGridCoordinate>().HasPlaced;
+                bool occupied = slot.GetComponent<IGridCoordinate>().HasPlaced;
 
-                if (!occupiedRoad)
-                    roads[i].SetActive(false);
-                if (!occupiedSocket)
-                    socketBuildings[i].SetActive(false);
+                if (!occupied)
+                    slot.SetActive(false);
             }
 
             currentSlot = "Teleport";
@@ -166,5 +170,48 @@ public class SlotManager : MonoBehaviour
         {
             socketBuildings[i].GetComponent<SocketBuilding>().showInteractableHoverMeshes = isHoverable;
         }
+    }
+
+    /// <summary>
+    /// Return results of checking surrounding the grid
+    /// </summary>
+    /// <param name="x">GRID Coordinate X</param>
+    /// <param name="z">GRID Coordinate Y</param>
+    /// <returns>Condition of N, W, S, E.</returns>
+    public bool[] CheckSurrounding(int x, int z)
+    {
+        int size = 4;
+        bool[] surroundings = new bool[size]; // should default all to false
+        bool[] isChecked = new bool[4];
+
+        // check each slot first available in grid system
+        foreach (var slot in slots)
+        {
+            // if the slot is not active, skip it
+            if (!slot.activeSelf)
+                continue;
+
+            IGridCoordinate slotCoordinate = slot.GetComponent<IGridCoordinate>();
+
+            for (int s = 0; s < size; s++)
+            {
+                // ba = bwh atas; kk = kiri-kanan; ve = positive/negative
+                int ba = (s % 2 == 0) ? 1 : 0, kk = s % 2, ve = 1;
+
+                if (s > 1) ve = -1;
+                // loop 0 : ba=1, kk=0
+                // loop 1 : ba=0, kk=1
+                // loop 2 : ba=-1, kk=0
+                // loop 3 : ba=0, kk=-1
+
+                if (slotCoordinate.PosX == (x + kk * ve) && slotCoordinate.PosZ == (z + ba * ve) && !isChecked[s])
+                {
+                    if (slotCoordinate.HasPlaced) surroundings[s] = true;
+                    isChecked[s] = true;
+                }
+            }
+        }
+
+        return surroundings;
     }
 }

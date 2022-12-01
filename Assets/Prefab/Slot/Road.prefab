@@ -299,9 +299,6 @@ MonoBehaviour:
       m_Calls: []
   roadType:
   - {fileID: 0}
-  - {fileID: 21300000, guid: 001e27bbfa91bc6418ae7f4b441290a8, type: 3}
-  - {fileID: 21300000, guid: 34d72345047a3d04992adda03a034c13, type: 3}
-  - {fileID: 21300000, guid: a6bfa25c3cdf7fc4ea400851c74bd57d, type: 3}
   - {fileID: 21300000, guid: c29081cafa7bcb648a135fbf62eb8446, type: 3}
   - {fileID: 21300000, guid: d95baf1f620edb44d93b92d0603d5b04, type: 3}
   - {fileID: 21300000, guid: 4f87c92e397add543bd291118bef8318, type: 3}

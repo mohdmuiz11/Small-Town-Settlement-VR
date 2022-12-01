@@ -15,6 +15,10 @@ public class Road : XRBaseInteractable, IGridCoordinate
     [SerializeField] private int actualX;
     [SerializeField] private int actualZ;
 
+    // Other vars
+
+    private SlotManager slotManager;
+
     //Store coordinate of the grid
     public int PosX { get; private set; }
     public int PosZ { get; private set; }
@@ -33,6 +37,7 @@ public class Road : XRBaseInteractable, IGridCoordinate
     protected override void Awake()
     {
         base.Awake();
+        slotManager = GameObject.Find("GRID System").GetComponent<SlotManager>();
         HasPlaced = false;
     }
 
@@ -43,6 +48,15 @@ public class Road : XRBaseInteractable, IGridCoordinate
 
         if (!HasPlaced)
         {
+            bool[] results = slotManager.CheckSurrounding(PosX, PosZ);
+            string debugText = "";
+
+            for (int i = 0; i < results.Length; i++)
+            {
+                debugText += results[i] + " ";
+            }
+
+            Debug.Log(debugText);
             roadRenderer.sprite = roadType[1];
             HasPlaced = true;
         }
