@@ -79,7 +79,7 @@ public class Road : XRBaseInteractable, IGridCoordinate
 
         bool[] results = slotManager.CheckSurrounding(PosX, PosZ);
 
-        // Check results. Another mess of a code
+        // Check results. Another mess of a code. Maybe dictionary can help?
         for (int i = 0; i < results.Length; i++)
         {
             if (results[i])

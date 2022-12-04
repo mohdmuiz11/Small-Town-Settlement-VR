@@ -193,20 +193,34 @@ public class SlotManager : MonoBehaviour
                 int ba = (s % 2 == 0) ? 1 : 0, kk = s % 2, ve = 1;
 
                 if (s > 1) ve = -1;
-                // loop 0 : ba=1, kk=0
-                // loop 1 : ba=0, kk=1
-                // loop 2 : ba=-1, kk=0
-                // loop 3 : ba=0, kk=-1
+                // loop 0 : ba=1, kk=0, north
+                // loop 1 : ba=0, kk=1, east
+                // loop 2 : ba=-1, kk=0, south
+                // loop 3 : ba=0, kk=-, west
 
                 if (slotCoordinate.PosX == (x + kk * ve) && slotCoordinate.PosZ == (z + ba * ve) && !isChecked[s])
                 {
-                    if (slotCoordinate.HasPlaced) surroundings[s] = true;
+                    if (slotCoordinate.HasPlaced)
+                        if (slot.CompareTag("Building")) // check building direction if it is valid
+                            surroundings[s] = CheckDirection(ba * ve, kk * ve, slot.GetComponent<SocketBuilding>());
+                        else // if road just true man
+                            surroundings[s] = true;
                     isChecked[s] = true;
                 }
             }
         }
 
         return surroundings;
+    }
+
+    // plan to tidy up this code but too lazy
+    private bool CheckDirection(int ba, int kk, SocketBuilding socket)
+    {
+        if (ba == 1 && kk == 0 && socket.attachTransform.eulerAngles.y == 180) return true;
+        if (ba == 0 && kk == 1 && socket.attachTransform.eulerAngles.y == 270) return true;
+        if (ba == -1 && kk == 0 && socket.attachTransform.eulerAngles.y == 0) return true;
+        if (ba == 0 && kk == -1 && socket.attachTransform.eulerAngles.y == 90) return true;
+        return false;
     }
 
     /// <summary>
