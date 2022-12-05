@@ -82,6 +82,7 @@ public class Road : XRBaseInteractable, IGridCoordinate
         // Check results. Another mess of a code. Maybe dictionary can help?
         for (int i = 0; i < results.Length; i++)
         {
+
             if (results[i])
             {
                 placed++;
@@ -104,6 +105,7 @@ public class Road : XRBaseInteractable, IGridCoordinate
             }
             angle += 90;
         }
+
 
         if (straight && placed == 2) // if road are straight
             roadRenderer.sprite = roadType[5];

@@ -196,20 +196,21 @@ public class SlotManager : MonoBehaviour
                 // loop 0 : ba=1, kk=0, north
                 // loop 1 : ba=0, kk=1, east
                 // loop 2 : ba=-1, kk=0, south
-                // loop 3 : ba=0, kk=-, west
+                // loop 3 : ba=0, kk=-1, west
 
                 if (slotCoordinate.PosX == (x + kk * ve) && slotCoordinate.PosZ == (z + ba * ve) && !isChecked[s])
                 {
                     if (slotCoordinate.HasPlaced)
-                        if (slot.CompareTag("Building")) // check building direction if it is valid
+                    {
+                        if (slot.CompareTag("Socket")) // check building direction if it is valid
                             surroundings[s] = CheckDirection(ba * ve, kk * ve, slot.GetComponent<SocketBuilding>());
-                        else // if road just true man
+                        else
                             surroundings[s] = true;
+                    }
                     isChecked[s] = true;
                 }
             }
         }
-
         return surroundings;
     }
 

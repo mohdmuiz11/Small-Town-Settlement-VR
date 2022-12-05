@@ -61,7 +61,7 @@ public class Building : XRGrabInteractable
         base.OnHoverExited(args);
         var interactorObj = args.interactorObject as XRBaseInteractor;
 
-        if (interactorObj.gameObject.CompareTag("Socket"))
+        if (interactorObj.gameObject.CompareTag("Socket") && hasPlaced)
             preventUpdate = true;
     }
 
@@ -82,7 +82,7 @@ public class Building : XRGrabInteractable
         base.OnSelectExited(args);
         var interactorObj = args.interactorObject as XRBaseInteractor;
 
-        if (interactorObj.gameObject.CompareTag("Socket"))
+        if (interactorObj.gameObject.CompareTag("Socket") && gridSystem.GetInteractionMode() != 2)
             hasPlaced = false;
     }
 
@@ -101,6 +101,7 @@ public class Building : XRGrabInteractable
     protected override void OnActivated(ActivateEventArgs args)
     {
         base.OnActivated(args);
+        Debug.Log(gridSystem.GetInteractionMode() + " " + hasPlaced);
         if (gridSystem.GetInteractionMode() == 2 && hasPlaced)
             gridSystem.ResizeWorld(playerTravelPos);
     }
