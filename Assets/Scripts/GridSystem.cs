@@ -24,7 +24,22 @@ public class GridSystem : MonoBehaviour
     private Vector3 playerOriginPos;
     private float tableHeight;
     private bool hasTraveled;
-    private int interactionMode = 0;
+
+    /// <summary>
+    /// Get current interaction mode.
+    /// </summary>
+    public int interactionMode { get; private set; } = 0;
+
+    /// <summary>
+    /// Get width of a grid to have same scale as props.
+    /// </summary>
+    public float WidthGrid { get; private set; }
+
+    private void Awake()
+    {
+        slotManager = GetComponent<SlotManager>();
+        WidthGrid = slotManager.WidthGrid;
+    }
 
     void Start()
     {
@@ -33,7 +48,6 @@ public class GridSystem : MonoBehaviour
         playerTransform = GameObject.Find("XR Rig").GetComponent<Transform>();
         leftController = GameObject.Find("LeftHand Controller").GetComponent<XRBaseControllerInteractor>();
         rightController = GameObject.Find("RightHand Controller").GetComponent<XRBaseControllerInteractor>();
-        slotManager = GetComponent<SlotManager>();
         selectDefaultLayer = leftController.interactionLayers;
         selectDefaultLayer = rightController.interactionLayers;
 
@@ -119,15 +133,6 @@ public class GridSystem : MonoBehaviour
         }
 
         interactionMode = mode;
-    }
-
-    /// <summary>
-    /// Get value of current interaction mode
-    /// </summary>
-    /// <returns>Current interaction mode</returns>
-    public int GetInteractionMode()
-    {
-        return interactionMode;
     }
 
     /// <summary>

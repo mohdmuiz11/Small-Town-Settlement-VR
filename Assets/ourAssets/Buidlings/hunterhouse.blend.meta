@@ -1,29 +1,9 @@
 fileFormatVersion: 2
-guid: 094c9dfe8ad97d24c9e7f64066034895
+guid: 84399d659706aa44581623a8ec4faabf
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: GreenLeaff
-    second: {fileID: 2100000, guid: 5bfdc244a03863c47b4dc728e26ebb02, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: LightLeaf
-    second: {fileID: 2100000, guid: 7d44cccef4228d84bb611e078d34705a, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: Wood
-    second: {fileID: 2100000, guid: b275d31eccd18a8459e10849b2007b7c, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: leaf
-    second: {fileID: 2100000, guid: 9d5b5c49e95291c4ca4e133a8c709cbe, type: 2}
+  externalObjects: {}
   materials:
     materialImportMode: 2
     materialName: 0

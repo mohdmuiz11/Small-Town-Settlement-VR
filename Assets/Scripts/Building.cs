@@ -12,9 +12,7 @@ public class Building : XRGrabInteractable
     [SerializeField] private Transform playerTravelPos;
 
     private TableUI tableUI;
-    private GameObject tableUIObj;
     private GridSystem gridSystem;
-    private SlotManager slotManager;
     private bool hasPlaced;
     private bool socketHovered;
     private bool preventUpdate;
@@ -26,16 +24,14 @@ public class Building : XRGrabInteractable
 
         // Default state
         gridSystem = GameObject.Find("GRID System").GetComponent<GridSystem>();
-        slotManager = GameObject.Find("GRID System").GetComponent<SlotManager>();
-        tableUIObj = GameObject.Find("Building UI");
-        tableUI = tableUIObj.GetComponent<TableUI>();
+        tableUI = GameObject.Find("Table UI").GetComponent<TableUI>();
         Angle = 0;
     }
 
     private void Start()
     {
         // scale to fit inside a slot
-        transform.localScale = Vector3.one * slotManager.WidthGrid;
+        transform.localScale = Vector3.one * gridSystem.WidthGrid;
     }
 
     // When the building is hovered by player's controller or socket
@@ -50,8 +46,8 @@ public class Building : XRGrabInteractable
         // Show building's information to the table UI
         else if (interactorObj.gameObject.CompareTag("Player"))
         {
-            tableUIObj.SetActive(true);
-            tableUI.setText(buildingName, buildingDescription, buildingThumbnail, playerTravelPos);
+            tableUI.gameObject.SetActive(true);
+            tableUI.setText(buildingName, buildingDescription, buildingThumbnail);
         }
     }
 
@@ -82,7 +78,7 @@ public class Building : XRGrabInteractable
         base.OnSelectExited(args);
         var interactorObj = args.interactorObject as XRBaseInteractor;
 
-        if (interactorObj.gameObject.CompareTag("Socket") && gridSystem.GetInteractionMode() != 2)
+        if (interactorObj.gameObject.CompareTag("Socket") && gridSystem.interactionMode != 2)
             hasPlaced = false;
     }
 
@@ -101,8 +97,8 @@ public class Building : XRGrabInteractable
     protected override void OnActivated(ActivateEventArgs args)
     {
         base.OnActivated(args);
-        Debug.Log(gridSystem.GetInteractionMode() + " " + hasPlaced);
-        if (gridSystem.GetInteractionMode() == 2 && hasPlaced)
+        Debug.Log(gridSystem.interactionMode + " " + hasPlaced);
+        if (gridSystem.interactionMode == 2 && hasPlaced)
             gridSystem.ResizeWorld(playerTravelPos);
     }
 
@@ -118,7 +114,7 @@ public class Building : XRGrabInteractable
     // BUG: the socket will produce hover mesh, which causes visual glitch
     public override bool IsSelectableBy(IXRSelectInteractor interactor)
     {
-        if (gridSystem.GetInteractionMode() == 2)
+        if (gridSystem.interactionMode == 2)
             return false;
         else
             return base.IsSelectableBy(interactor);

@@ -11,26 +11,27 @@ public class TableUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI descriptionText;
     [SerializeField] private RawImage thumbnailImage;
 
-    private Transform playerTravelPos;
-    private GridSystem gridSystem;
+    //private Transform playerTravelPos;
+    //private GridSystem gridSystem;
 
     void Start()
     {
         gameObject.SetActive(false);
-        gridSystem = GameObject.Find("GRID System").GetComponent<GridSystem>();
+        //gridSystem = GameObject.Find("GRID System").GetComponent<GridSystem>();
     }
 
-    public void setText(string title, string desc, Texture2D thumb, Transform pos)
+    public void setText(string title, string desc, Texture2D thumb) //, Transform pos)
     {
         nameText.text = title;
         descriptionText.text = desc;
         thumbnailImage.texture = thumb;
-        playerTravelPos = pos;
+        //playerTravelPos = pos;
     }
 
-    public void TravelToBuilding()
-    {
-        gridSystem.ResizeWorld(playerTravelPos);
-    }
+    // CURRENTLY NOT IN USE
+    //public void TravelToBuilding()
+    //{
+    //    gridSystem.ResizeWorld(playerTravelPos);
+    //}
 
 }

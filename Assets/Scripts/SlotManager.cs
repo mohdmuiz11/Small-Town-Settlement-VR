@@ -2,18 +2,24 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Manage slots in a grid system
+/// Manage slots in a grid system. Executed before anything else.
 /// </summary>
+[DefaultExecutionOrder(-20)]
 public class SlotManager : MonoBehaviour
 {
     // Editable config
+    [Header("General")]
     [SerializeField] private int gridCount = 18;
     [SerializeField] private BoxCollider table;
     [SerializeField] private GameObject socketBuildingPrefab;
     [SerializeField] private GameObject roadPrefab;
-    [SerializeField] private bool useElevation; // use elevation according to model map
+
+    [Header("Event settings")]
+    [SerializeField] private GameObject forestPrefab;
+    [SerializeField] private Vector2[] forestEventList;
 
     // Elevation profile - each grid has its own elevation from origin point to sea level (y-axis)
+    [SerializeField] private bool useElevation; // use elevation according to model map
     [SerializeField] private float[] elevations;
 
     // Initiate lists of slots and interactables
@@ -26,6 +32,10 @@ public class SlotManager : MonoBehaviour
 
     // Other vars
     private string currentSlot; // by tag
+
+    /// <summary>
+    /// Get width of a grid to have same scale as props.
+    /// </summary>
     public float WidthGrid { get; private set; }
 
     private void Awake()
@@ -63,11 +73,24 @@ public class SlotManager : MonoBehaviour
         {
             for (int x = 0; x < gridCount; x++)
             {
+                bool isEvent = false;
+
+                for (int e = 0; e < forestEventList.Length; e++)
+                {
+                    // Check if the event match the GRID coordinate
+                    if (forestEventList[e].x == x && forestEventList[e].y == z)
+                    {
+                        isEvent = true;
+                        SpawnSlot(forestPrefab, pos, i, x, z, isEvent);
+                    }
+                }
+
                 // Spawn socket by default
-                SpawnSlot(socketBuildingPrefab, pos, i, x, z, true);
+                SpawnSlot(socketBuildingPrefab, pos, i, x, z, !isEvent);
 
                 // Spawn road but inactive
                 SpawnSlot(roadPrefab, pos, i, x, z, false);
+
                 i++;
                 pos.x += WidthGrid;
             }
