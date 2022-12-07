@@ -23,7 +23,11 @@ public class GridSystem : MonoBehaviour
     private Quaternion playerOriginRot;
     private Vector3 playerOriginPos;
     private float tableHeight;
-    private bool hasTraveled;
+
+    /// <summary>
+    /// Check if the player has traveled to real world.
+    /// </summary>
+    public bool hasTraveled { get; private set; }
 
     /// <summary>
     /// Get current interaction mode.

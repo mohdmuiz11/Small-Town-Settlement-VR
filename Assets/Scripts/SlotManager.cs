@@ -227,7 +227,7 @@ public class SlotManager : MonoBehaviour
                     {
                         if (slot.CompareTag("Socket")) // check building direction if it is valid
                             surroundings[s] = CheckDirection(ba * ve, kk * ve, slot.GetComponent<SocketBuilding>());
-                        else
+                        else if (slot.CompareTag("Road"))
                             surroundings[s] = true;
                     }
                     isChecked[s] = true;

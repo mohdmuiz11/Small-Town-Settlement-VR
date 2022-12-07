@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 351d60161ba13e74cadd11acb5bf2d12
+guid: d62c34bec5b86b7498d892edba3b7084
 ModelImporter:
   serializedVersion: 21300
   internalIDToNameTable: []
@@ -7,11 +7,16 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: Material
-    second: {fileID: 2100000, guid: c04595b5ca8c64d41b54e250e611bc85, type: 2}
+      name: Grass
+    second: {fileID: 2100000, guid: c2003d908325da249bfa1c223da1f203, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Sand
+    second: {fileID: 2100000, guid: a151855b9d0f56041b945bc9b445555a, type: 2}
   materials:
     materialImportMode: 2
-    materialName: 1
+    materialName: 0
     materialSearch: 1
     materialLocation: 1
   animations:

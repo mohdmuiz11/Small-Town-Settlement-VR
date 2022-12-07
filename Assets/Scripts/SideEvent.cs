@@ -31,6 +31,7 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
 
     // Private vars
     private GridSystem gridSystem;
+    private BoxCollider boxCollider;
     private TableUI tableUI;
     private bool isCompleted;
 
@@ -56,6 +57,7 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
         // Default state
         gridSystem = GameObject.Find("GRID System").GetComponent<GridSystem>();
         tableUI = GameObject.Find("Table UI").GetComponent<TableUI>();
+        boxCollider = GetComponent<BoxCollider>();
     }
 
     private void Start()
@@ -63,6 +65,7 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
         // scale to fit inside a slot
         transform.localScale = Vector3.one * gridSystem.WidthGrid;
         GenerateRandomObjects();
+        HasPlaced = true;
     }
 
     protected override void OnHoverEntered(HoverEnterEventArgs args)
@@ -70,7 +73,10 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
         base.OnHoverEntered(args);
         
         if (gridSystem.interactionMode == 2)
+        {
+            tableUI.gameObject.SetActive(true);
             tableUI.setText(eventType.ToString(), description, null);
+        }
     }
 
     protected override void OnActivated(ActivateEventArgs args)
@@ -78,7 +84,14 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
         base.OnActivated(args);
 
         if (gridSystem.interactionMode == 2 && !isCompleted)
+        {
             gridSystem.ResizeWorld(playerTravelPos);
+        }
+    }
+
+    private void DisableBoxCollider(bool condition)
+    {
+        boxCollider.isTrigger = condition;
     }
 
     // Since event is based on XRBaseInteractable, grab is enabled by default, so need to disable it first
@@ -87,12 +100,22 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
         return false;
     }
 
+    public override void ProcessInteractable(XRInteractionUpdateOrder.UpdatePhase updatePhase)
+    {
+        base.ProcessInteractable(updatePhase);
+
+        if (gridSystem.hasTraveled)
+            DisableBoxCollider(true);
+        else
+            DisableBoxCollider(false);
+    }
+
     // Everything in randomized
     private void GenerateRandomObjects()
     {
         // Random spawn and place to store pos
         int spawnSize = Random.Range(minSpawn, maxSpawn);
-        float setDistance = 1f / (spawnSize + 1) * (1 - marginSlot);
+        float setDistance = 1f / (spawnSize + 1f) * (1f - marginSlot);
         Debug.Log(setDistance + " " + spawnSize);
         List<Vector2> posList = new List<Vector2>();
         posList.Add(Vector2.zero);
@@ -100,7 +123,7 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
         for (int i = 0; i < spawnSize; i++)
         {
             // Spawn object first
-            int ri = Random.Range(1, prefabs.Length);
+            int ri = Random.Range(0, prefabs.Length);
             GameObject prefab = Instantiate(prefabs[ri], transform);
 
             // Spare some distance between prefabs

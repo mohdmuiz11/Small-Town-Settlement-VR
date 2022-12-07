@@ -122,9 +122,13 @@ MonoBehaviour:
     to collect woods.
   prefabs:
   - {fileID: 3419081502229303117, guid: 3af269e8d93353447b89ae9d8a6e937c, type: 3}
+  - {fileID: 8705032805967574307, guid: 56193cf3e6ff30245b95f233f1b095ec, type: 3}
   - {fileID: 786528970488369720, guid: 0f3a1532f9d56304b8fafd007f49c003, type: 3}
+  - {fileID: 8751925752684039585, guid: fe30d14933fb543418e8d3ad8b755ec5, type: 3}
   - {fileID: 1333609008687664222, guid: 465c13174f57be34ab8c54ba81dc30cc, type: 3}
-  sizePrefab: 1.5
+  - {fileID: 2725184745024726928, guid: 1e53075f49b4bfd4d87f0d4c48e79242, type: 3}
+  - {fileID: 8552468322210656681, guid: 48e15ad02437bb44c91b1e2f6214ec9d, type: 3}
+  sizePrefab: 1
   minSpawn: 5
   maxSpawn: 10
   marginSlot: 0.1
@@ -139,7 +143,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2988612450565834796}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 0.17680605, z: 1}

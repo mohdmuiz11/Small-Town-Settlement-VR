@@ -44,7 +44,7 @@ public class Building : XRGrabInteractable
             socketHovered = true;
 
         // Show building's information to the table UI
-        else if (interactorObj.gameObject.CompareTag("Player"))
+        else if (interactorObj.gameObject.CompareTag("Player") && hasPlaced)
         {
             tableUI.gameObject.SetActive(true);
             tableUI.setText(buildingName, buildingDescription, buildingThumbnail);
@@ -97,7 +97,7 @@ public class Building : XRGrabInteractable
     protected override void OnActivated(ActivateEventArgs args)
     {
         base.OnActivated(args);
-        Debug.Log(gridSystem.interactionMode + " " + hasPlaced);
+        //Debug.Log(gridSystem.interactionMode + " " + hasPlaced);
         if (gridSystem.interactionMode == 2 && hasPlaced)
             gridSystem.ResizeWorld(playerTravelPos);
     }
