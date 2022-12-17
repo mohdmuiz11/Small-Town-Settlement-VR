@@ -37,6 +37,10 @@ public class SlotManager : MonoBehaviour
     /// Get width of a grid to have same scale as props.
     /// </summary>
     public float WidthGrid { get; private set; }
+    /// <summary>
+    /// Exclusive for road. Is the controller is in a state of activiting? 0 = nope, 1 = remove road, 2 = add road
+    /// </summary>
+    public int controllerActivate = 0;
 
     private void Awake()
     {

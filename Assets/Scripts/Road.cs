@@ -17,8 +17,8 @@ public class Road : XRBaseInteractable, IGridCoordinate
     [SerializeField] private int actualZ;
 
     // Other vars
-
     private SlotManager slotManager;
+    private bool hasInteracted;
 
     //Store coordinate of the grid
     public int PosX { get; private set; }
@@ -42,24 +42,55 @@ public class Road : XRBaseInteractable, IGridCoordinate
         HasPlaced = false;
     }
 
+    // Trying to fix not spraying the road issue
+    protected override void OnHoverEntered(HoverEnterEventArgs args)
+    {
+        base.OnHoverEntered(args);
+
+        if (slotManager.controllerActivate > 0 && !hasInteracted)
+            PlacingRoad();
+    }
+
+    // Trying to fix not spraying the road issue
+    protected override void OnHoverExited(HoverExitEventArgs args)
+    {
+        base.OnHoverExited(args);
+
+        if (hasInteracted)
+            hasInteracted = false;
+    }
+
     // When the controller hovers over to this gameObject, user can activate (by pressing trigger) to create road
     protected override void OnActivated(ActivateEventArgs args)
     {
         base.OnActivated(args);
 
-        if (!HasPlaced)
+        // If HasPlaced, remove road, else add them
+        slotManager.controllerActivate = HasPlaced ? 1 : 2;
+        hasInteracted = true;
+        PlacingRoad();
+    }
+
+    private void PlacingRoad()
+    {
+        if (!HasPlaced && slotManager.controllerActivate != 1)
         {
             HasPlaced = true;
             slotManager.UpdateAllRoads();
         }
-        else if (HasPlaced)
+        else if (HasPlaced && slotManager.controllerActivate != 2)
         {
             roadRenderer.sprite = roadType[0];
             HasPlaced = false;
             slotManager.UpdateAllRoads();
         }
-        //Debug.Log(HasPlaced);
-        
+    }
+
+    // Trying to fix not spraying the road issue
+    protected override void OnDeactivated(DeactivateEventArgs args)
+    {
+        base.OnDeactivated(args);
+        slotManager.controllerActivate = 0;
     }
 
     // Since road is based on XRBaseInteractable, grab is enabled by default, so need to disable it first
