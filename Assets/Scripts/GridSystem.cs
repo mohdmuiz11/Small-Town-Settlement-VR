@@ -17,6 +17,7 @@ public class GridSystem : MonoBehaviour
     // Private vars
     private XRBaseControllerInteractor leftController;
     private XRBaseControllerInteractor rightController;
+    private Grabber grabber;
     private SlotManager slotManager;
     private Transform playerTransform;
     private GameObject buildModeObject;
@@ -30,7 +31,7 @@ public class GridSystem : MonoBehaviour
     public bool hasTraveled { get; private set; }
 
     /// <summary>
-    /// Get current interaction mode.
+    /// Get current interaction mode. Available mode: 0 - build mode, 1 - road mode, 2 - teleport mode
     /// </summary>
     public int interactionMode { get; private set; } = 0;
 
@@ -65,7 +66,11 @@ public class GridSystem : MonoBehaviour
     // Set interaction layer for both controllers, easy peasy
     private void SetControllerInteractionLayer(InteractionLayerMask layerMask)
     {
-        leftController.interactionLayers = layerMask;
+        // Dirty fix: left controller has no purpose other than teleportation
+        if (layerMask == selectTpLayer)
+            leftController.interactionLayers = layerMask;
+        else
+            leftController.interactionLayers = selectDefaultLayer;
         rightController.interactionLayers = layerMask;
     }
 
@@ -92,7 +97,7 @@ public class GridSystem : MonoBehaviour
     }
 
     /// <summary>
-    /// Set interaction mode. Available mode: 0 - build mode, 1 - road mode, 2 - view mode (inside map)
+    /// Set interaction mode. Available mode: 0 - build mode, 1 - road mode, 2 - teleport mode
     /// </summary>
     /// <param name="mode">Set mode in integer, between 0-2</param>
     public void SetInteractionMode(int mode)

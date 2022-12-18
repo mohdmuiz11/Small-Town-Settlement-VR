@@ -365,7 +365,7 @@ MonoBehaviour:
   m_TeleportationProvider: {fileID: 0}
   m_MatchOrientation: 0
   m_MatchDirectionalInput: 0
-  m_TeleportTrigger: 0
+  m_TeleportTrigger: 3
   m_FilterSelectionByHitNormal: 0
   m_UpNormalToleranceDegrees: 30
   m_Teleporting:
@@ -417,17 +417,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 6259747fffb856442a47525a4bdd8ad2,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.0701818
+      value: 0.08
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6259747fffb856442a47525a4bdd8ad2,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.0701818
+      value: 0.08
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6259747fffb856442a47525a4bdd8ad2,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.0701818
+      value: 0.08
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 6259747fffb856442a47525a4bdd8ad2,
         type: 3}

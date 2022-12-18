@@ -18,6 +18,7 @@ public class SocketBuilding : XRSocketInteractor, IGridCoordinate
 
     // Private vars
     private GridSystem gridSystem;
+    private SlotManager slotManager;
     private Building buildingStats;
     private bool buildingHovered;
     private bool preventUpdate;
@@ -27,6 +28,7 @@ public class SocketBuilding : XRSocketInteractor, IGridCoordinate
         base.Awake();
 
         gridSystem = GameObject.Find("GRID System").GetComponent<GridSystem>();
+        slotManager = gridSystem.GetComponent<SlotManager>();
         HasPlaced = false;
     }
 
@@ -67,6 +69,7 @@ public class SocketBuilding : XRSocketInteractor, IGridCoordinate
 
         BuildingIsPlaced(true, interactableObj);
         preventUpdate = false;
+        slotManager.UpdateAllRoads();
     }
 
     // Get status of the building when it exit from socket
@@ -76,6 +79,7 @@ public class SocketBuilding : XRSocketInteractor, IGridCoordinate
         var interactableObj = args.interactableObject as XRBaseInteractable;
 
         BuildingIsPlaced(false, interactableObj);
+        slotManager.UpdateAllRoads();
     }
 
     // get angle from the current building

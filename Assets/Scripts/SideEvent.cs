@@ -116,7 +116,7 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
         // Random spawn and place to store pos
         int spawnSize = Random.Range(minSpawn, maxSpawn);
         float setDistance = 1f / (spawnSize + 1f) * (1f - marginSlot);
-        Debug.Log(setDistance + " " + spawnSize);
+        //Debug.Log(setDistance + " " + spawnSize);
         List<Vector2> posList = new List<Vector2>();
         posList.Add(Vector2.zero);
 
