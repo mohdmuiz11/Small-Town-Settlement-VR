@@ -7,17 +7,30 @@ using UnityEngine.XR.Interaction.Toolkit;
 public class GridSystem : MonoBehaviour
 {
     // Variables for game inspector
+    [Header("World settings")]
     [SerializeField] private float worldSize = 100;
 
-    // Set interaction layers from the inspector, cus idk how to setup lol
+    [Header("Interaction Layers")]
     [SerializeField] private InteractionLayerMask selectRoadLayer = 0; // for roads
     [SerializeField] private InteractionLayerMask selectTpLayer = 0; // teleportation in building
     private InteractionLayerMask selectDefaultLayer = 0; // default int layer for both controller
 
+    [Header("Controller settings")]
+    [SerializeField] private float defaultLineWidth = 0.02f;
+    [SerializeField] private GameObject grabberModel;
+    [SerializeField] private GameObject controllerDefaultModel;
+    [SerializeField] private float defaultMaxRaycastDist = 30;
+    [SerializeField] private Gradient invisibleGradient;
+
+    // Controller setup
+    private XRBaseControllerInteractor leftControllerInteractor;
+    private XRBaseControllerInteractor rightControllerInteractor;
+    private XRBaseController rightController;
+    private XRInteractorLineVisual rightHandLV;
+    private Gradient originalValidGradient;
+    private Gradient originalInvalidGradient;
+
     // Private vars
-    private XRBaseControllerInteractor leftController;
-    private XRBaseControllerInteractor rightController;
-    private Grabber grabber;
     private SlotManager slotManager;
     private Transform playerTransform;
     private GameObject buildModeObject;
@@ -51,16 +64,24 @@ public class GridSystem : MonoBehaviour
         // Find gameobjects to reference
         buildModeObject = GameObject.Find("BuildMode");
         playerTransform = GameObject.Find("XR Rig").GetComponent<Transform>();
-        leftController = GameObject.Find("LeftHand Controller").GetComponent<XRBaseControllerInteractor>();
-        rightController = GameObject.Find("RightHand Controller").GetComponent<XRBaseControllerInteractor>();
-        selectDefaultLayer = leftController.interactionLayers;
-        selectDefaultLayer = rightController.interactionLayers;
+        leftControllerInteractor = GameObject.Find("LeftHand Controller").GetComponent<XRBaseControllerInteractor>();
+        rightControllerInteractor = GameObject.Find("RightHand Controller").GetComponent<XRBaseControllerInteractor>();
+        rightHandLV = rightControllerInteractor.GetComponent<XRInteractorLineVisual>();
+        rightController = rightControllerInteractor.xrController as XRBaseController;
+        selectDefaultLayer = leftControllerInteractor.interactionLayers;
+        selectDefaultLayer = rightControllerInteractor.interactionLayers;
 
         // Initiate variables from the start of the game
         playerOriginPos = playerTransform.position;
         playerOriginRot = playerTransform.rotation;
         tableHeight = gameObject.transform.position.y;
         hasTraveled = false;
+
+        // controller settings by default
+        Debug.Log(controllerDefaultModel.ToString());
+        originalValidGradient = rightHandLV.validColorGradient;
+        originalInvalidGradient = rightHandLV.invalidColorGradient;
+        EnableGrabber(true);
     }
 
     // Set interaction layer for both controllers, easy peasy
@@ -68,10 +89,10 @@ public class GridSystem : MonoBehaviour
     {
         // Dirty fix: left controller has no purpose other than teleportation
         if (layerMask == selectTpLayer)
-            leftController.interactionLayers = layerMask;
+            leftControllerInteractor.interactionLayers = layerMask;
         else
-            leftController.interactionLayers = selectDefaultLayer;
-        rightController.interactionLayers = layerMask;
+            leftControllerInteractor.interactionLayers = selectDefaultLayer;
+        rightControllerInteractor.interactionLayers = layerMask;
     }
 
     // Freeze or unfreeze all building movement
@@ -90,10 +111,41 @@ public class GridSystem : MonoBehaviour
         }
     }
 
+    // enables to activate objects while hovering
     private void EnableHoverActivate(bool condition)
     {
-        rightController.allowHoveredActivate = condition;
-        leftController.allowHoveredActivate = condition;
+        rightControllerInteractor.allowHoveredActivate = condition;
+        leftControllerInteractor.allowHoveredActivate = condition;
+    }
+
+    // setting up grabber
+    private void EnableGrabber(bool enabled)
+    {
+        if (enabled)
+        {
+            // set grabber's model
+            rightController.model = grabberModel.transform;
+            grabberModel.SetActive(enabled);
+            controllerDefaultModel.SetActive(!enabled);
+            rightHandLV.lineWidth = 0.05f;
+
+            // hide line visuals
+            rightHandLV.validColorGradient = invisibleGradient;
+            rightHandLV.invalidColorGradient = invisibleGradient;
+        }
+        else
+        {
+            // set default model
+            rightController.model = controllerDefaultModel.transform;
+            grabberModel.SetActive(enabled);
+            controllerDefaultModel.SetActive(!enabled);
+            rightControllerInteractor.GetComponent<XRRayInteractor>().maxRaycastDistance = defaultMaxRaycastDist;
+
+            // ayo
+            rightHandLV.validColorGradient = originalValidGradient;
+            rightHandLV.invalidColorGradient = originalInvalidGradient;
+            rightHandLV.lineWidth = defaultLineWidth;
+        }
     }
 
     /// <summary>
@@ -108,6 +160,7 @@ public class GridSystem : MonoBehaviour
             ConstraintAllBuildings(false);
             slotManager.SwitchSlot("Socket");
             SetControllerInteractionLayer(selectDefaultLayer);
+            EnableGrabber(true);
 
             // travel -> building
             if (interactionMode == 2)
@@ -124,6 +177,7 @@ public class GridSystem : MonoBehaviour
             SetControllerInteractionLayer(selectRoadLayer);
             slotManager.SwitchSlot("Road");
             EnableHoverActivate(true);
+            EnableGrabber(false);
             if (interactionMode == 2) mode = 2; //temporary fix
         }
         // Nak teleport
@@ -132,6 +186,7 @@ public class GridSystem : MonoBehaviour
             ConstraintAllBuildings(true);
             slotManager.ToggleHoverMeshSocket(false);
             slotManager.SwitchSlot("Teleport");
+            EnableGrabber(false);
 
             // road -> travel
             if (interactionMode == 1)
