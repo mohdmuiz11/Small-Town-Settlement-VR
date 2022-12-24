@@ -299,11 +299,11 @@ MonoBehaviour:
       m_Calls: []
   roadType:
   - {fileID: 0}
-  - {fileID: 21300000, guid: 001e27bbfa91bc6418ae7f4b441290a8, type: 3}
-  - {fileID: 21300000, guid: 4f87c92e397add543bd291118bef8318, type: 3}
-  - {fileID: 21300000, guid: 9dea51a831e3e02488af56ebe5b36908, type: 3}
-  - {fileID: 21300000, guid: 253f76d1051c44d4e85469cf54c6e0f4, type: 3}
-  - {fileID: 21300000, guid: d95baf1f620edb44d93b92d0603d5b04, type: 3}
+  - {fileID: 21300000, guid: ffa0051fb0dfe90428f4ad168f509f2c, type: 3}
+  - {fileID: 21300000, guid: 36bfaecb6caafd4498f822828cec7814, type: 3}
+  - {fileID: 21300000, guid: de51c6747c992eb41855573dbb77237c, type: 3}
+  - {fileID: 21300000, guid: 35c2fa39b8aa549498013c2e991835ae, type: 3}
+  - {fileID: 21300000, guid: 235beffa17fa7e44686a1b18e93ca033, type: 3}
   roadRenderer: {fileID: 8826286158889996511}
   anchor: {fileID: 6804633762695451142}
   actualX: 0

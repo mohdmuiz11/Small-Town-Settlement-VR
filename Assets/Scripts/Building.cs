@@ -6,17 +6,26 @@ using UnityEngine.XR.Interaction.Toolkit;
 /// </summary>
 public class Building : XRGrabInteractable
 {
+    [Header("Building information")]
     [SerializeField] private string buildingName;
+    [SerializeField] private BuildingType buildingType;
     [SerializeField] [TextArea(5, 20)] private string buildingDescription;
     [SerializeField] private Texture2D buildingThumbnail;
     [SerializeField] private Transform playerTravelPos;
 
+    [Header("Resource management")]
+    [SerializeField] private ResourceType[] resourceRequired;
+    [SerializeField] private int[] resourceAmount;
+    [SerializeField] private int durationBuild;
+
     private TableUI tableUI;
     private GridSystem gridSystem;
+    private GameManager gameManager;
     private bool hasPlaced;
     private bool socketHovered;
     private bool preventUpdate;
     public float Angle { get; private set; }
+    public bool isInConstruction { get; private set; }
 
     protected override void Awake()
     {
@@ -24,6 +33,7 @@ public class Building : XRGrabInteractable
 
         // Default state
         gridSystem = GameObject.Find("GRID System").GetComponent<GridSystem>();
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         tableUI = GameObject.Find("Table UI").GetComponent<TableUI>();
         Angle = 0;
     }
@@ -32,6 +42,30 @@ public class Building : XRGrabInteractable
     {
         // scale to fit inside a slot
         transform.localScale = Vector3.one * gridSystem.WidthGrid;
+    }
+
+    /// <summary>
+    /// Check if the building can be build with enough resources
+    /// </summary>
+    /// <returns>True or false</returns>
+    public bool CheckBuild()
+    {
+        bool check = false;
+        // If number length are not same, give an error
+        if (resourceRequired.Length == resourceAmount.Length)
+        {
+            for (int i = 0; i < resourceRequired.Length; i++)
+            {
+                // if current resource are not sufficient, break the loop, check will still false
+                Debug.Log(resourceAmount[i]);
+                if (resourceAmount[i] > gameManager.CheckResources(resourceRequired[i]))
+                    break;
+                check = true;
+            }
+        }
+        else
+            Debug.LogError("Resource type and amount arrays are not in same length for" + buildingName);
+        return check;
     }
 
     // When the building is hovered by player's controller or socket
