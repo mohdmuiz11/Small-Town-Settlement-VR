@@ -22,21 +22,19 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int cookedFood = 15;
     [SerializeField] private int wood = 25; // depending on player wanted to collect
 
-    [Header("Object References")]
-    [SerializeField] private GameObject statusUI;
-    [SerializeField] private GameObject modeUI;
-    [SerializeField] private GameObject craftUI;
+    [Header("Misc")]
+    [SerializeField] private GameUI gameUI;
 
     // private vars
     private int actionPoint;
     private Dictionary<ResourceType, int> currentResources = new Dictionary<ResourceType, int>();
 
-    private void Start()
+    void Awake()
     {
         // Add resources
-        currentResources.Add(ResourceType.Wood, 0);
+        currentResources.Add(ResourceType.Wood, 15);
         currentResources.Add(ResourceType.Stone, 0);
-        currentResources.Add(ResourceType.Reed, 0);
+        currentResources.Add(ResourceType.Reed, 10);
         currentResources.Add(ResourceType.Herb, 0);
         currentResources.Add(ResourceType.Raw_Food, 0);
         currentResources.Add(ResourceType.Cooked_Food, cookedFood);
@@ -44,14 +42,22 @@ public class GameManager : MonoBehaviour
         currentResources.Add(ResourceType.Leather, 5);
 
         // Instantiate stuff
-        Debug.Log(CheckResources(ResourceType.Wood) + " " + ResourceType.Wood.ToString());
+        //Debug.Log(CheckResources(ResourceType.Wood) + " " + ResourceType.Wood.ToString());
         actionPoint = maxActionPoint;
+    }
+
+    /// <summary>
+    /// Update everything after 1 action point spent
+    /// </summary>
+    public void NextAction()
+    {
+        Debug.Log("Next action!");
     }
 
     /// <summary>
     /// Calculate everything for next day when this method is called
     /// </summary>
-    public void nextDay()
+    public void NextDay()
     {
         mood -= moodDecayRate;
         wellbeing -= wellbeingDecayRate;

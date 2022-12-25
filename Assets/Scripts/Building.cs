@@ -7,23 +7,29 @@ using UnityEngine.XR.Interaction.Toolkit;
 public class Building : XRGrabInteractable
 {
     [Header("Building information")]
-    [SerializeField] private string buildingName;
-    [SerializeField] private BuildingType buildingType;
+    [SerializeField] private BuildingType _buildingType;
     [SerializeField] [TextArea(5, 20)] private string buildingDescription;
-    [SerializeField] private Texture2D buildingThumbnail;
+    [SerializeField] private Sprite _buildingThumbnail;
     [SerializeField] private Transform playerTravelPos;
 
     [Header("Resource management")]
-    [SerializeField] private ResourceType[] resourceRequired;
-    [SerializeField] private int[] resourceAmount;
+    [SerializeField] private ResourceType[] _resourceRequired;
+    [SerializeField] private int[] _resourceAmount;
     [SerializeField] private int durationBuild;
 
-    private TableUI tableUI;
+    // private vars
+    //private TableUI tableUI;
     private GridSystem gridSystem;
-    private GameManager gameManager;
+    private Vector3 originalPos;
     private bool hasPlaced;
     private bool socketHovered;
     private bool preventUpdate;
+
+    // public sort of vars
+    public BuildingType buildingType { get { return _buildingType; } }
+    public Sprite buildingThumbnail { get { return _buildingThumbnail; } }
+    public ResourceType[] resourceRequired { get { return _resourceRequired; } }
+    public int[] resourceAmount { get { return _resourceAmount; } }
     public float Angle { get; private set; }
     public bool isInConstruction { get; private set; }
 
@@ -33,39 +39,25 @@ public class Building : XRGrabInteractable
 
         // Default state
         gridSystem = GameObject.Find("GRID System").GetComponent<GridSystem>();
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        tableUI = GameObject.Find("Table UI").GetComponent<TableUI>();
+        //tableUI = GameObject.Find("Table UI").GetComponent<TableUI>();
+
+        // initial vars
+        transform.localScale = Vector3.one * gridSystem.WidthGrid;
+        originalPos = transform.position;
         Angle = 0;
     }
 
-    private void Start()
-    {
-        // scale to fit inside a slot
-        transform.localScale = Vector3.one * gridSystem.WidthGrid;
-    }
-
     /// <summary>
-    /// Check if the building can be build with enough resources
+    /// Return the name of the building to user readable format
     /// </summary>
-    /// <returns>True or false</returns>
-    public bool CheckBuild()
+    /// <returns>Name of the building</returns>
+    public string BuildingName()
     {
-        bool check = false;
-        // If number length are not same, give an error
-        if (resourceRequired.Length == resourceAmount.Length)
-        {
-            for (int i = 0; i < resourceRequired.Length; i++)
-            {
-                // if current resource are not sufficient, break the loop, check will still false
-                Debug.Log(resourceAmount[i]);
-                if (resourceAmount[i] > gameManager.CheckResources(resourceRequired[i]))
-                    break;
-                check = true;
-            }
-        }
-        else
-            Debug.LogError("Resource type and amount arrays are not in same length for" + buildingName);
-        return check;
+        // thanks chandragupta
+        string buildingName = buildingType.ToString(); // convert to string
+        buildingName = buildingName.Replace("_", " "); // replace underscore with whitespace
+
+        return buildingName;
     }
 
     // When the building is hovered by player's controller or socket
@@ -78,11 +70,11 @@ public class Building : XRGrabInteractable
             socketHovered = true;
 
         // Show building's information to the table UI
-        else if (interactorObj.gameObject.CompareTag("Player") && hasPlaced)
-        {
-            tableUI.gameObject.SetActive(true);
-            tableUI.setText(buildingName, buildingDescription, buildingThumbnail);
-        }
+        //else if (interactorObj.gameObject.CompareTag("Player") && hasPlaced)
+        //{
+        //    tableUI.gameObject.SetActive(true);
+        //    tableUI.setText(buildingType, buildingDescription, buildingThumbnail);
+        //}
     }
 
     // Prevent constant update of calculating Angle to save more performance
