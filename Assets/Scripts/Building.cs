@@ -6,17 +6,32 @@ using UnityEngine.XR.Interaction.Toolkit;
 /// </summary>
 public class Building : XRGrabInteractable
 {
-    [SerializeField] private string buildingName;
+    [Header("Building information")]
+    [SerializeField] private BuildingType _buildingType;
     [SerializeField] [TextArea(5, 20)] private string buildingDescription;
-    [SerializeField] private Texture2D buildingThumbnail;
+    [SerializeField] private Sprite _buildingThumbnail;
     [SerializeField] private Transform playerTravelPos;
 
-    private TableUI tableUI;
+    [Header("Resource management")]
+    [SerializeField] private ResourceType[] _resourceRequired;
+    [SerializeField] private int[] _resourceAmount;
+    [SerializeField] private int durationBuild;
+
+    // private vars
+    //private TableUI tableUI;
     private GridSystem gridSystem;
+    private Vector3 originalPos;
     private bool hasPlaced;
     private bool socketHovered;
     private bool preventUpdate;
+
+    // public sort of vars
+    public BuildingType buildingType { get { return _buildingType; } }
+    public Sprite buildingThumbnail { get { return _buildingThumbnail; } }
+    public ResourceType[] resourceRequired { get { return _resourceRequired; } }
+    public int[] resourceAmount { get { return _resourceAmount; } }
     public float Angle { get; private set; }
+    public bool isInConstruction { get; private set; }
 
     protected override void Awake()
     {
@@ -24,14 +39,25 @@ public class Building : XRGrabInteractable
 
         // Default state
         gridSystem = GameObject.Find("GRID System").GetComponent<GridSystem>();
-        tableUI = GameObject.Find("Table UI").GetComponent<TableUI>();
+        //tableUI = GameObject.Find("Table UI").GetComponent<TableUI>();
+
+        // initial vars
+        transform.localScale = Vector3.one * gridSystem.WidthGrid;
+        originalPos = transform.position;
         Angle = 0;
     }
 
-    private void Start()
+    /// <summary>
+    /// Return the name of the building to user readable format
+    /// </summary>
+    /// <returns>Name of the building</returns>
+    public string BuildingName()
     {
-        // scale to fit inside a slot
-        transform.localScale = Vector3.one * gridSystem.WidthGrid;
+        // thanks chandragupta
+        string buildingName = buildingType.ToString(); // convert to string
+        buildingName = buildingName.Replace("_", " "); // replace underscore with whitespace
+
+        return buildingName;
     }
 
     // When the building is hovered by player's controller or socket
@@ -44,11 +70,11 @@ public class Building : XRGrabInteractable
             socketHovered = true;
 
         // Show building's information to the table UI
-        else if (interactorObj.gameObject.CompareTag("Player") && hasPlaced)
-        {
-            tableUI.gameObject.SetActive(true);
-            tableUI.setText(buildingName, buildingDescription, buildingThumbnail);
-        }
+        //else if (interactorObj.gameObject.CompareTag("Player") && hasPlaced)
+        //{
+        //    tableUI.gameObject.SetActive(true);
+        //    tableUI.setText(buildingType, buildingDescription, buildingThumbnail);
+        //}
     }
 
     // Prevent constant update of calculating Angle to save more performance

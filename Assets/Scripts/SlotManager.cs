@@ -18,15 +18,18 @@ public class SlotManager : MonoBehaviour
     [SerializeField] private GameObject forestPrefab;
     [SerializeField] private Vector2[] forestEventList;
 
-    // Elevation profile - each grid has its own elevation from origin point to sea level (y-axis)
-    [SerializeField] private bool useElevation; // use elevation according to model map
-    [SerializeField] private float[] elevations;
+    [Header("Buildings")]
+    public Building[] buildingList;
+
+    //[Header("Misc")]
+    //// Elevation profile - each grid has its own elevation from origin point to sea level (y-axis)
+    //[SerializeField] private bool useElevation; // use elevation according to model map
+    //[SerializeField] private float[] elevations;
 
     // Initiate lists of slots and interactables
     private List<GameObject> slots; // literally everything
     private GameObject[] socketBuildings;
     private GameObject[] roads;
-    //private GameObject[] buildings;
     //private GameObject[] sideEvents;
     //private GameObject[] obstacles;
 
@@ -40,7 +43,7 @@ public class SlotManager : MonoBehaviour
     /// <summary>
     /// Exclusive for road. Is the controller is in a state of activiting? 0 = nope, 1 = remove road, 2 = add road
     /// </summary>
-    public int controllerActivate = 0;
+    [HideInInspector] public int controllerActivate = 0;
 
     private void Awake()
     {
@@ -108,17 +111,18 @@ public class SlotManager : MonoBehaviour
     {
         GameObject slotSpawn;
 
-        // Spawn slot with fixed elevations
-        if (index < elevations.Length && useElevation)
-        {
-            Vector3 elevatePos = new Vector3(pos.x, pos.y+elevations[index], pos.z);
-            slotSpawn = Instantiate(objPrefab, elevatePos, objPrefab.transform.rotation, transform);
-        }
-        else
-        {
-            slotSpawn = Instantiate(objPrefab, pos, objPrefab.transform.rotation, transform);
-        }
+        //// Spawn slot with fixed elevations
+        //if (index < elevations.Length && useElevation)
+        //{
+        //    Vector3 elevatePos = new Vector3(pos.x, pos.y+elevations[index], pos.z);
+        //    slotSpawn = Instantiate(objPrefab, elevatePos, objPrefab.transform.rotation, transform);
+        //}
+        //else
+        //{
+        //    slotSpawn = Instantiate(objPrefab, pos, objPrefab.transform.rotation, transform);
+        //}
 
+        slotSpawn = Instantiate(objPrefab, pos, objPrefab.transform.rotation, transform);
         slotSpawn.transform.localScale = new Vector3(WidthGrid, 0.1f, WidthGrid);
         slotSpawn.GetComponent<IGridCoordinate>().SetCoordinate(x, z);
         slotSpawn.SetActive(isVisible);
