@@ -10,10 +10,15 @@ public class GameUI : MonoBehaviour
     [SerializeField] private RectTransform craftCanvasRow;
     [SerializeField] private float craftRowStartingYPos;
     [SerializeField] private float craftRowDistance;
-    [SerializeField] private Transform locationBuilding;
-    private Dictionary<RectTransform, Building> craftRowList = new Dictionary<RectTransform, Building>();
+    private Dictionary<RectTransform, Building> craftRowList = new();
 
     [Header("Resource UI")]
+    [SerializeField] private Sprite[] resourceThumnails; //has to arrange according to enum, for now, or make it an object bruh
+    [SerializeField] private RectTransform resourceUIContent;
+    [SerializeField] private RectTransform resourceCanvasRow;
+    [SerializeField] private float resourceRowStartingYPos;
+    [SerializeField] private float resourceRowDistance;
+    private Dictionary<RectTransform, ResourceType> resourceRowList = new();
 
     // Other vars
     private SlotManager slotManager;
@@ -26,10 +31,11 @@ public class GameUI : MonoBehaviour
         slotManager = GameObject.Find("GRID System").GetComponent<SlotManager>();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         
-        InitialSetup();
+        InitialCraftUISetup();
+        UpdateOnce();
     }
 
-    private void InitialSetup()
+    private void InitialCraftUISetup()
     {
         float posY = craftRowStartingYPos; // initial posY
 
@@ -46,8 +52,23 @@ public class GameUI : MonoBehaviour
             craftRowList.Add(rowInstance, slotManager.buildingList[i]); // add to the row
             posY -= craftRowDistance;
         }
+    }
 
-        UpdateOnce();
+    private void InitialResourceUISetup()
+    {
+        float posY = resourceRowStartingYPos;
+        ResourceType[] resourceTypes = (ResourceType[])System.Enum.GetValues(typeof(ResourceType));
+
+
+        for (int i = 0; i < System.Enum.GetNames(typeof(ResourceType)).Length; i++)
+        {
+            // Instantiate row inside scrollview content and position them according resource starting pos.
+            var rowInstance = Instantiate(resourceCanvasRow, resourceUIContent.transform);
+            rowInstance.localPosition = Vector3.up * posY;
+
+            // Put resource amount and thumnail
+
+        }
     }
 
     public void UpdateOnce()
@@ -58,52 +79,14 @@ public class GameUI : MonoBehaviour
             RectTransform rowInstance = row.Key;
             Building building = row.Value;
 
-            Debug.Log(building.BuildingName());
+            //Debug.Log(building.BuildingName());
 
-            bool eligible = CheckBuild(building);
+            bool eligible = gameManager.CheckBuild(building);
             Button button = rowInstance.GetComponentInChildren<Button>();
 
             button.interactable = eligible;
             if (eligible)
-                button.onClick.AddListener(() => CraftBuilding(building));
+                button.onClick.AddListener(() => gameManager.CraftBuilding(building));
         }
-    }
-
-
-
-    /// <summary>
-    /// Check if the building can be build with enough resources
-    /// </summary>
-    /// <returns>True or false</returns>
-    public bool CheckBuild(Building building)
-    {
-        // Initial setup
-        ResourceType[] resourceRequired = building.resourceRequired;
-        int[] resourceAmount = building.resourceAmount;
-        bool check = false;
-
-        // If number length are not same, give an error
-        if (resourceRequired.Length == resourceAmount.Length)
-        {
-            for (int i = 0; i < resourceRequired.Length; i++)
-            {
-                // if current resource are not sufficient, break the loop, check will still false
-                Debug.Log(resourceAmount[i]);
-                if (resourceAmount[i] > gameManager.CheckResources(resourceRequired[i]))
-                    break;
-                check = true;
-            }
-        }
-        else
-            Debug.LogError("Resource type and amount arrays are not in same length for" + building.buildingType);
-        return check;
-    }
-
-    // BUG: the building scale is too small, for now manually set the position and tranform parent
-    private void CraftBuilding(Building building)
-    {
-        var spawned = Instantiate(building);
-        spawned.transform.position = locationBuilding.position;
-        spawned.transform.SetParent(locationBuilding);
     }
 }

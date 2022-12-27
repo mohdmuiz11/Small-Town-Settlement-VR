@@ -23,11 +23,14 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int wood = 25; // depending on player wanted to collect
 
     [Header("Misc")]
+    [SerializeField] private GameObject[] interiorDesign;
     [SerializeField] private GameUI gameUI;
+    [SerializeField] private Transform locationBuilding;
+    [SerializeField] private bool isTalkingToNPC; //useful toggle to focus on NPC dialogues later
 
     // private vars
     private int actionPoint;
-    private Dictionary<ResourceType, int> currentResources = new Dictionary<ResourceType, int>();
+    private Dictionary<ResourceType, int> currentResources = new();
 
     void Awake()
     {
@@ -52,6 +55,7 @@ public class GameManager : MonoBehaviour
     public void NextAction()
     {
         Debug.Log("Next action!");
+        gameUI.UpdateOnce();
     }
 
     /// <summary>
@@ -77,7 +81,7 @@ public class GameManager : MonoBehaviour
     {
         if (currentResources.TryGetValue(resourceType, out int amount))
         {
-            Debug.Log(amount + " " + resourceType.ToString());
+            //Debug.Log(amount + " " + resourceType.ToString());
             return amount;
         }
         else
@@ -85,6 +89,66 @@ public class GameManager : MonoBehaviour
             Debug.LogError("Error checking resources for " + resourceType);
             return -1;
         }
+    }
+
+    /// <summary>
+    /// Check if the building can be build with enough resources
+    /// </summary>
+    /// <returns>True or false</returns>
+    public bool CheckBuild(Building building)
+    {
+        // Initial setup
+        ResourceType[] resourceRequired = building.resourceRequired;
+        int[] resourceAmount = building.resourceAmount;
+        bool check = false;
+
+        // If number length are not same, give an error
+        if (resourceRequired.Length == resourceAmount.Length)
+        {
+            for (int i = 0; i < resourceRequired.Length; i++)
+            {
+                // if current resource are not sufficient, break the loop, check will still false
+                if (resourceAmount[i] > CheckResources(resourceRequired[i]))
+                    break;
+                check = true;
+            }
+        }
+        else
+            Debug.LogError("Resource type and amount arrays are not in same length for" + building.buildingType);
+        return check;
+    }
+
+    /// <summary>
+    /// Spent resources, then spawn a building
+    /// </summary>
+    /// <param name="building">Building to spawn</param>
+    public void CraftBuilding(Building building)
+    {
+        // Initial setup
+        ResourceType[] resourceRequired = building.resourceRequired;
+        int[] resourceAmount = building.resourceAmount;
+
+        // If number length are not same, give an error
+        if (resourceRequired.Length == resourceAmount.Length)
+        {
+
+            for (int i = 0; i < resourceRequired.Length; i++)
+            {
+                // get amount of current resource by the resource type from the building, then deduct from the resource amoun
+                // needed from the building (resourceAmount), then assign to currentResource[resourceType]
+                currentResources[resourceRequired[i]] = CheckResources(resourceRequired[i]) - resourceAmount[i];
+            }
+        }
+        else
+            Debug.LogError("Resource type and amount arrays are not in same length for" + building.buildingType);
+
+
+        // BUG: the building scale is too small, for now manually set the position and tranform parent
+        var spawned = Instantiate(building);
+        spawned.transform.position = locationBuilding.position;
+        spawned.transform.SetParent(locationBuilding);
+
+        NextAction();
     }
 }
 
