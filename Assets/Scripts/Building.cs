@@ -47,19 +47,6 @@ public class Building : XRGrabInteractable
         Angle = 0;
     }
 
-    /// <summary>
-    /// Return the name of the building to user readable format
-    /// </summary>
-    /// <returns>Name of the building</returns>
-    public string BuildingName()
-    {
-        // thanks chandragupta
-        string buildingName = buildingType.ToString(); // convert to string
-        buildingName = buildingName.Replace("_", " "); // replace underscore with whitespace
-
-        return buildingName;
-    }
-
     // When the building is hovered by player's controller or socket
     protected override void OnHoverEntered(HoverEnterEventArgs args)
     {

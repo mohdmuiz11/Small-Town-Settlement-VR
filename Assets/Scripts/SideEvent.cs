@@ -5,7 +5,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 /// <summary>
 /// Side event types available for SideEvent
 /// </summary>
-public enum SideEventType { Forest, Fishing, Start }
+public enum SideEventType { Forest, Fishing, Start, Obstacle }
 
 /// <summary>
 /// Side events that the player can partake.

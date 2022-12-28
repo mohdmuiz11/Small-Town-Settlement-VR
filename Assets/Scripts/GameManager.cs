@@ -30,19 +30,20 @@ public class GameManager : MonoBehaviour
 
     // private vars
     private int actionPoint;
-    private Dictionary<ResourceType, int> currentResources = new();
+    private Dictionary<ResourceType, int> _currentResources = new();
+    public Dictionary<ResourceType, int> currentResources { get { return _currentResources; } }
 
     void Awake()
     {
         // Add resources
-        currentResources.Add(ResourceType.Wood, 15);
-        currentResources.Add(ResourceType.Stone, 0);
-        currentResources.Add(ResourceType.Reed, 10);
-        currentResources.Add(ResourceType.Herb, 0);
-        currentResources.Add(ResourceType.Raw_Food, 0);
-        currentResources.Add(ResourceType.Cooked_Food, cookedFood);
-        currentResources.Add(ResourceType.Delicious_Food, 0);
-        currentResources.Add(ResourceType.Leather, 5);
+        _currentResources.Add(ResourceType.Wood, 15);
+        _currentResources.Add(ResourceType.Stone, 0);
+        _currentResources.Add(ResourceType.Reed, 10);
+        _currentResources.Add(ResourceType.Herb, 0);
+        _currentResources.Add(ResourceType.Raw_Food, 0);
+        _currentResources.Add(ResourceType.Cooked_Food, cookedFood);
+        _currentResources.Add(ResourceType.Delicious_Food, 0);
+        _currentResources.Add(ResourceType.Leather, 5);
 
         // Instantiate stuff
         //Debug.Log(CheckResources(ResourceType.Wood) + " " + ResourceType.Wood.ToString());
@@ -79,7 +80,7 @@ public class GameManager : MonoBehaviour
     /// <returns>Amount of current resources</returns>
     public int CheckResources(ResourceType resourceType)
     {
-        if (currentResources.TryGetValue(resourceType, out int amount))
+        if (_currentResources.TryGetValue(resourceType, out int amount))
         {
             //Debug.Log(amount + " " + resourceType.ToString());
             return amount;
@@ -136,7 +137,7 @@ public class GameManager : MonoBehaviour
             {
                 // get amount of current resource by the resource type from the building, then deduct from the resource amoun
                 // needed from the building (resourceAmount), then assign to currentResource[resourceType]
-                currentResources[resourceRequired[i]] = CheckResources(resourceRequired[i]) - resourceAmount[i];
+                _currentResources[resourceRequired[i]] = CheckResources(resourceRequired[i]) - resourceAmount[i];
             }
         }
         else
