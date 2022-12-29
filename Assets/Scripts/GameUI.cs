@@ -19,6 +19,18 @@ public class GameUI : MonoBehaviour
     [SerializeField] private float resourceRowDistance;
     private List<ResourceUI> resourceRowList = new();
 
+    [Header("Information UI")]
+    [SerializeField] private GameObject canvasInfoUI;
+    [SerializeField] private TextMeshProUGUI titleInfo;
+    [SerializeField] private TextMeshProUGUI descriptionInfo;
+    [SerializeField] private Image thumnailInfo;
+    [SerializeField] private Button buttonInfo;
+
+    [Header("Building stats")]
+    [SerializeField] private RectTransform buildingStats;
+    [SerializeField] private float statsPosY;
+    List<RectTransform> listBuildingStats = new();
+
     // Other vars
     private SlotManager slotManager;
     private GameManager gameManager;
@@ -32,7 +44,8 @@ public class GameUI : MonoBehaviour
         
         InitialCraftUISetup();
         InitialResourceUISetup();
-        UpdateOnce();
+        ShowInfo(false);
+        UpdateNextAction();
     }
 
     // Initialize Craft UI
@@ -95,7 +108,7 @@ public class GameUI : MonoBehaviour
     /// <summary>
     /// Update everything related to Game UI
     /// </summary>
-    public void UpdateOnce()
+    public void UpdateNextAction()
     {
         craftUIUpdate();
         resourceUIUpdate();
@@ -116,7 +129,10 @@ public class GameUI : MonoBehaviour
 
             button.interactable = eligible;
             if (eligible)
+            {
+                buttonInfo.onClick.RemoveAllListeners();
                 button.onClick.AddListener(() => gameManager.CraftBuilding(building));
+            }
         }
     }
 
@@ -158,6 +174,52 @@ public class GameUI : MonoBehaviour
             texts[1].text = rowInstance.amount.ToString();
             pos++;
         }
+    }
+
+    /// <summary>
+    /// Instantiate stats building
+    /// </summary>
+    /// <param name="building"></param>
+    /// <param name="timer"></param>
+    public void ShowStats(Building building, int timer)
+    {
+        var instance = Instantiate(buildingStats, building.transform);
+        instance.localPosition = Vector3.up * statsPosY;
+        instance.GetComponentInChildren<TextMeshProUGUI>().text = timer.ToString();
+    }
+
+    /// <summary>
+    /// Update stats what
+    /// </summary>
+    /// <param name="building"></param>
+    /// <param name="timer"></param>
+    public void UpdateStats(Building building, int timer)
+    {
+        building.GetComponentInChildren<RectTransform>().GetComponentInChildren<TextMeshProUGUI>().text = timer.ToString();
+    }
+
+    /// <summary>
+    /// Show info of something
+    /// </summary>
+    /// <param name="building">idk</param>
+    public void ShowInfo(Building building)
+    {
+        canvasInfoUI.SetActive(true);
+        titleInfo.text = EnumToReadableFormat(building.buildingType);
+        descriptionInfo.text = building.buildingDescription;
+        thumnailInfo.sprite = building.buildingThumbnail;
+        buttonInfo.GetComponentInChildren<TextMeshProUGUI>().text = "Confirm?";
+        buttonInfo.onClick.RemoveAllListeners();
+        buttonInfo.onClick.AddListener(building.TimeToBuild);
+    }
+
+    /// <summary>
+    /// Show visible of info UI
+    /// </summary>
+    /// <param name="isVisible">need bool thank</param>
+    public void ShowInfo(bool isVisible)
+    {
+        canvasInfoUI.SetActive(isVisible);
     }
 }
 

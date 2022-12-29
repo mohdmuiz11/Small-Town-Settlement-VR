@@ -8,7 +8,7 @@ public class Building : XRGrabInteractable
 {
     [Header("Building information")]
     [SerializeField] private BuildingType _buildingType;
-    [SerializeField] [TextArea(5, 20)] private string buildingDescription;
+    [SerializeField] [TextArea(5, 20)] private string _buildingDescription;
     [SerializeField] private Sprite _buildingThumbnail;
     [SerializeField] private Transform playerTravelPos;
 
@@ -20,12 +20,16 @@ public class Building : XRGrabInteractable
     // private vars
     //private TableUI tableUI;
     private GridSystem gridSystem;
+    private GameUI gameUI;
     private Vector3 originalPos;
     private bool hasPlaced;
     private bool socketHovered;
     private bool preventUpdate;
+    private int duration;
+    private bool hasBuild;
 
     // public sort of vars
+    public string buildingDescription { get { return _buildingDescription; } }
     public BuildingType buildingType { get { return _buildingType; } }
     public Sprite buildingThumbnail { get { return _buildingThumbnail; } }
     public ResourceType[] resourceRequired { get { return _resourceRequired; } }
@@ -39,12 +43,39 @@ public class Building : XRGrabInteractable
 
         // Default state
         gridSystem = GameObject.Find("GRID System").GetComponent<GridSystem>();
+        gameUI = GameObject.Find("Game UI").GetComponent<GameUI>();
         //tableUI = GameObject.Find("Table UI").GetComponent<TableUI>();
 
         // initial vars
         transform.localScale = Vector3.one * gridSystem.WidthGrid;
         originalPos = transform.position;
         Angle = 0;
+    }
+
+    /// <summary>
+    /// Begin the building process
+    /// </summary>
+    public void TimeToBuild()
+    {
+        isInConstruction = true;
+        interactionLayers = InteractionLayerMask.GetMask("Constructioned");
+        gameUI.ShowInfo(false);
+        duration = durationBuild;
+        gameUI.ShowStats(this, duration);
+    }
+    
+    /// <summary>
+    /// Update after next day function
+    /// </summary>
+    public void UpdateNextDay()
+    {
+        if (isInConstruction && duration > 0)
+        {
+            duration--;
+            gameUI.UpdateStats(this, duration);
+        }
+        else if (duration == 0)
+            hasBuild = true;
     }
 
     // When the building is hovered by player's controller or socket
@@ -55,13 +86,6 @@ public class Building : XRGrabInteractable
 
         if (interactorObj.gameObject.CompareTag("Socket"))
             socketHovered = true;
-
-        // Show building's information to the table UI
-        //else if (interactorObj.gameObject.CompareTag("Player") && hasPlaced)
-        //{
-        //    tableUI.gameObject.SetActive(true);
-        //    tableUI.setText(buildingType, buildingDescription, buildingThumbnail);
-        //}
     }
 
     // Prevent constant update of calculating Angle to save more performance
@@ -82,17 +106,24 @@ public class Building : XRGrabInteractable
 
         if (interactorObj.gameObject.CompareTag("Socket"))
         {
+            //Debug.Log("what");
+            gameUI.ShowInfo(this);
             preventUpdate = false;
             hasPlaced = true;
         }
     }
+    
+    // When the building is out of socket
     protected override void OnSelectExited(SelectExitEventArgs args)
     {
         base.OnSelectExited(args);
         var interactorObj = args.interactorObject as XRBaseInteractor;
 
         if (interactorObj.gameObject.CompareTag("Socket") && gridSystem.interactionMode != 2)
+        {
+            gameUI.ShowInfo(false);
             hasPlaced = false;
+        }
     }
 
     // Identify current direction of the building by bearings to snap into socket.

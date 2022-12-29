@@ -268,4 +268,17 @@ public class SlotManager : MonoBehaviour
                 road.RoadUpdate();
         }
     }
+
+    /// <summary>
+    /// Update something next day
+    /// </summary>
+    public void UpdateNextDay()
+    {
+        var buildings = GameObject.FindGameObjectsWithTag("Building");
+
+        for (int i = 0; i < buildings.Length; i++)
+        {
+            buildings[i].GetComponent<Building>().UpdateNextDay();
+        }
+    }
 }

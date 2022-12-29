@@ -33,11 +33,17 @@ public class GameManager : MonoBehaviour
     private Dictionary<ResourceType, int> _currentResources = new();
     public Dictionary<ResourceType, int> currentResources { get { return _currentResources; } }
 
+    // Object references
+    private SlotManager slotManager;
+
     void Awake()
     {
+        // Object reference
+        slotManager = GameObject.Find("GRID System").GetComponent<SlotManager>();
+
         // Add resources
-        _currentResources.Add(ResourceType.Wood, 15);
-        _currentResources.Add(ResourceType.Stone, 0);
+        _currentResources.Add(ResourceType.Wood, 25);
+        _currentResources.Add(ResourceType.Stone, 15);
         _currentResources.Add(ResourceType.Reed, 10);
         _currentResources.Add(ResourceType.Herb, 0);
         _currentResources.Add(ResourceType.Raw_Food, 0);
@@ -56,7 +62,7 @@ public class GameManager : MonoBehaviour
     public void NextAction()
     {
         Debug.Log("Next action!");
-        gameUI.UpdateOnce();
+        gameUI.UpdateNextAction();
     }
 
     /// <summary>
@@ -64,13 +70,19 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void NextDay()
     {
+        // Update current stats
         mood -= moodDecayRate;
         wellbeing -= wellbeingDecayRate;
         hunger -= hungerDecayRate;
 
         if (mood <= -100f || wellbeing <= 0)
             Debug.Log("Game over!");
+
+        // Refresh action points
         actionPoint = maxActionPoint;
+
+        // Update for other classes
+        slotManager.UpdateNextDay();
     }
 
     /// <summary>

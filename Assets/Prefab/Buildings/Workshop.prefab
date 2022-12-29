@@ -179,8 +179,8 @@ MonoBehaviour:
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
   _buildingType: 2
-  buildingDescription: Required to build other advanced buildings beside town hall.
-    Can build better tools for other NPC to yield more raw resources.
+  _buildingDescription: Required to build other advanced buildings beside town hall.
+    Can also be used to build better tools for other people to get resources faster.
   _buildingThumbnail: {fileID: 21300000, guid: 9dea51a831e3e02488af56ebe5b36908, type: 3}
   playerTravelPos: {fileID: 4626710414505378541}
   _resourceRequired: 0000000001000000
