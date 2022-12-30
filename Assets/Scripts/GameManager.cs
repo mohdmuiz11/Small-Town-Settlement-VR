@@ -135,7 +135,7 @@ public class GameManager : MonoBehaviour
     /// Spent resources, then spawn a building
     /// </summary>
     /// <param name="building">Building to spawn</param>
-    public void CraftBuilding(Building building)
+    public void SpawnBuilding(Building building)
     {
         // Initial setup
         ResourceType[] resourceRequired = building.resourceRequired;

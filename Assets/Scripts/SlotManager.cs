@@ -18,13 +18,8 @@ public class SlotManager : MonoBehaviour
     [SerializeField] private GameObject forestPrefab;
     [SerializeField] private Vector2[] forestEventList;
 
-    [Header("Buildings")]
+    [Header("Available Buildings")]
     public Building[] buildingList;
-
-    //[Header("Misc")]
-    //// Elevation profile - each grid has its own elevation from origin point to sea level (y-axis)
-    //[SerializeField] private bool useElevation; // use elevation according to model map
-    //[SerializeField] private float[] elevations;
 
     // Initiate lists of slots and interactables
     private List<GameObject> slots; // literally everything
@@ -110,17 +105,6 @@ public class SlotManager : MonoBehaviour
     private void SpawnSlot(GameObject objPrefab, Vector3 pos, int index, int x, int z, bool isVisible)
     {
         GameObject slotSpawn;
-
-        //// Spawn slot with fixed elevations
-        //if (index < elevations.Length && useElevation)
-        //{
-        //    Vector3 elevatePos = new Vector3(pos.x, pos.y+elevations[index], pos.z);
-        //    slotSpawn = Instantiate(objPrefab, elevatePos, objPrefab.transform.rotation, transform);
-        //}
-        //else
-        //{
-        //    slotSpawn = Instantiate(objPrefab, pos, objPrefab.transform.rotation, transform);
-        //}
 
         slotSpawn = Instantiate(objPrefab, pos, objPrefab.transform.rotation, transform);
         slotSpawn.transform.localScale = new Vector3(WidthGrid, 0.1f, WidthGrid);
@@ -280,5 +264,24 @@ public class SlotManager : MonoBehaviour
         {
             buildings[i].GetComponent<Building>().UpdateNextDay();
         }
+    }
+
+    /// <summary>
+    /// Check if the building is available and active
+    /// </summary>
+    /// <param name="buildingType">Building type</param>
+    /// <returns>True if there is a building, false if not</returns>
+    public bool CheckAvailableBuilding(BuildingType buildingType)
+    {
+        var buildings = GameObject.FindGameObjectsWithTag("Building");
+
+        for (int i = 0; i < buildings.Length; i++)
+        {
+            Building instanceB = buildings[i].GetComponent<Building>();
+            if (instanceB.buildingType == buildingType && instanceB.hasBuild)
+                return true;
+        }
+
+        return false;
     }
 }

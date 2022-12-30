@@ -29,7 +29,12 @@ public class GameUI : MonoBehaviour
     [Header("Building stats")]
     [SerializeField] private RectTransform buildingStats;
     [SerializeField] private float statsPosY;
-    List<RectTransform> listBuildingStats = new();
+
+    [Header("Multi tool settings")]
+    [SerializeField] private Canvas mtCanvas;
+    [SerializeField] private TextMeshProUGUI mtTitle;
+    [SerializeField] private Button[] mtButtons;
+    [SerializeField] private string[] buttonTexts;
 
     // Other vars
     private SlotManager slotManager;
@@ -44,6 +49,7 @@ public class GameUI : MonoBehaviour
         
         InitialCraftUISetup();
         InitialResourceUISetup();
+        InitialMtUI();
         ShowInfo(false);
         UpdateNextAction();
     }
@@ -92,6 +98,25 @@ public class GameUI : MonoBehaviour
         }
     }
 
+    private void InitialMtUI()
+    {
+        if (mtButtons.Length == buttonTexts.Length)
+        {
+            for (int i = 0; i < mtButtons.Length; i++)
+            {
+                mtButtons[i].GetComponentInChildren<TextMeshProUGUI>().text = buttonTexts[i];
+            }
+
+            // Make build & next day button available to use
+            mtButtons[0].interactable = true;
+            mtButtons[2].interactable = true;
+        }
+        else
+        {
+            Debug.LogError("Buttons and text are not in equal lengths!");
+        }
+    }
+
     /// <summary>
     /// Return the name of the any enum types to user readable format
     /// </summary>
@@ -131,7 +156,7 @@ public class GameUI : MonoBehaviour
             if (eligible)
             {
                 buttonInfo.onClick.RemoveAllListeners();
-                button.onClick.AddListener(() => gameManager.CraftBuilding(building));
+                button.onClick.AddListener(() => ShowInfo(building));
             }
         }
     }
@@ -176,6 +201,13 @@ public class GameUI : MonoBehaviour
         }
     }
 
+    private void MtUIUpdate()
+    {
+        // Check if the town hall is already built
+        if (slotManager.CheckAvailableBuilding(BuildingType.Town_Hall))
+            mtButtons[1].interactable = true;
+    }
+
     /// <summary>
     /// Instantiate stats building
     /// </summary>
@@ -208,9 +240,23 @@ public class GameUI : MonoBehaviour
         titleInfo.text = EnumToReadableFormat(building.buildingType);
         descriptionInfo.text = building.buildingDescription;
         thumnailInfo.sprite = building.buildingThumbnail;
-        buttonInfo.GetComponentInChildren<TextMeshProUGUI>().text = "Confirm?";
-        buttonInfo.onClick.RemoveAllListeners();
-        buttonInfo.onClick.AddListener(building.TimeToBuild);
+
+        if (building.GetHasPlaced())
+        {
+            // If the building is placed in a socket
+            buttonInfo.GetComponentInChildren<TextMeshProUGUI>().text = "Build?";
+            buttonInfo.onClick.RemoveAllListeners();
+            buttonInfo.onClick.AddListener(building.TimeToBuild);
+            buttonInfo.onClick.AddListener(() => ShowInfo(false));
+        }
+        else
+        {
+            // In the process of choosing building to spawn
+            buttonInfo.GetComponentInChildren<TextMeshProUGUI>().text = "Confirm?";
+            buttonInfo.onClick.RemoveAllListeners();
+            buttonInfo.onClick.AddListener(() => gameManager.SpawnBuilding(building));
+            buttonInfo.onClick.AddListener(() => ShowInfo(false));
+        }
     }
 
     /// <summary>

@@ -9,6 +9,7 @@ TagManager:
   - Socket
   - SideEvent
   - NPC
+  - Tree
   layers:
   - Default
   - TransparentFX

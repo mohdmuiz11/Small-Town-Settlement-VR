@@ -26,7 +26,6 @@ public class Building : XRGrabInteractable
     private bool socketHovered;
     private bool preventUpdate;
     private int duration;
-    private bool hasBuild;
 
     // public sort of vars
     public string buildingDescription { get { return _buildingDescription; } }
@@ -36,6 +35,7 @@ public class Building : XRGrabInteractable
     public int[] resourceAmount { get { return _resourceAmount; } }
     public float Angle { get; private set; }
     public bool isInConstruction { get; private set; }
+    public bool hasBuild { get; private set; }
 
     protected override void Awake()
     {
@@ -59,9 +59,17 @@ public class Building : XRGrabInteractable
     {
         isInConstruction = true;
         interactionLayers = InteractionLayerMask.GetMask("Constructioned");
-        gameUI.ShowInfo(false);
         duration = durationBuild;
         gameUI.ShowStats(this, duration);
+    }
+
+    /// <summary>
+    /// return condition of hasPlaced
+    /// </summary>
+    /// <returns>True or false</returns>
+    public bool GetHasPlaced()
+    {
+        return hasPlaced;
     }
     
     /// <summary>
@@ -107,9 +115,9 @@ public class Building : XRGrabInteractable
         if (interactorObj.gameObject.CompareTag("Socket"))
         {
             //Debug.Log("what");
-            gameUI.ShowInfo(this);
             preventUpdate = false;
             hasPlaced = true;
+            gameUI.ShowInfo(this);
         }
     }
     
