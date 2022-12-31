@@ -180,7 +180,7 @@ MonoBehaviour:
   m_AddDefaultGrabTransformers: 1
   _buildingType: 3
   _buildingDescription: A place to collect woods.
-  _buildingThumbnail: {fileID: 21300000, guid: 9dea51a831e3e02488af56ebe5b36908, type: 3}
+  _buildingThumbnail: {fileID: 21300000, guid: 8d6fa9fe112081142ae53a8780a7a5ef, type: 3}
   playerTravelPos: {fileID: 4626710414505378541}
   _resourceRequired: 0000000001000000
   _resourceAmount: 190000000f000000
@@ -419,22 +419,22 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 2ec157cd7adde644495557debab8bb84,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.097679995
+      value: 0.11926727
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2ec157cd7adde644495557debab8bb84,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.097679995
+      value: 0.11926727
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2ec157cd7adde644495557debab8bb84,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.097679995
+      value: 0.11926727
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2ec157cd7adde644495557debab8bb84,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0.078
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2ec157cd7adde644495557debab8bb84,
         type: 3}
@@ -444,7 +444,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 2ec157cd7adde644495557debab8bb84,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.047
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2ec157cd7adde644495557debab8bb84,
         type: 3}
