@@ -3748,6 +3748,12 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 834618851}
   m_CullTransparentMesh: 1
+--- !u!1 &850939817 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1970075046121635700, guid: e3f0dafd0adbca34f93f5ea5441946f1,
+    type: 3}
+  m_PrefabInstance: {fileID: 1699674555879153185}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &920921510
 GameObject:
   m_ObjectHideFlags: 0
@@ -4328,6 +4334,13 @@ MonoBehaviour:
   - Build
   - Travel
   - Next day
+  directionButtons:
+  - {fileID: 1107863742}
+  - {fileID: 1076180193}
+  mapObj:
+  - {fileID: 1741758160}
+  - {fileID: 850939817}
+  turnDuration: 0.5
 --- !u!1 &1046924376
 GameObject:
   m_ObjectHideFlags: 0
@@ -4463,7 +4476,7 @@ GameObject:
   - component: {fileID: 1076180194}
   - component: {fileID: 1076180193}
   m_Layer: 0
-  m_Name: Turn Left Button
+  m_Name: Turn Right button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4597,7 +4610,7 @@ GameObject:
   - component: {fileID: 1107863743}
   - component: {fileID: 1107863742}
   m_Layer: 0
-  m_Name: Turn Right Button
+  m_Name: Turn Left Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7651,6 +7664,21 @@ BoxCollider:
     type: 3}
   m_PrefabInstance: {fileID: 1699674555879153185}
   m_PrefabAsset: {fileID: 0}
+--- !u!111 &919132148819206487
+Animation:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 850939817}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Animation: {fileID: 0}
+  m_Animations: []
+  m_WrapMode: 0
+  m_PlayAutomatically: 1
+  m_AnimatePhysics: 0
+  m_CullingType: 0
 --- !u!4 &1587568093709931749 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4122931298191351542, guid: 32117c3e4cfd82444b9da92a301c1eb9,
