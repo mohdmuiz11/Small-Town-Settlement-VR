@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 
 public class GameUI : MonoBehaviour
 {
@@ -35,10 +34,14 @@ public class GameUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI mtTitle;
     [SerializeField] private Button[] mtButtons;
     [SerializeField] private string[] buttonTexts;
+    [SerializeField] private Button[] directionButtons;
+    [SerializeField] private GameObject[] mapObj;
+    [SerializeField] private float turnDuration;
 
     // Other vars
     private SlotManager slotManager;
     private GameManager gameManager;
+    private float currentRot = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -102,7 +105,7 @@ public class GameUI : MonoBehaviour
     {
         if (mtButtons.Length == buttonTexts.Length)
         {
-            for (int i = 0; i < mtButtons.Length; i++)
+            for (int i = 0; i < mtButtons.Length - 2; i++)
             {
                 mtButtons[i].GetComponentInChildren<TextMeshProUGUI>().text = buttonTexts[i];
             }
@@ -110,6 +113,10 @@ public class GameUI : MonoBehaviour
             // Make build & next day button available to use
             mtButtons[0].interactable = true;
             mtButtons[2].interactable = true;
+
+            // initiate buttons 
+            directionButtons[0].onClick.AddListener(() => MapTurn(1));
+            directionButtons[1].onClick.AddListener(() => MapTurn(-1));
         }
         else
         {
@@ -266,6 +273,18 @@ public class GameUI : MonoBehaviour
     public void ShowInfo(bool isVisible)
     {
         canvasInfoUI.SetActive(isVisible);
+    }
+
+    // -ve for left, +ve for right
+    private void MapTurn(int direction)
+    {
+        currentRot = (currentRot + (90 * direction)) % 360;
+
+        for (int i = 0; i < mapObj.Length; i++)
+        {
+            iTween.RotateTo(mapObj[i], iTween.Hash("y", currentRot, "time", turnDuration, "easetype", "easeInOutCubic"));
+        }
+
     }
 }
 
