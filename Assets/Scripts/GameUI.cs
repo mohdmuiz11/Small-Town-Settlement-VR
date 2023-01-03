@@ -18,6 +18,10 @@ public class GameUI : MonoBehaviour
     [SerializeField] private float resourceRowDistance;
     private List<ResourceUI> resourceRowList = new();
 
+    [Header("Status UI")]
+    [SerializeField] private StatusUI statusUIPrefab;
+    [SerializeField] private RectTransform statusContent;
+
     [Header("Information UI")]
     [SerializeField] private GameObject canvasInfoUI;
     [SerializeField] private TextMeshProUGUI titleInfo;
@@ -101,11 +105,19 @@ public class GameUI : MonoBehaviour
         }
     }
 
+    private void InitialStatusUISetup()
+    {
+        for (int i = 0; i < gameManager.listStatus.Length; i++)
+        {
+            Debug.Log("bruh");
+        }
+    }
+
     private void InitialMtUI()
     {
         if (mtButtons.Length == buttonTexts.Length)
         {
-            for (int i = 0; i < mtButtons.Length - 2; i++)
+            for (int i = 0; i < mtButtons.Length; i++)
             {
                 mtButtons[i].GetComponentInChildren<TextMeshProUGUI>().text = buttonTexts[i];
             }
@@ -114,7 +126,7 @@ public class GameUI : MonoBehaviour
             mtButtons[0].interactable = true;
             mtButtons[2].interactable = true;
 
-            // initiate buttons 
+            // initiate right/left buttons 
             directionButtons[0].onClick.AddListener(() => MapTurn(1));
             directionButtons[1].onClick.AddListener(() => MapTurn(-1));
         }

@@ -10,17 +10,13 @@ public class GameManager : MonoBehaviour
     [Header("Current community status")]
     [SerializeField] private int dayElapsed = 0; // keep track of time
     [SerializeField] private int maxActionPoint = 3; // action points that player need to spend per day
-    [SerializeField] private int npcCount = 7; // how many NPC's are alive
-    [SerializeField] [Range(-1, 1)] private float mood = 0.5f;
-    [SerializeField] [Range(0, 1)] private float wellbeing = 0.8f;
-    [SerializeField] [Range(0, 1)] private float hunger = 0.5f;
-    [SerializeField] [Range(0, 1)] private float moodDecayRate = 0.02f;
-    [SerializeField] [Range(0, 1)] private float wellbeingDecayRate = 0.01f;
-    [SerializeField] [Range(0, 1)] private float hungerDecayRate = 0.2f;
+    [SerializeField] [Range(0, 0.5f)] private float hungerIncreaseRate = 0.2f;
+    [SerializeField] private Status[] _listStatus;
 
     [Header("Starting resources")]
     [SerializeField] private int cookedFood = 15;
     [SerializeField] private int wood = 25; // depending on player wanted to collect
+    [SerializeField] private NPC[] listNPCs;
 
     [Header("Misc")]
     [SerializeField] private GameObject[] interiorDesign;
@@ -32,6 +28,7 @@ public class GameManager : MonoBehaviour
     private int actionPoint;
     private Dictionary<ResourceType, int> _currentResources = new();
     public Dictionary<ResourceType, int> currentResources { get { return _currentResources; } }
+    public Status[] listStatus { get { return _listStatus; } }
 
     // Object references
     private SlotManager slotManager;
@@ -70,18 +67,31 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void NextDay()
     {
-        // Update current stats
-        mood -= moodDecayRate;
-        wellbeing -= wellbeingDecayRate;
-        hunger -= hungerDecayRate;
+        // Consume food
+        _currentResources[ResourceType.Cooked_Food] -= _listStatus[2].CheckFood(CheckResources(ResourceType.Cooked_Food), listNPCs.Length, hungerIncreaseRate);
 
-        if (mood <= -100f || wellbeing <= 0)
-            Debug.Log("Game over!");
+        // Update current stats
+        for (int i = 0; i < listStatus.Length; i++)
+        {
+            _listStatus[i].UpdateStatus();
+        }
+
+        //if (CheckResources(ResourceType.Delicious_Food) > 0)
+        //    _listStatus[2].CheckFood(CheckResources(ResourceType.Delicious_Food), listNPCs.Length, hungerIncreaseRate*2);
+
+        // Check mood if -100 and below
+        if (_listStatus[0].currentAmount <= -1f)
+            Debug.Log("Game Over: Overthrown leader ending.");
+        else if (_listStatus[1].currentAmount <= 0)
+            Debug.Log("Game Over: Everyone is dead.");
+        else if (_listStatus[2].currentAmount <= 0)
+            _listStatus[1].currentAmount -= 0.2f;
 
         // Refresh action points
         actionPoint = maxActionPoint;
 
         // Update for other classes
+        gameUI.UpdateNextAction();
         slotManager.UpdateNextDay();
     }
 
@@ -192,4 +202,58 @@ public enum BuildingType {
     Fishing_hut,
     Food_hall,
     Clinic
+}
+/// <summary>
+/// Types of community statuses available
+/// </summary>
+public enum StatusType
+{
+    Mood,
+    Wellbeing,
+    Hunger
+}
+
+/// <summary>
+/// Keeps status of the community
+/// </summary>
+[System.Serializable]
+public class Status
+{
+    public StatusType statusType;
+    public float currentAmount;
+    public float minLimit;
+    public float maxLimit;
+    public float decayRate;
+
+    public void UpdateStatus()
+    {
+        currentAmount -= decayRate;
+        
+        // Stop currentAmount from overflowing
+        if (currentAmount < minLimit)
+            currentAmount = minLimit;
+        else if (currentAmount > maxLimit)
+            currentAmount = maxLimit;
+    }
+
+    /// <summary>
+    /// Check food for each NPC
+    /// </summary>
+    /// <param name="totalFood">Total of food</param>
+    /// <param name="npcAmount">Amount of NPCs</param>
+    /// <param name="factor">Rate of hunger increase</param>
+    /// <returns>Number of food consumed</returns>
+    public int CheckFood(int totalFood, int npcAmount, float factor)
+    {
+        int foodAmount;
+
+        if (totalFood >= npcAmount)
+            foodAmount = npcAmount;
+        else
+            foodAmount = totalFood;
+
+        currentAmount += foodAmount / npcAmount * factor;
+
+        return foodAmount;
+    }
 }
