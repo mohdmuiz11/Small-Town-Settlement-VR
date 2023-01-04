@@ -31,12 +31,14 @@ public class GridSystem : MonoBehaviour
     private Gradient originalInvalidGradient;
 
     // Private vars
+    private GameManager gameManager;
     private SlotManager slotManager;
     private Transform playerTransform;
     private GameObject buildModeObject;
     private Quaternion playerOriginRot;
     private Vector3 playerOriginPos;
     private float tableHeight;
+    private bool usingGrabber;
 
     /// <summary>
     /// Check if the player has traveled to real world.
@@ -62,6 +64,7 @@ public class GridSystem : MonoBehaviour
     void Start()
     {
         // Find gameobjects to reference
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         buildModeObject = GameObject.Find("BuildMode");
         playerTransform = GameObject.Find("XR Rig").GetComponent<Transform>();
         leftControllerInteractor = GameObject.Find("LeftHand Controller").GetComponent<XRBaseControllerInteractor>();
@@ -81,7 +84,13 @@ public class GridSystem : MonoBehaviour
         Debug.Log(controllerDefaultModel.ToString());
         originalValidGradient = rightHandLV.validColorGradient;
         originalInvalidGradient = rightHandLV.invalidColorGradient;
-        EnableGrabber(true);
+        usingGrabber = true;
+        EnableGrabber(!usingGrabber);
+    }
+
+    public void ToggleGrabber()
+    {
+        EnableGrabber(!usingGrabber);
     }
 
     // Set interaction layer for both controllers, easy peasy
@@ -119,9 +128,9 @@ public class GridSystem : MonoBehaviour
     }
 
     // setting up grabber
-    private void EnableGrabber(bool enabled)
+    public void EnableGrabber(bool enabled)
     {
-        if (enabled)
+        if (enabled && !usingGrabber)
         {
             // set grabber's model
             rightController.model = grabberModel.transform;
@@ -133,7 +142,7 @@ public class GridSystem : MonoBehaviour
             rightHandLV.validColorGradient = invisibleGradient;
             rightHandLV.invalidColorGradient = invisibleGradient;
         }
-        else
+        else if (!enabled && usingGrabber)
         {
             // set default model
             rightController.model = controllerDefaultModel.transform;
@@ -146,6 +155,7 @@ public class GridSystem : MonoBehaviour
             rightHandLV.invalidColorGradient = originalInvalidGradient;
             rightHandLV.lineWidth = defaultLineWidth;
         }
+        usingGrabber = enabled;
     }
 
     /// <summary>
@@ -160,7 +170,7 @@ public class GridSystem : MonoBehaviour
             ConstraintAllBuildings(false);
             slotManager.SwitchSlot("Socket");
             SetControllerInteractionLayer(selectDefaultLayer);
-            EnableGrabber(true);
+            //EnableGrabber(true);
 
             // travel -> building
             if (interactionMode == 2)
@@ -177,7 +187,7 @@ public class GridSystem : MonoBehaviour
             SetControllerInteractionLayer(selectRoadLayer);
             slotManager.SwitchSlot("Road");
             EnableHoverActivate(true);
-            EnableGrabber(false);
+            //EnableGrabber(false);
             if (interactionMode == 2) mode = 2; //temporary fix
         }
         // Nak teleport
@@ -186,7 +196,7 @@ public class GridSystem : MonoBehaviour
             ConstraintAllBuildings(true);
             slotManager.ToggleHoverMeshSocket(false);
             slotManager.SwitchSlot("Teleport");
-            EnableGrabber(false);
+            //EnableGrabber(false);
 
             // road -> travel
             if (interactionMode == 1)
@@ -197,6 +207,7 @@ public class GridSystem : MonoBehaviour
         }
 
         interactionMode = mode;
+        gameManager.NextAction(false);
     }
 
     /// <summary>

@@ -4,9 +4,10 @@ using TMPro;
 
 public class StatusUI : MonoBehaviour
 {
+    public StatusType statusType;
     public TextMeshProUGUI textStatus;
     public TextMeshProUGUI textAmount;
-    public Sprite thumbnail;
-    public Color fillColor;
+    public Image thumbnail;
+    public Image fill;
     public Slider sliderValue;
 }

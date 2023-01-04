@@ -25,8 +25,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private bool isTalkingToNPC; //useful toggle to focus on NPC dialogues later
 
     // private vars
-    private int actionPoint;
     private Dictionary<ResourceType, int> _currentResources = new();
+    public int actionPoint { get; private set; }
     public Dictionary<ResourceType, int> currentResources { get { return _currentResources; } }
     public Status[] listStatus { get { return _listStatus; } }
 
@@ -48,17 +48,26 @@ public class GameManager : MonoBehaviour
         _currentResources.Add(ResourceType.Delicious_Food, 0);
         _currentResources.Add(ResourceType.Leather, 5);
 
+        // Set NPC all to idle
+        for (int i = 0; i < listNPCs.Length; i++)
+        {
+            listNPCs[i].currentTask = TaskType.Idle;
+        }
+
         // Instantiate stuff
         //Debug.Log(CheckResources(ResourceType.Wood) + " " + ResourceType.Wood.ToString());
         actionPoint = maxActionPoint;
     }
 
     /// <summary>
-    /// Update everything after 1 action point spent
+    /// Update next action.
     /// </summary>
-    public void NextAction()
+    /// <param name="spentAction">Do you need to spent the AP?</param>
+    public void NextAction(bool spentAction = true)
     {
         Debug.Log("Next action!");
+        if (spentAction)
+            actionPoint--;
         gameUI.UpdateNextAction();
     }
 
@@ -68,7 +77,14 @@ public class GameManager : MonoBehaviour
     public void NextDay()
     {
         // Consume food
-        _currentResources[ResourceType.Cooked_Food] -= _listStatus[2].CheckFood(CheckResources(ResourceType.Cooked_Food), listNPCs.Length, hungerIncreaseRate);
+        int consumedDeliciousFood = _listStatus[2].CheckFood(CheckResources(ResourceType.Delicious_Food), listNPCs.Length, hungerIncreaseRate*2);
+        _currentResources[ResourceType.Delicious_Food] -= consumedDeliciousFood;
+
+        // if delicious food doesn't cover all NPCs
+        if (consumedDeliciousFood < listNPCs.Length)
+        {
+            _currentResources[ResourceType.Cooked_Food] -= _listStatus[2].CheckFood(CheckResources(ResourceType.Cooked_Food), listNPCs.Length - consumedDeliciousFood, hungerIncreaseRate);
+        }
 
         // Update current stats
         for (int i = 0; i < listStatus.Length; i++)
@@ -79,19 +95,22 @@ public class GameManager : MonoBehaviour
         //if (CheckResources(ResourceType.Delicious_Food) > 0)
         //    _listStatus[2].CheckFood(CheckResources(ResourceType.Delicious_Food), listNPCs.Length, hungerIncreaseRate*2);
 
-        // Check mood if -100 and below
-        if (_listStatus[0].currentAmount <= -1f)
-            Debug.Log("Game Over: Overthrown leader ending.");
-        else if (_listStatus[1].currentAmount <= 0)
+        // Check mood & wellbeing for game over
+        if (_listStatus[1].currentAmount <= 0)
             Debug.Log("Game Over: Everyone is dead.");
+        else if (_listStatus[0].currentAmount <= -1f)
+            Debug.Log("Game Over: Overthrown leader ending.");
         else if (_listStatus[2].currentAmount <= 0)
+        {
             _listStatus[1].currentAmount -= 0.2f;
+            _listStatus[0].currentAmount -= 0.2f;
+        }
 
         // Refresh action points
         actionPoint = maxActionPoint;
 
         // Update for other classes
-        gameUI.UpdateNextAction();
+        NextAction(false);
         slotManager.UpdateNextDay();
     }
 
@@ -171,7 +190,65 @@ public class GameManager : MonoBehaviour
         spawned.transform.position = locationBuilding.position;
         spawned.transform.SetParent(locationBuilding);
 
+
+        // Black smith task
+        AssignTask(NPCType.Blacksmith, TaskType.Building);
+
         NextAction();
+    }
+
+    /// <summary>
+    /// Check NPC task if they do the certain task
+    /// </summary>
+    /// <param name="npc">The npc</param>
+    /// <param name="taskType">TaskType</param>
+    /// <returns>True or false</returns>
+    public bool CheckNPCCurrentTask(NPCType npcType, TaskType taskType)
+    {
+        for (int i = 0; i < listNPCs.Length; i++)
+        {
+            NPC npc = listNPCs[i];
+
+            if (npc.npcType == npcType && npc.currentTask == taskType)
+                return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Check if the NPC is doing something other than idle
+    /// </summary>
+    /// <param name="npcType">Type of NPC</param>
+    /// <returns>Returns true if they are busy</returns>
+    public bool CheckNPCCurrentTask(NPCType npcType)
+    {
+        for (int i = 0; i < listNPCs.Length; i++)
+        {
+            NPC npc = listNPCs[i];
+
+            if (npc.npcType == npcType && npc.currentTask != TaskType.Idle)
+                return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Assign NPC a task
+    /// </summary>
+    /// <param name="npcType">What NPC</param>
+    /// <param name="taskType">Task you want to give</param>
+    public void AssignTask(NPCType npcType, TaskType taskType)
+    {
+        for (int i = 0; i < listNPCs.Length; i++)
+        {
+            if (listNPCs[i].npcType == npcType)
+            {
+                listNPCs[i].currentTask = taskType;
+                break;
+            }
+        }
     }
 }
 
@@ -224,6 +301,7 @@ public class Status
     public float minLimit;
     public float maxLimit;
     public float decayRate;
+    public float[] indicatorStats;
 
     public void UpdateStatus()
     {

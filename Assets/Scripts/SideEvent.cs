@@ -32,7 +32,7 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
     // Private vars
     private GridSystem gridSystem;
     private BoxCollider boxCollider;
-    private TableUI tableUI;
+    private GameUI gameUI;
     private bool isCompleted;
 
     // Interfaces
@@ -56,7 +56,7 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
 
         // Default state
         gridSystem = GameObject.Find("GRID System").GetComponent<GridSystem>();
-        tableUI = GameObject.Find("Table UI").GetComponent<TableUI>();
+        gameUI = GameObject.Find("Game UI").GetComponent<GameUI>();
         boxCollider = GetComponent<BoxCollider>();
     }
 
@@ -74,8 +74,9 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
         
         if (gridSystem.interactionMode == 2)
         {
-            tableUI.gameObject.SetActive(true);
-            tableUI.setText(eventType.ToString(), description, null);
+            //tableUI.gameObject.SetActive(true);
+            //tableUI.setText(eventType.ToString(), description, null);
+            Debug.Log("TODO: Fix this");
         }
     }
 

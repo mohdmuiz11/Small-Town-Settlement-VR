@@ -21,6 +21,10 @@ public class GameUI : MonoBehaviour
     [Header("Status UI")]
     [SerializeField] private StatusUI statusUIPrefab;
     [SerializeField] private RectTransform statusContent;
+    [SerializeField] private TextMeshProUGUI apText;
+    [SerializeField] private Sprite[] moodImage;
+    [SerializeField] private Color[] colorStats;
+    private List<StatusUI> listStatusUI = new();
 
     [Header("Information UI")]
     [SerializeField] private GameObject canvasInfoUI;
@@ -28,6 +32,8 @@ public class GameUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI descriptionInfo;
     [SerializeField] private Image thumnailInfo;
     [SerializeField] private Button buttonInfo;
+    [SerializeField] private GameObject warningBG;
+    [SerializeField] private TextMeshProUGUI warning;
 
     [Header("Building stats")]
     [SerializeField] private RectTransform buildingStats;
@@ -44,6 +50,7 @@ public class GameUI : MonoBehaviour
 
     // Other vars
     private SlotManager slotManager;
+    private GridSystem gridSystem;
     private GameManager gameManager;
     private float currentRot = 0;
 
@@ -53,9 +60,11 @@ public class GameUI : MonoBehaviour
         // Object referencing
         slotManager = GameObject.Find("GRID System").GetComponent<SlotManager>();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        gridSystem = slotManager.GetComponent<GridSystem>();
         
         InitialCraftUISetup();
         InitialResourceUISetup();
+        InitialStatusUISetup();
         InitialMtUI();
         ShowInfo(false);
         UpdateNextAction();
@@ -105,11 +114,28 @@ public class GameUI : MonoBehaviour
         }
     }
 
+    // Initialize Status UI
     private void InitialStatusUISetup()
     {
         for (int i = 0; i < gameManager.listStatus.Length; i++)
         {
-            Debug.Log("bruh");
+            // Get the status
+            Status status = gameManager.listStatus[i];
+
+            // Get status type
+            statusUIPrefab.statusType = status.statusType;
+            string statusName = EnumToReadableFormat(status.statusType);
+            statusUIPrefab.textStatus.text = statusName;
+
+            // Load sprite according to resourceType name from Assets/Resources
+            statusUIPrefab.thumbnail.sprite = Resources.Load<Sprite>($"UI/{statusName}");
+
+            // apply limits
+            statusUIPrefab.sliderValue.minValue = status.minLimit;
+            statusUIPrefab.sliderValue.maxValue = status.maxLimit;
+
+            // instantiate and keep inside lisStatusUI
+            listStatusUI.Add(Instantiate(statusUIPrefab, statusContent));
         }
     }
 
@@ -156,6 +182,15 @@ public class GameUI : MonoBehaviour
     {
         craftUIUpdate();
         resourceUIUpdate();
+        StatusUIUpdate();
+        MtUIUpdate();
+        ActionPointUpdate();
+    }
+
+    // update action point
+    private void ActionPointUpdate()
+    {
+        apText.text = gameManager.actionPoint.ToString();
     }
 
     // update craft ui
@@ -220,11 +255,70 @@ public class GameUI : MonoBehaviour
         }
     }
 
+    // Update Status UI
+    private void StatusUIUpdate()
+    {
+        foreach (StatusUI instance in listStatusUI)
+        {
+            for (int i = 0; i < gameManager.listStatus.Length; i++)
+            {
+                // Select a status
+                Status status = gameManager.listStatus[i];
+
+                // if same status type, update text the amount and slider
+                if (status.statusType == instance.statusType)
+                {
+
+                    float amount = status.currentAmount;
+
+                    // Change text inside StatusUI
+                    instance.sliderValue.value = amount;
+                    instance.textAmount.text = (amount * 100).ToString("F0") + "%";
+
+                    // Change color according to each stats
+                    if (status.indicatorStats.Length == colorStats.Length)
+                        for (int j = 0; j < status.indicatorStats.Length; j++)
+                        {
+                            if (amount >= status.indicatorStats[j])
+                            {
+                                if (status.statusType == StatusType.Mood)
+                                {
+                                    instance.thumbnail.sprite = moodImage[j];
+                                }
+                                instance.fill.color = colorStats[j];
+                                break;
+                            }
+                        }
+                    else
+                        Debug.LogError("The indicatorStats are not the same lenth as colorStatus for " + status.statusType.ToString());
+                    break;
+                }
+            }
+        }
+    }
+
     private void MtUIUpdate()
     {
-        // Check if the town hall is already built
-        if (slotManager.CheckAvailableBuilding(BuildingType.Town_Hall))
-            mtButtons[1].interactable = true;
+        // Clear all listeners first before applying onClick functions to the buttons
+        mtButtons[0].onClick.RemoveAllListeners();
+
+        // Building mode
+        if (gridSystem.interactionMode == 0)
+        {
+            mtButtons[0].GetComponentInChildren<TextMeshProUGUI>().text = "Road";
+            mtButtons[0].onClick.AddListener(() => gridSystem.SetInteractionMode(1));
+            mtButtons[1].interactable = false;
+            mtButtons[2].interactable = true;
+        }
+        // Road mode
+        else if (gridSystem.interactionMode == 1)
+        {
+            mtButtons[0].GetComponentInChildren<TextMeshProUGUI>().text = "Building";
+            mtButtons[0].onClick.AddListener(() => gridSystem.SetInteractionMode(0));
+            mtButtons[1].interactable = false;
+            mtButtons[2].interactable = false;
+        }
+
     }
 
     /// <summary>
@@ -270,6 +364,14 @@ public class GameUI : MonoBehaviour
         }
         else
         {
+            // Check if the blacksmith is busy
+            if (gameManager.CheckNPCCurrentTask(NPCType.Blacksmith))
+            {
+                buttonInfo.interactable = false;
+                if (!warningBG.activeSelf)
+                    warningBG.SetActive(true);
+                warning.text = "Blacksmith is busy!";
+            }
             // In the process of choosing building to spawn
             buttonInfo.GetComponentInChildren<TextMeshProUGUI>().text = "Confirm?";
             buttonInfo.onClick.RemoveAllListeners();
@@ -284,6 +386,8 @@ public class GameUI : MonoBehaviour
     /// <param name="isVisible">need bool thank</param>
     public void ShowInfo(bool isVisible)
     {
+        if (warningBG.activeSelf)
+            warningBG.SetActive(false);
         canvasInfoUI.SetActive(isVisible);
     }
 

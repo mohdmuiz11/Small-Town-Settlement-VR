@@ -35,8 +35,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -0.000015258789, y: 0}
-  m_SizeDelta: {x: 10, y: 0}
+  m_AnchoredPosition: {x: -2.5000076, y: 0}
+  m_SizeDelta: {x: 5.0000153, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &857213990018844890
 CanvasRenderer:
@@ -186,8 +186,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.25}
   m_AnchorMax: {x: 1, y: 0.75}
-  m_AnchoredPosition: {x: -5, y: 0}
-  m_SizeDelta: {x: -20, y: 0}
+  m_AnchoredPosition: {x: 2.5, y: 0}
+  m_SizeDelta: {x: -5, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &4384368369923666129
 GameObject:
@@ -225,7 +225,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 22.074999, y: 0}
-  m_SizeDelta: {x: 20.9, y: 10.2}
+  m_SizeDelta: {x: 21.02, y: 10.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4526662498917614652
 CanvasRenderer:
@@ -255,7 +255,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 100%
+  m_text: -100%
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c8ac1ed6123904112adeaf50e63c4731, type: 2}
   m_sharedMaterial: {fileID: 1693478669045529817, guid: c8ac1ed6123904112adeaf50e63c4731,
@@ -441,7 +441,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 0}
   m_FillRect: {fileID: 2830229837050387662}
   m_HandleRect: {fileID: 0}
@@ -449,7 +449,7 @@ MonoBehaviour:
   m_MinValue: 0
   m_MaxValue: 1
   m_WholeNumbers: 0
-  m_Value: 0.59
+  m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -519,7 +519,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 21300000, guid: 8e7880af88f949447914bfbcbc935126, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -595,7 +595,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Wellbeing = '
+  m_text: Hunger
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: c8ac1ed6123904112adeaf50e63c4731, type: 2}
   m_sharedMaterial: {fileID: 1693478669045529817, guid: c8ac1ed6123904112adeaf50e63c4731,
@@ -703,7 +703,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 59.22}
-  m_SizeDelta: {x: 75.9, y: 15}
+  m_SizeDelta: {x: 87.3, y: 18.8}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &8031333516622488321
 MonoBehaviour:
@@ -717,7 +717,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd48cf2fe9e7759449fc04e5da4945c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  textTMP: {fileID: 0}
-  thumbnail: {fileID: 0}
-  fillColor: {r: 0, g: 0, b: 0, a: 0}
-  sliderValue: {fileID: 0}
+  statusType: 2
+  textStatus: {fileID: 8553050475483997602}
+  textAmount: {fileID: 5279327188179053673}
+  thumbnail: {fileID: 8553050474172789364}
+  fill: {fileID: 1999483945223886936}
+  sliderValue: {fileID: 3166811602789246355}
