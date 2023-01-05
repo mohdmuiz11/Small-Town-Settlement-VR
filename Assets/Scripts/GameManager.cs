@@ -8,7 +8,6 @@ public class GameManager : MonoBehaviour
 {
     // Game manager said "It's Inspector time" and inspecting all over my brain
     [Header("Current community status")]
-    [SerializeField] private int dayElapsed = 0; // keep track of time
     [SerializeField] private int maxActionPoint = 3; // action points that player need to spend per day
     [SerializeField] [Range(0, 0.5f)] private float hungerIncreaseRate = 0.2f;
     [SerializeField] private Status[] _listStatus;
@@ -26,6 +25,7 @@ public class GameManager : MonoBehaviour
 
     // private vars
     private Dictionary<ResourceType, int> _currentResources = new();
+    public int dayElapsed { get; private set; }
     public int actionPoint { get; private set; }
     public Dictionary<ResourceType, int> currentResources { get { return _currentResources; } }
     public Status[] listStatus { get { return _listStatus; } }
@@ -46,7 +46,7 @@ public class GameManager : MonoBehaviour
         _currentResources.Add(ResourceType.Raw_Food, 0);
         _currentResources.Add(ResourceType.Cooked_Food, cookedFood);
         _currentResources.Add(ResourceType.Delicious_Food, 0);
-        _currentResources.Add(ResourceType.Leather, 5);
+        _currentResources.Add(ResourceType.Cloth, 5);
 
         // Set NPC all to idle
         for (int i = 0; i < listNPCs.Length; i++)
@@ -112,6 +112,7 @@ public class GameManager : MonoBehaviour
         // Update for other classes
         NextAction(false);
         slotManager.UpdateNextDay();
+        dayElapsed++;
     }
 
     /// <summary>
@@ -194,6 +195,10 @@ public class GameManager : MonoBehaviour
         // Black smith task
         AssignTask(NPCType.Blacksmith, TaskType.Building);
 
+        // State the building is "crafted" but not "placed",
+        gameUI.isNotPlaced = true;
+
+        // Go to next action
         NextAction();
     }
 
@@ -264,7 +269,7 @@ public enum ResourceType
     Raw_Food,
     Cooked_Food,
     Delicious_Food,
-    Leather
+    Cloth
 }
 
 /// <summary>

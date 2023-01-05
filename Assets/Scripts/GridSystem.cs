@@ -187,7 +187,7 @@ public class GridSystem : MonoBehaviour
             SetControllerInteractionLayer(selectRoadLayer);
             slotManager.SwitchSlot("Road");
             EnableHoverActivate(true);
-            //EnableGrabber(false);
+            EnableGrabber(false);
             if (interactionMode == 2) mode = 2; //temporary fix
         }
         // Nak teleport
@@ -196,7 +196,7 @@ public class GridSystem : MonoBehaviour
             ConstraintAllBuildings(true);
             slotManager.ToggleHoverMeshSocket(false);
             slotManager.SwitchSlot("Teleport");
-            //EnableGrabber(false);
+            EnableGrabber(false);
 
             // road -> travel
             if (interactionMode == 1)

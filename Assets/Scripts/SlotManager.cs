@@ -16,13 +16,18 @@ public class SlotManager : MonoBehaviour
 
     [Header("Event settings")]
     [SerializeField] private GameObject forestPrefab;
-    [SerializeField] private Vector2[] forestEventList;
+    [SerializeField] private GameObject fishingPrefab;
+    [SerializeField] private GameObject obstaclePrefab;
+    [SerializeField] private int startingRowToPopulate;
+    [SerializeField] private Vector2[] forestRangePopulate;
+    [SerializeField] private Vector2[] obstacleList;
 
     [Header("Available Buildings")]
     public Building[] buildingList;
 
     // Initiate lists of slots and interactables
-    private List<GameObject> slots; // literally everything
+    private List<GameObject> slots = new(); // literally everything
+    public GameObject[] events;
     private GameObject[] socketBuildings;
     private GameObject[] roads;
     //private GameObject[] sideEvents;
@@ -46,7 +51,7 @@ public class SlotManager : MonoBehaviour
         // Initiate arrays
         socketBuildings = new GameObject[gridCount * gridCount];
         roads = new GameObject[gridCount * gridCount];
-        slots = new List<GameObject>();
+        events = new GameObject[gridCount * gridCount];
 
         // Default state
         WidthGrid = (table.size.z) / (gridCount + 1);
@@ -77,10 +82,17 @@ public class SlotManager : MonoBehaviour
             {
                 bool isEvent = false;
 
-                for (int e = 0; e < forestEventList.Length; e++)
+                // hard coded to place forest, this is the most efficient
+                if (i >= startingRowToPopulate)
                 {
-                    // Check if the event match the GRID coordinate
-                    if (forestEventList[e].x == x && forestEventList[e].y == z)
+                    isEvent = true;
+                    SpawnSlot(forestPrefab, pos, i, x, z, isEvent);
+                }
+
+                // selective forest event if there is
+                for (int e = 0; e < forestRangePopulate.Length; e++)
+                {
+                    if (i >= forestRangePopulate[e].x && i <= forestRangePopulate[e].y)
                     {
                         isEvent = true;
                         SpawnSlot(forestPrefab, pos, i, x, z, isEvent);
@@ -116,39 +128,51 @@ public class SlotManager : MonoBehaviour
             socketBuildings[index] = slotSpawn;
         else if (objPrefab.tag == "Road")
             roads[index] = slotSpawn;
+        else if (objPrefab.tag == "SideEvent")
+            events[index] = objPrefab;
     }
 
     /// <summary>
     /// Switch slot types. Available type = Road, Socket & Teleport.
     /// </summary>
     /// <param name="type">Type of slot in string. Case sensitive.</param>
-    public void SwitchSlot(string type)
+    public void SwitchSlot(string type, bool refresh = false)
     {
         // Switch from socket -> road
         if (type == "Road" && currentSlot != roadPrefab.tag )
         {
             for (int i = 0; i < socketBuildings.Length; i++)
             {
+                // check for side event
+                bool isEvent = false;
+                if (events[i] != null)
+                    isEvent = true;
+
                 bool occupied = socketBuildings[i].GetComponent<IGridCoordinate>().HasPlaced;
                 if (!occupied)
                 {
                     socketBuildings[i].SetActive(false);
-                    roads[i].SetActive(true);
+                    roads[i].SetActive(!isEvent);
                 }
             }
             currentSlot = roadPrefab.tag;
         }
 
         // Switch from road -> socket
-        else if (type == "Socket" && currentSlot != socketBuildingPrefab.tag)
+        else if (type == "Socket" && (currentSlot != socketBuildingPrefab.tag || refresh))
         {
             for (int i = 0; i < roads.Length; i++)
             {
+                // check for side event
+                bool isEvent = false;
+                if (events[i] != null)
+                    isEvent = true;
+
                 bool occupied = roads[i].GetComponent<IGridCoordinate>().HasPlaced;
                 if (!occupied)
                 {
                     roads[i].SetActive(false);
-                    socketBuildings[i].SetActive(true);
+                    socketBuildings[i].SetActive(!isEvent);
                 }
             }
             currentSlot = socketBuildingPrefab.tag;

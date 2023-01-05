@@ -117,9 +117,10 @@ MonoBehaviour:
   m_OnDeactivate:
     m_PersistentCalls:
       m_Calls: []
-  eventType: 0
-  description: This place is full of trees. You should cut them down if you want
-    to collect woods.
+  _eventType: 0
+  _usefulTasks: 02000000030000000400000005000000
+  _description: The forest is full of trees. Cutting down the trees will get woods,
+    but can also used to get other resources such as raw food, herbs, and stones.
   prefabs:
   - {fileID: 3419081502229303117, guid: 3af269e8d93353447b89ae9d8a6e937c, type: 3}
   - {fileID: 8705032805967574307, guid: 56193cf3e6ff30245b95f233f1b095ec, type: 3}

@@ -14,8 +14,10 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
 {
     // Inspector usage
     [Header("Event details")]
-    [SerializeField] private SideEventType eventType;
-    [SerializeField] [TextArea(5, 20)] private string description;
+    [SerializeField] private SideEventType _eventType;
+    [SerializeField] private TaskType[] _usefulTasks;
+    [SerializeField] [TextArea(5, 20)] private string _description;
+    [SerializeField] private Sprite _thumbnail;
 
     [Header("Object instance")]
     [SerializeField] private GameObject[] prefabs;
@@ -39,6 +41,13 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
     public int PosX { get; private set; }
     public int PosZ { get; private set; }
     public bool HasPlaced { get; private set; }
+
+    // half public vars
+    public int treeAmount { get; private set; }
+    public SideEventType eventType { get { return _eventType; } }
+    public TaskType[] usefulTasks { get { return _usefulTasks; } }
+    public string description { get { return _description; } }
+    public Sprite thumbnail { get { return _thumbnail; } }
 
     // Set coordinate
     public void SetCoordinate(int x, int z)
@@ -68,17 +77,15 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
         HasPlaced = true;
     }
 
-    protected override void OnHoverEntered(HoverEnterEventArgs args)
-    {
-        base.OnHoverEntered(args);
+    //protected override void OnHoverEntered(HoverEnterEventArgs args)
+    //{
+    //    base.OnHoverEntered(args);
         
-        if (gridSystem.interactionMode == 2)
-        {
-            //tableUI.gameObject.SetActive(true);
-            //tableUI.setText(eventType.ToString(), description, null);
-            Debug.Log("TODO: Fix this");
-        }
-    }
+    //    if (gridSystem.interactionMode == 2)
+    //    {
+    //        gameUI.ShowInfo(this);
+    //    }
+    //}
 
     protected override void OnActivated(ActivateEventArgs args)
     {
@@ -86,7 +93,8 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
 
         if (gridSystem.interactionMode == 2 && !isCompleted)
         {
-            gridSystem.ResizeWorld(playerTravelPos);
+            //gridSystem.ResizeWorld(playerTravelPos);
+            gameUI.ShowInfo(this);
         }
     }
 
@@ -115,13 +123,14 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
     private void GenerateRandomObjects()
     {
         // Random spawn and place to store pos
-        int spawnSize = Random.Range(minSpawn, maxSpawn);
-        float setDistance = 1f / (spawnSize + 1f) * (1f - marginSlot);
+        treeAmount = Random.Range(minSpawn, maxSpawn);
+        
+        float setDistance = 1f / (treeAmount + 1f) * (1f - marginSlot);
         //Debug.Log(setDistance + " " + spawnSize);
         List<Vector2> posList = new List<Vector2>();
         posList.Add(Vector2.zero);
 
-        for (int i = 0; i < spawnSize; i++)
+        for (int i = 0; i < treeAmount; i++)
         {
             // Spawn object first
             int ri = Random.Range(0, prefabs.Length);

@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -60,7 +61,9 @@ public class Building : XRGrabInteractable
         isInConstruction = true;
         interactionLayers = InteractionLayerMask.GetMask("Constructioned");
         duration = durationBuild;
+        gameUI.isNotPlaced = false;
         gameUI.ShowStats(this, duration);
+        gameUI.UpdateNextAction();
     }
 
     /// <summary>
@@ -83,7 +86,10 @@ public class Building : XRGrabInteractable
             gameUI.UpdateStats(this, duration);
         }
         else if (duration == 0)
+        {
+            gameUI.DestroyStats(this);
             hasBuild = true;
+        }
     }
 
     // When the building is hovered by player's controller or socket
@@ -132,6 +138,16 @@ public class Building : XRGrabInteractable
             gameUI.ShowInfo(false);
             hasPlaced = false;
         }
+        else // if the player accidentally drop something
+            StartCoroutine(ResetToOriginalPos());
+    }
+
+    // Wait for one second, and reset if not hasplaced
+    IEnumerator ResetToOriginalPos()
+    {
+        yield return new WaitForSeconds(1);
+        if (!hasPlaced)
+            transform.position = originalPos;
     }
 
     // Identify current direction of the building by bearings to snap into socket.

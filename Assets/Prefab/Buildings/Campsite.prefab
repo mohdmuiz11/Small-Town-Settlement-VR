@@ -183,7 +183,7 @@ MonoBehaviour:
     Can also be used to build better tools for other people to get resources faster.
   _buildingThumbnail: {fileID: 21300000, guid: 125c304317ab7ed41991501842fc4b1b, type: 3}
   playerTravelPos: {fileID: 4626710414505378541}
-  _resourceRequired: 0000000001000000
+  _resourceRequired: 0000000007000000
   _resourceAmount: 140000000a000000
   durationBuild: 2
 --- !u!1 &6413475331396118443
