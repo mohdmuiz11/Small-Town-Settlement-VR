@@ -5,7 +5,14 @@ using UnityEngine.XR.Interaction.Toolkit;
 /// <summary>
 /// Side event types available for SideEvent
 /// </summary>
-public enum SideEventType { Forest, Fishing, Start, Obstacle }
+public enum SideEventType
+{ 
+    Forest,
+    Fishing,
+    Start,
+    Obstacle,
+    BuildingInfo
+}
 
 /// <summary>
 /// Side events that the player can partake.
@@ -15,9 +22,11 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
     // Inspector usage
     [Header("Event details")]
     [SerializeField] private SideEventType _eventType;
-    [SerializeField] private TaskType[] _usefulTasks;
     [SerializeField] [TextArea(5, 20)] private string _description;
     [SerializeField] private Sprite _thumbnail;
+
+    [Header("Task details")]
+    [SerializeField] private ResourceTask[] _resourcesGain;
 
     [Header("Object instance")]
     [SerializeField] private GameObject[] prefabs;
@@ -30,12 +39,15 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
     [SerializeField] private Transform playerTravelPos;
     [SerializeField] private int actualX;
     [SerializeField] private int actualZ;
+    [SerializeField] private Building _buildingStats;
 
     // Private vars
     private GridSystem gridSystem;
     private BoxCollider boxCollider;
     private GameUI gameUI;
-    private bool isCompleted;
+    private bool buildingIsPlaced;
+
+    public bool teleportable;
 
     // Interfaces
     public int PosX { get; private set; }
@@ -45,9 +57,10 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
     // half public vars
     public int treeAmount { get; private set; }
     public SideEventType eventType { get { return _eventType; } }
-    public TaskType[] usefulTasks { get { return _usefulTasks; } }
+    public ResourceTask[] resourcesGain { get { return _resourcesGain; } }
     public string description { get { return _description; } }
     public Sprite thumbnail { get { return _thumbnail; } }
+    public Building buildingStats { get { return _buildingStats; } }
 
     // Set coordinate
     public void SetCoordinate(int x, int z)
@@ -73,7 +86,8 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
     {
         // scale to fit inside a slot
         transform.localScale = Vector3.one * gridSystem.WidthGrid;
-        GenerateRandomObjects();
+        if (_eventType == SideEventType.Forest)
+            GenerateRandomObjects();
         HasPlaced = true;
     }
 
@@ -91,7 +105,7 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
     {
         base.OnActivated(args);
 
-        if (gridSystem.interactionMode == 2 && !isCompleted)
+        if (gridSystem.interactionMode == 2)
         {
             //gridSystem.ResizeWorld(playerTravelPos);
             gameUI.ShowInfo(this);
@@ -113,10 +127,13 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
     {
         base.ProcessInteractable(updatePhase);
 
-        if (gridSystem.hasTraveled)
-            DisableBoxCollider(true);
-        else
+        //if (gridSystem.hasTraveled)
+        // Detect if the building is placed, the laziest way to code
+        if (_eventType == SideEventType.BuildingInfo && buildingStats.GetHasPlaced() && !buildingIsPlaced)
+        {
             DisableBoxCollider(false);
+            buildingIsPlaced = true;
+        }
     }
 
     // Everything in randomized

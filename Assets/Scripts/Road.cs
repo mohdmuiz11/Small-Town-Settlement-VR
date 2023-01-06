@@ -117,9 +117,9 @@ public class Road : XRBaseInteractable, IGridCoordinate
             if (results[i])
             {
                 placed++;
-                if (angle - anchor.eulerAngles.y == 180 && !straight)
+                if (angle - anchor.localEulerAngles.y == 180 && !straight)
                     straight = true;
-                else if ((angle - anchor.eulerAngles.y == 270 || straight) && placed > 1)
+                else if ((angle - anchor.localEulerAngles.y == 270 || straight) && placed > 1)
                     angle += 90;
 
                 if (!results[2] && placed > 2)
@@ -128,11 +128,11 @@ public class Road : XRBaseInteractable, IGridCoordinate
                 // zero out angle if 360, else normal la
                 if (angle > 300)
                 {
-                    anchor.eulerAngles = new Vector3(0, angle - 360, 0);
+                    anchor.localEulerAngles = new Vector3(0, angle - 360, 0);
                     angle = 0;
                 }
                 else
-                    anchor.eulerAngles = new Vector3(0, angle, 0);
+                    anchor.localEulerAngles = new Vector3(0, angle, 0);
             }
             angle += 90;
         }

@@ -21,7 +21,6 @@ public class SocketBuilding : XRSocketInteractor, IGridCoordinate
     private SlotManager slotManager;
     private Building buildingStats;
     private bool buildingHovered;
-    private bool preventUpdate;
 
     protected override void Awake()
     {
@@ -57,8 +56,8 @@ public class SocketBuilding : XRSocketInteractor, IGridCoordinate
     protected override void OnHoverExited(HoverExitEventArgs args)
     {
         base.OnHoverExited(args);
-
-        preventUpdate = true;
+        buildingHovered = false;
+        buildingStats = null;
     }
 
     // Get status of the building when it enters the socket
@@ -68,8 +67,9 @@ public class SocketBuilding : XRSocketInteractor, IGridCoordinate
         var interactableObj = args.interactableObject as XRBaseInteractable;
 
         BuildingIsPlaced(true, interactableObj);
-        preventUpdate = false;
         slotManager.UpdateAllRoads();
+        buildingHovered = false;
+        buildingStats = null;
     }
 
     // Get status of the building when it exit from socket
@@ -80,6 +80,7 @@ public class SocketBuilding : XRSocketInteractor, IGridCoordinate
 
         BuildingIsPlaced(false, interactableObj);
         slotManager.UpdateAllRoads();
+        buildingStats = null;
     }
 
     // get angle from the current building
@@ -87,8 +88,14 @@ public class SocketBuilding : XRSocketInteractor, IGridCoordinate
     {
         base.ProcessInteractor(updatePhase);
 
-        if (buildingHovered && !preventUpdate)
-            attachTransform.eulerAngles = new Vector3(0, buildingStats.Angle, 0);
+
+        if (buildingHovered && !buildingStats.GetHasPlaced())
+        {
+            Debug.Log(buildingStats.GetHasPlaced());
+            float angle = buildingStats.Angle - gridSystem.gameObject.transform.eulerAngles.y;
+            attachTransform.localEulerAngles = new Vector3(0, angle, 0);
+            Debug.Log(angle + " Socket");
+        }
 
     }
 

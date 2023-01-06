@@ -1,5 +1,7 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Keep track of resources, effects, status, and NPCs
@@ -15,16 +17,18 @@ public class GameManager : MonoBehaviour
     [Header("Starting resources")]
     [SerializeField] private int cookedFood = 15;
     [SerializeField] private int wood = 25; // depending on player wanted to collect
-    [SerializeField] private NPC[] listNPCs;
+    [SerializeField] private NPC[] listNPCs;  
 
     [Header("Misc")]
     [SerializeField] private GameObject[] interiorDesign;
+    [SerializeField] private Image transitionImage;
     [SerializeField] private GameUI gameUI;
     [SerializeField] private Transform locationBuilding;
     [SerializeField] private bool isTalkingToNPC; //useful toggle to focus on NPC dialogues later
 
     // private vars
     private Dictionary<ResourceType, int> _currentResources = new();
+    private Dictionary<ResourceType, int> pendingResources = new();
     public int dayElapsed { get; private set; }
     public int actionPoint { get; private set; }
     public Dictionary<ResourceType, int> currentResources { get { return _currentResources; } }
@@ -32,11 +36,14 @@ public class GameManager : MonoBehaviour
 
     // Object references
     private SlotManager slotManager;
+    private GridSystem gridSystem;
+    private Transition transition;
 
     void Awake()
     {
         // Object reference
         slotManager = GameObject.Find("GRID System").GetComponent<SlotManager>();
+        gridSystem = slotManager.GetComponent<GridSystem>();
 
         // Add resources
         _currentResources.Add(ResourceType.Wood, 25);
@@ -57,18 +64,25 @@ public class GameManager : MonoBehaviour
         // Instantiate stuff
         //Debug.Log(CheckResources(ResourceType.Wood) + " " + ResourceType.Wood.ToString());
         actionPoint = maxActionPoint;
+
+        transition = new Transition(this);
+
+        transition.StartTransition(FadeType.FadeOut, transitionImage, 1, 3);
     }
+
+    
 
     /// <summary>
     /// Update next action.
     /// </summary>
     /// <param name="spentAction">Do you need to spent the AP?</param>
-    public void NextAction(bool spentAction = true)
+    public void NextAction(bool spentAction = true, bool updateEverything = true)
     {
         Debug.Log("Next action!");
         if (spentAction)
             actionPoint--;
-        gameUI.UpdateNextAction();
+        if (updateEverything)
+            gameUI.UpdateNextAction();
     }
 
     /// <summary>
@@ -104,6 +118,19 @@ public class GameManager : MonoBehaviour
         {
             _listStatus[1].currentAmount -= 0.2f;
             _listStatus[0].currentAmount -= 0.2f;
+        }
+
+        // Add the resources
+        foreach (KeyValuePair<ResourceType, int> resource in pendingResources)
+        {
+            _currentResources[resource.Key] += resource.Value;
+        }
+
+        // Clear NPC tasks
+        for (int i = 0; i < listNPCs.Length; i++)
+        {
+            if (CheckNPCCurrentTask(listNPCs[i].npcType) && listNPCs[i].currentTask != TaskType.Building)
+                listNPCs[i].currentTask = TaskType.Idle;
         }
 
         // Refresh action points
@@ -187,8 +214,9 @@ public class GameManager : MonoBehaviour
 
 
         // BUG: the building scale is too small, for now manually set the position and tranform parent
+        building.originalPos = locationBuilding.position;
         var spawned = Instantiate(building);
-        spawned.transform.position = locationBuilding.position;
+        spawned.transform.position = building.originalPos;
         spawned.transform.SetParent(locationBuilding);
 
 
@@ -255,6 +283,60 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+
+    /// <summary>
+    /// Clear specific NPC's current task
+    /// </summary>
+    /// <param name="npcType">Type of NPC</param>
+    public void ClearNPCTask(NPCType npcType)
+    {
+        for (int i = 0; i < listNPCs.Length; i++)
+        {
+            if (listNPCs[i].npcType == npcType)
+            {
+                listNPCs[i].currentTask = TaskType.Idle;
+                break;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gain or lose resources
+    /// </summary>
+    /// <param name="resourceType">Type of resources</param>
+    /// <param name="amount">Amount to deduct(-) or add(+)</param>
+    public void ChangeValueResource(ResourceType resourceType, int amount)
+    {
+        if (!pendingResources.TryAdd(resourceType, amount))
+            pendingResources[resourceType] += amount;
+
+    }
+
+    /// <summary>
+    /// List out NPC are capable of this task
+    /// </summary>
+    /// <param name="taskType">Type of task</param>
+    /// <returns>List of NPCs</returns>
+    public List<NPCType> CheckNPCCapabilities(TaskType taskType)
+    {
+        List<NPCType> taskNPC = new();
+
+        for (int i = 0; i < listNPCs.Length; i++)
+        {
+            NPC npc = listNPCs[i];
+
+            for (int j = 0; j < npc.capableTasks.Length; j++)
+            {
+                if (npc.capableTasks[j] == taskType)
+                {
+                    taskNPC.Add(npc.npcType);
+                    break;
+                }
+            }
+        }
+
+        return taskNPC;
+    }
 }
 
 /// <summary>
@@ -283,7 +365,7 @@ public enum BuildingType {
     Hunter_hut,
     Fishing_hut,
     Food_hall,
-    Clinic
+    Clinic,
 }
 /// <summary>
 /// Types of community statuses available
@@ -338,5 +420,23 @@ public class Status
         currentAmount += foodAmount / npcAmount * factor;
 
         return foodAmount;
+    }
+}
+
+/// <summary>
+/// ResourceTask pair, because I don't want to deal with dictionary stuff
+/// </summary>
+[System.Serializable]
+public class ResourceTask
+{
+    public ResourceType resourceType;
+    public TaskType taskType;
+    public int amount;
+
+    public ResourceTask(ResourceType resourceType, TaskType taskType, int amount)
+    {
+        this.resourceType = resourceType;
+        this.taskType = taskType;
+        this.amount = amount;
     }
 }

@@ -24,6 +24,7 @@ public class SlotManager : MonoBehaviour
 
     [Header("Available Buildings")]
     public Building[] buildingList;
+    public bool currentBuildingHasBuilt { get; private set; }
 
     // Initiate lists of slots and interactables
     private List<GameObject> slots = new(); // literally everything
@@ -256,10 +257,10 @@ public class SlotManager : MonoBehaviour
     // plan to tidy up this code but too lazy
     private bool CheckDirection(int ba, int kk, SocketBuilding socket)
     {
-        if (ba == 1 && kk == 0 && socket.attachTransform.eulerAngles.y == 180) return true;
-        if (ba == 0 && kk == 1 && socket.attachTransform.eulerAngles.y == 270) return true;
-        if (ba == -1 && kk == 0 && socket.attachTransform.eulerAngles.y == 0) return true;
-        if (ba == 0 && kk == -1 && socket.attachTransform.eulerAngles.y == 90) return true;
+        if (ba == 1 && kk == 0 && socket.attachTransform.localEulerAngles.y == 180) return true;
+        if (ba == 0 && kk == 1 && socket.attachTransform.localEulerAngles.y == 270) return true;
+        if (ba == -1 && kk == 0 && socket.attachTransform.localEulerAngles.y == 0) return true;
+        if (ba == 0 && kk == -1 && socket.attachTransform.localEulerAngles.y == 90) return true;
         return false;
     }
 
@@ -286,7 +287,8 @@ public class SlotManager : MonoBehaviour
 
         for (int i = 0; i < buildings.Length; i++)
         {
-            buildings[i].GetComponent<Building>().UpdateNextDay();
+            Building building = buildings[i].GetComponent<Building>();
+            building.UpdateNextDay();
         }
     }
 

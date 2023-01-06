@@ -7,13 +7,18 @@ using System.Linq;
 public class GameUI : MonoBehaviour
 {
     [Header("Craft UI")]
-    [SerializeField] private Canvas craftUICanvas;
+    [SerializeField] private Canvas craftTaskUICanvas;
+    [SerializeField] private TextMeshProUGUI craftTaskTitleText;
     [SerializeField] private RectTransform craftUIContent;
     [SerializeField] private RectTransform craftCanvasRow;
+    [SerializeField] private RectTransform craftUIViewPort;
     private Dictionary<RectTransform, Building> craftRowList = new();
 
     [Header("Task UI")]
-    [SerializeField] private string todo;
+    [SerializeField] private RectTransform taskUIContent;
+    [SerializeField] private RectTransform taskCanvasRow;
+    [SerializeField] private RectTransform taskUIViewPort;
+    private List<RectTransform> taskRowList = new();
 
     [Header("Resource UI")]
     [SerializeField] private RectTransform resourceUIContent;
@@ -58,6 +63,7 @@ public class GameUI : MonoBehaviour
     private GridSystem gridSystem;
     private GameManager gameManager;
     private float currentRot = 0;
+    private SideEvent currentSideEventSelected;
     public bool isNotPlaced;
 
     // Start is called before the first frame update
@@ -96,6 +102,7 @@ public class GameUI : MonoBehaviour
     // Initialize Resource UI
     private void InitialResourceUISetup()
     {
+        TaskUIUpdate(false);
         float posY = resourceRowStartingYPos - 11.57f;
         int pos = 0;
 
@@ -199,11 +206,11 @@ public class GameUI : MonoBehaviour
     {
         // Check currently "built" building has not placed in the map yet.
         if (isNotPlaced)
-            craftUICanvas.gameObject.SetActive(false);
+            craftTaskUICanvas.gameObject.SetActive(false);
         else
         {
-            if (!craftUICanvas.gameObject.activeSelf)
-                craftUICanvas.gameObject.SetActive(true);
+            if (!craftTaskUICanvas.gameObject.activeSelf)
+                craftTaskUICanvas.gameObject.SetActive(true);
             foreach (KeyValuePair<RectTransform, Building> row in craftRowList)
             {
                 RectTransform rowInstance = row.Key;
@@ -222,11 +229,6 @@ public class GameUI : MonoBehaviour
                 }
             }
         }
-    }
-
-    private void TaskUIUpdate()
-    {
-        Debug.Log("TODO");
     }
 
     // update resource UI, the most inefficient code imaginable
@@ -321,6 +323,9 @@ public class GameUI : MonoBehaviour
         mtButtons[0].onClick.RemoveAllListeners();
         mtButtons[1].onClick.RemoveAllListeners();
 
+        // Side event clear event idk
+        currentSideEventSelected = null;
+
         // Check if the building is not placed in the map yet
         if (isNotPlaced)
             for (int i = 0; i < mtButtons.Length; i++)
@@ -342,7 +347,7 @@ public class GameUI : MonoBehaviour
             mtButtons[2].interactable = true;
 
             // Set craft UI canvas to true
-            craftUICanvas.gameObject.SetActive(true);
+            craftTaskUICanvas.gameObject.SetActive(true);
         }
         // Road mode
         else if (gridSystem.interactionMode == 1)
@@ -356,23 +361,101 @@ public class GameUI : MonoBehaviour
             mtButtons[2].interactable = false;
 
             // Set craft UI canvas to false
-            craftUICanvas.gameObject.SetActive(false);
+            craftTaskUICanvas.gameObject.SetActive(false);
         }
         else // "Teleport" mode
         {
             // Second button
             mtButtons[1].GetComponentInChildren<TextMeshProUGUI>().text = "Building";
             mtButtons[1].onClick.AddListener(() => gridSystem.SetInteractionMode(0));
+            mtButtons[1].onClick.AddListener(() => TaskUIUpdate(false)); // disable task UI if visible
+            mtButtons[1].onClick.AddListener(() => ShowInfo(false)); // disable task UI if visible
 
-            // First and third button
+            // First button
             mtButtons[0].interactable = false;
-            mtButtons[2].interactable = false;
+            mtButtons[2].interactable = true;
 
             // Set craft UI canvas to false
-            craftUICanvas.gameObject.SetActive(false);
+            craftTaskUICanvas.gameObject.SetActive(false);
         }
 
     }
+
+    // Check NPC is available to assign task
+    private void TaskUIUpdate(SideEvent sideEvent)
+    {
+        // Switch from craft UI to task UI
+        craftTaskUICanvas.gameObject.SetActive(true);
+        TaskUIUpdate(true);
+
+        // Clear out remaining task row
+        if (taskRowList.Count != 0)
+        {
+            foreach (RectTransform item in taskRowList)
+                Destroy(item.gameObject);
+            taskRowList.Clear();
+        }
+
+
+        for (int i = 0; i < sideEvent.resourcesGain.Length; i++)
+        {
+            // Get resource task from side event
+            ResourceTask resourceTask = sideEvent.resourcesGain[i];
+
+            foreach (NPCType npc in gameManager.CheckNPCCapabilities(resourceTask.taskType))
+            {
+                // Check if the NPC are idle
+                if (!gameManager.CheckNPCCurrentTask(npc))
+                {
+                    var rowInstance = Instantiate(taskCanvasRow, taskUIContent);
+
+                    // Set NPC type
+                    TextMeshProUGUI text = rowInstance.GetComponentInChildren<TextMeshProUGUI>();
+                    Button button = rowInstance.GetComponentInChildren<Button>();
+
+                    // Set text or something
+                    text.text = npc.ToString();
+                    button.GetComponentInChildren<TextMeshProUGUI>().text = EnumToReadableFormat(resourceTask.taskType);
+
+                    // Set button listener to edit resources from GameManager
+                    button.onClick.RemoveAllListeners();
+                    button.onClick.AddListener(() => gameManager.ChangeValueResource(resourceTask.resourceType, resourceTask.amount));
+                    button.onClick.AddListener(() => gameManager.AssignTask(npc,resourceTask.taskType));
+                    //button.onClick.AddListener(() => TaskUIUpdate(button, false));
+
+                    // Update action point
+                    button.onClick.AddListener(() => gameManager.NextAction());
+                    taskRowList.Add(rowInstance);
+                }
+            }
+        }
+
+        // Avoid next day because the player is choosing something
+        mtButtons[2].interactable = true;
+        buttonInfo.GetComponentInChildren<TextMeshProUGUI>().text = "Cancel Task";
+        buttonInfo.onClick.RemoveAllListeners();
+        buttonInfo.onClick.AddListener(() => ShowInfo(false));
+        buttonInfo.onClick.AddListener(() => craftTaskUICanvas.gameObject.SetActive(false));
+    }
+
+    // Change task ui to resources UI
+    private void TaskUIUpdate(bool change)
+    {
+        craftUIViewPort.gameObject.SetActive(!change);
+        taskUIViewPort.gameObject.SetActive(change);
+
+        if (change)
+            craftTaskTitleText.text = "Assign a Task";
+        else
+            craftTaskTitleText.text = "Create a building";
+    }
+
+    // For use of addlistner event only
+    //private void TaskUIUpdate(Button button, bool change)
+    //{
+    //    //Debug.Log("what");
+    //    button.interactable = change;
+    //}
 
     /// <summary>
     /// Instantiate stats building
@@ -420,18 +503,20 @@ public class GameUI : MonoBehaviour
         {
             // If the building is placed in a socket
             buttonInfo.GetComponentInChildren<TextMeshProUGUI>().text = "Build?";
-            buttonInfo.onClick.RemoveAllListeners();
-            buttonInfo.onClick.AddListener(building.TimeToBuild);
+
+            if (gameManager.actionPoint > 0)
+            {
+                buttonInfo.onClick.RemoveAllListeners();
+                buttonInfo.onClick.AddListener(building.TimeToBuild);
+            }
+            else
+                BlockUserAction("Not enough action point!");
         }
         else
         {
             // Check if the blacksmith is busy
             if (gameManager.CheckNPCCurrentTask(NPCType.Blacksmith))
-            {
-                buttonInfo.interactable = false;
-                warningBG.SetActive(true);
-                warning.text = "Blacksmith is busy!";
-            }
+                BlockUserAction("Blacksmith is busy!");
             // In the process of choosing building to spawn
             buttonInfo.GetComponentInChildren<TextMeshProUGUI>().text = "Confirm?";
             buttonInfo.onClick.RemoveAllListeners();
@@ -445,16 +530,56 @@ public class GameUI : MonoBehaviour
     /// <param name="sideEvent">Type of side event</param>
     public void ShowInfo(SideEvent sideEvent)
     {
-        // Set up everything
-        canvasInfoUI.SetActive(true);
-        titleInfo.text = EnumToReadableFormat(sideEvent.eventType);
-        descriptionInfo.text = sideEvent.description;
-        thumnailInfo.sprite = sideEvent.thumbnail;
+        // Check if the user is selecting the side event
+        if (currentSideEventSelected != sideEvent)
+        {
+            // Set up everything
+            canvasInfoUI.SetActive(true);
+            craftTaskUICanvas.gameObject.SetActive(false);
 
-        // Set up button
-        buttonInfo.GetComponentInChildren<TextMeshProUGUI>().text = "Assign Task";
-        buttonInfo.onClick.RemoveAllListeners();
-        buttonInfo.onClick.AddListener(TaskUIUpdate);
+            // Buiding can be side event too i guess
+            if (sideEvent.eventType == SideEventType.BuildingInfo)
+            {
+                Building building = sideEvent.buildingStats;
+
+                titleInfo.text = EnumToReadableFormat(building.buildingType);
+                descriptionInfo.text = building.buildingDescription;
+                if (building.duration > 0)
+                    descriptionInfo.text += " Remaining days to build: " + building.duration;
+                thumnailInfo.sprite = building.buildingThumbnail;
+            }
+            else
+            {
+                titleInfo.text = EnumToReadableFormat(sideEvent.eventType);
+                descriptionInfo.text = sideEvent.description;
+                thumnailInfo.sprite = sideEvent.thumbnail;
+            }
+            currentSideEventSelected = sideEvent;
+
+            // Set up button
+            if (sideEvent.resourcesGain.Length == 0)
+                buttonInfo.gameObject.SetActive(false);
+            else
+            {
+                buttonInfo.gameObject.SetActive(true);
+                buttonInfo.GetComponentInChildren<TextMeshProUGUI>().text = "Assign Task";
+
+                if (gameManager.actionPoint > 0)
+                {
+                    buttonInfo.onClick.RemoveAllListeners();
+                    buttonInfo.onClick.AddListener(() => TaskUIUpdate(sideEvent));
+                }
+                else
+                    BlockUserAction("Not enough action point!");
+            }
+        }
+    }
+
+    private void BlockUserAction(string text)
+    {
+        buttonInfo.interactable = false;
+        warningBG.SetActive(true);
+        warning.text = text;
     }
 
     /// <summary>
@@ -463,8 +588,10 @@ public class GameUI : MonoBehaviour
     /// <param name="isVisible">need bool thank</param>
     public void ShowInfo(bool isVisible)
     {
-        if (warningBG.activeSelf)
+        if (warningBG != null && warningBG.activeSelf)
             warningBG.SetActive(false);
+        buttonInfo.gameObject.SetActive(true);
+        buttonInfo.interactable = true;
         canvasInfoUI.SetActive(isVisible);
     }
 

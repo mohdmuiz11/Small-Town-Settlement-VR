@@ -9,6 +9,7 @@ public enum TaskType {
     Gather_Wood,
     Gather_Stone,
     Gather_Reeds,
+    Gather_Herbs,
     Gather_Meat,
     Gather_Fish,
     Cooking,

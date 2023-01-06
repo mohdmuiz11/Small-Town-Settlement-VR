@@ -2599,9 +2599,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _npcName: Ali
+  _npcType: 0
   currentLocation: 0
   currentTask: 0
-  capableTasks: 02000000
+  capableTasks: 0200000004000000
   taskDuration: 0
   wellbeing: 0.8
   isSick: 0

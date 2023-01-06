@@ -49,7 +49,7 @@ MonoBehaviour:
   _npcType: 5
   currentLocation: 0
   currentTask: 0
-  capableTasks: 08000000
+  capableTasks: 0900000005000000
   taskDuration: 0
   wellbeing: 0.8
   isSick: 0

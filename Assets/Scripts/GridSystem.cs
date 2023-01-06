@@ -167,7 +167,7 @@ public class GridSystem : MonoBehaviour
         // Nak letak Building
         if (mode == 0 && interactionMode != 0)
         {
-            ConstraintAllBuildings(false);
+            //ConstraintAllBuildings(false);
             slotManager.SwitchSlot("Socket");
             SetControllerInteractionLayer(selectDefaultLayer);
             //EnableGrabber(true);
@@ -183,7 +183,7 @@ public class GridSystem : MonoBehaviour
         // Nak letak road
         else if (mode == 1 && interactionMode != 1 && !hasTraveled)
         {
-            ConstraintAllBuildings(true);
+            //ConstraintAllBuildings(true);
             SetControllerInteractionLayer(selectRoadLayer);
             slotManager.SwitchSlot("Road");
             EnableHoverActivate(true);
@@ -193,7 +193,7 @@ public class GridSystem : MonoBehaviour
         // Nak teleport
         else if (mode == 2 && interactionMode != 2)
         {
-            ConstraintAllBuildings(true);
+            //ConstraintAllBuildings(true);
             slotManager.ToggleHoverMeshSocket(false);
             slotManager.SwitchSlot("Teleport");
             EnableGrabber(false);

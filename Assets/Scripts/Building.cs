@@ -22,11 +22,12 @@ public class Building : XRGrabInteractable
     //private TableUI tableUI;
     private GridSystem gridSystem;
     private GameUI gameUI;
-    private Vector3 originalPos;
+    private GameManager gameManager;
+    public Vector3 originalPos;
     private bool hasPlaced;
     private bool socketHovered;
     private bool preventUpdate;
-    private int duration;
+    public int duration { get; private set; }
 
     // public sort of vars
     public string buildingDescription { get { return _buildingDescription; } }
@@ -45,11 +46,11 @@ public class Building : XRGrabInteractable
         // Default state
         gridSystem = GameObject.Find("GRID System").GetComponent<GridSystem>();
         gameUI = GameObject.Find("Game UI").GetComponent<GameUI>();
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         //tableUI = GameObject.Find("Table UI").GetComponent<TableUI>();
 
         // initial vars
         transform.localScale = Vector3.one * gridSystem.WidthGrid;
-        originalPos = transform.position;
         Angle = 0;
     }
 
@@ -80,15 +81,19 @@ public class Building : XRGrabInteractable
     /// </summary>
     public void UpdateNextDay()
     {
-        if (isInConstruction && duration > 0)
+        if (duration != 0)
         {
             duration--;
-            gameUI.UpdateStats(this, duration);
-        }
-        else if (duration == 0)
-        {
-            gameUI.DestroyStats(this);
-            hasBuild = true;
+            if (isInConstruction && duration > 0)
+            {
+                gameUI.UpdateStats(this, duration);
+            }
+            else if (duration == 0)
+            {
+                gameUI.DestroyStats(this);
+                hasBuild = true;
+                gameManager.ClearNPCTask(NPCType.Blacksmith);
+            }
         }
     }
 
@@ -108,8 +113,8 @@ public class Building : XRGrabInteractable
         base.OnHoverExited(args);
         var interactorObj = args.interactorObject as XRBaseInteractor;
 
-        if (interactorObj.gameObject.CompareTag("Socket") && hasPlaced)
-            preventUpdate = true;
+        if (interactorObj.gameObject.CompareTag("Socket"))
+            socketHovered = false;
     }
 
     // To indicate if the building is placed
@@ -120,10 +125,12 @@ public class Building : XRGrabInteractable
 
         if (interactorObj.gameObject.CompareTag("Socket"))
         {
-            //Debug.Log("what");
-            preventUpdate = false;
             hasPlaced = true;
-            gameUI.ShowInfo(this);
+            socketHovered = false;
+
+            // Show info in the table UI
+            if (!isInConstruction && !hasBuild)
+                gameUI.ShowInfo(this);
         }
     }
     
@@ -133,10 +140,11 @@ public class Building : XRGrabInteractable
         base.OnSelectExited(args);
         var interactorObj = args.interactorObject as XRBaseInteractor;
 
-        if (interactorObj.gameObject.CompareTag("Socket") && gridSystem.interactionMode != 2)
+        if (interactorObj.gameObject.CompareTag("Socket"))
         {
             gameUI.ShowInfo(false);
             hasPlaced = false;
+            socketHovered = false;
         }
         else // if the player accidentally drop something
             StartCoroutine(ResetToOriginalPos());
@@ -147,7 +155,10 @@ public class Building : XRGrabInteractable
     {
         yield return new WaitForSeconds(1);
         if (!hasPlaced)
+        {
             transform.position = originalPos;
+            transform.rotation = Quaternion.Euler(Vector3.zero);
+        }
     }
 
     // Identify current direction of the building by bearings to snap into socket.
@@ -158,7 +169,7 @@ public class Building : XRGrabInteractable
         else if (angle >= 45 && angle < 135) Angle = 90;
         else if (angle >= 135 && angle < 225) Angle = 180;
         else Angle = 270;
-        //Debug.Log(Angle);
+        //Debug.Log(Angle + " " + hasPlaced);
     }
 
     // When travel mode is activated, the player should travel to this building
@@ -166,15 +177,15 @@ public class Building : XRGrabInteractable
     {
         base.OnActivated(args);
         //Debug.Log(gridSystem.interactionMode + " " + hasPlaced);
-        if (gridSystem.interactionMode == 2 && hasPlaced)
-            gridSystem.ResizeWorld(playerTravelPos);
+        //if (gridSystem.interactionMode == 2 && hasPlaced)
+        //    gridSystem.ResizeWorld(playerTravelPos);
     }
 
     public override void ProcessInteractable(XRInteractionUpdateOrder.UpdatePhase updatePhase)
     {
         base.ProcessInteractable(updatePhase);
 
-        if (socketHovered && !preventUpdate)
+        if (socketHovered && !hasPlaced) //what 
             CurrentBuildingDirection();
     }
 
@@ -182,9 +193,9 @@ public class Building : XRGrabInteractable
     // BUG: the socket will produce hover mesh, which causes visual glitch
     public override bool IsSelectableBy(IXRSelectInteractor interactor)
     {
-        if (gridSystem.interactionMode == 2)
-            return false;
-        else
+        //if (gridSystem.interactionMode == 2)
+        //    return false;
+        //else
             return base.IsSelectableBy(interactor);
     }
 }
