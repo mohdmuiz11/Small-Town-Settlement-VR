@@ -15,6 +15,7 @@ public class Road : XRBaseInteractable, IGridCoordinate
     // For debug purposes
     [SerializeField] private int actualX;
     [SerializeField] private int actualZ;
+    [SerializeField] private GameObject uiHide;
 
     // Other vars
     private SlotManager slotManager;
@@ -33,6 +34,11 @@ public class Road : XRBaseInteractable, IGridCoordinate
         // For debug purposes
         actualX = x;
         actualZ = z;
+    }
+
+    public GameObject GetObjectToHide()
+    {
+        return uiHide;
     }
 
     protected override void Awake()

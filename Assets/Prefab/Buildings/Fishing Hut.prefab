@@ -179,12 +179,16 @@ MonoBehaviour:
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
   _buildingType: 5
-  _buildingDescription: Required to build other advanced buildings beside town hall.
-    Can also be used to build better tools for other people to get resources faster.
+  _buildingDescription: 'A place to provides raw food in form of fish to the settlers.
+
+    Requires
+    10 woods, 10 reeds and 5 stones.
+
+    Takes 2 days to build.'
   _buildingThumbnail: {fileID: 21300000, guid: 0732dc6173a967b4ba738f785325a79c, type: 3}
   playerTravelPos: {fileID: 4626710414505378541}
-  _resourceRequired: 0000000001000000
-  _resourceAmount: 140000000a000000
+  _resourceRequired: 000000000100000002000000
+  _resourceAmount: 0a000000050000000a000000
   durationBuild: 2
   originalPos: {x: 0, y: 0, z: 0}
 --- !u!1 &6413475331396118443
@@ -507,19 +511,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 3945044118424468875}
   m_PrefabAsset: {fileID: 0}
---- !u!135 &7994206280863771668
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4215076131275145434}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 2.1089213
-  m_Center: {x: -0.13617511, y: -0.41625303, z: 2.1663237}
 --- !u!65 &540400338571018997
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -533,3 +524,16 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 4.134059, y: 4.82962, z: 1.011626}
   m_Center: {x: -0.13617511, y: -0.31077373, z: 0.4786465}
+--- !u!135 &7994206280863771668
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4215076131275145434}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 2.1089213
+  m_Center: {x: -0.13617511, y: -0.41625303, z: 2.1663237}

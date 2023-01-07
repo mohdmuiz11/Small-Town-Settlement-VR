@@ -179,8 +179,13 @@ MonoBehaviour:
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
   _buildingType: 2
-  _buildingDescription: Required to build other advanced buildings beside town hall.
+  _buildingDescription: 'Required to build other advanced buildings beside town hall.
     Can also be used to build better tools for other people to get resources faster.
+
+    Requires
+    20 woods and 10 stones
+
+    Takes 2 days to build.'
   _buildingThumbnail: {fileID: 21300000, guid: 6da2e9eb45bb6844aa916f526d39f1e2, type: 3}
   playerTravelPos: {fileID: 4626710414505378541}
   _resourceRequired: 0000000001000000

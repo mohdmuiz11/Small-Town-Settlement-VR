@@ -128,6 +128,7 @@ MonoBehaviour:
   actualX: 0
   actualZ: 0
   _buildingStats: {fileID: 1090034511}
+  uiHide: {fileID: 0}
   teleportable: 0
 --- !u!65 &2059322795178025630
 BoxCollider:
@@ -322,7 +323,12 @@ MonoBehaviour:
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
   _buildingType: 1
-  _buildingDescription: Oversees everything. No town hall, no planning.
+  _buildingDescription: 'A place to oversee and  plan the settlement.
+
+    Requires
+    15 woods and 10 reeds.
+
+    Takes 2 days to build'
   _buildingThumbnail: {fileID: 21300000, guid: dea24ba4cc8133c4099c70564354b6b4, type: 3}
   playerTravelPos: {fileID: 4626710414505378541}
   _resourceRequired: 0000000002000000

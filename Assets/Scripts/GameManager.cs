@@ -142,6 +142,19 @@ public class GameManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Run this method to start the game
+    /// </summary>
+    public IEnumerator StartGame(Transform targetPos)
+    {
+        // cut delay by half before the player actually notice the change in BTS
+        yield return new WaitForSeconds(transitions[0].delay / 2);
+
+        // Teleport player to a desired location
+        gridSystem.SetInteractionMode(2);
+        gridSystem.ResizeWorld(targetPos);
+    }
+
+    /// <summary>
     /// Check current resources by resource type
     /// </summary>
     /// <param name="resourceType">Type of resources</param>
@@ -308,7 +321,10 @@ public class GameManager : MonoBehaviour
     {
         if (!pendingResources.TryAdd(resourceType, amount))
             pendingResources[resourceType] += amount;
-
+        foreach (var item in pendingResources)
+        {
+            Debug.Log(item.Key + ": " + item.Value);
+        }
     }
 
     /// <summary>

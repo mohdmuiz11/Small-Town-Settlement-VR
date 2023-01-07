@@ -10,6 +10,8 @@ TagManager:
   - SideEvent
   - NPC
   - Tree
+  - WoodScraps
+  - NPCPos
   layers:
   - Default
   - TransparentFX

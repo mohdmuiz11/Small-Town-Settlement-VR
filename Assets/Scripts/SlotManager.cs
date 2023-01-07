@@ -14,13 +14,13 @@ public class SlotManager : MonoBehaviour
     [SerializeField] private GameObject socketBuildingPrefab;
     [SerializeField] private GameObject roadPrefab;
 
-    [Header("Event settings")]
+    [Header("Forest settings")]
     [SerializeField] private GameObject forestPrefab;
-    [SerializeField] private GameObject fishingPrefab;
-    [SerializeField] private GameObject obstaclePrefab;
     [SerializeField] private int startingRowToPopulate;
     [SerializeField] private Vector2[] forestRangePopulate;
-    [SerializeField] private Vector2[] obstacleList;
+
+    [Header("Special events")]
+    [SerializeField] private LocationSideEvent[] specialEvents;
 
     [Header("Available Buildings")]
     public Building[] buildingList;
@@ -28,7 +28,7 @@ public class SlotManager : MonoBehaviour
 
     // Initiate lists of slots and interactables
     private List<GameObject> slots = new(); // literally everything
-    public GameObject[] events;
+    private GameObject[] events;
     private GameObject[] socketBuildings;
     private GameObject[] roads;
     //private GameObject[] sideEvents;
@@ -58,6 +58,7 @@ public class SlotManager : MonoBehaviour
         WidthGrid = (table.size.z) / (gridCount + 1);
         InitiateSlotList();
         currentSlot = socketBuildingPrefab.tag;
+        //Instantiate(specialEvents[0].sideEvent);
     }
 
     // get first world position of the grid
@@ -82,6 +83,7 @@ public class SlotManager : MonoBehaviour
             for (int x = 0; x < gridCount; x++)
             {
                 bool isEvent = false;
+                bool isObstacle = false; //use for things that absolute cannot be interacted
 
                 // hard coded to place forest, this is the most efficient
                 if (i >= startingRowToPopulate)
@@ -100,11 +102,31 @@ public class SlotManager : MonoBehaviour
                     }
                 }
 
-                // Spawn socket by default
-                SpawnSlot(socketBuildingPrefab, pos, i, x, z, !isEvent);
+                //selective special events idk
+                for (int e = 0; e < specialEvents.Length; e++)
+                {
+                    if (specialEvents[e].location.x == x && specialEvents[e].location.y == z)
+                    {
+                        if (specialEvents[e].sideEvent == null)
+                            isObstacle = true;
+                        else
+                        {
+                            isEvent = true;
+                            SpawnSlot(specialEvents[e].sideEvent.gameObject, pos, i, x, z, isEvent);
+                        }
+                        break;
+                    }
+                }
+                
+                // As long as it is not obstacle
+                if (!isObstacle)
+                {
+                    // Spawn socket by default
+                    SpawnSlot(socketBuildingPrefab, pos, i, x, z, !isEvent);
 
-                // Spawn road but inactive
-                SpawnSlot(roadPrefab, pos, i, x, z, false);
+                    // Spawn road but inactive
+                    SpawnSlot(roadPrefab, pos, i, x, z, false);
+                }
 
                 i++;
                 pos.x += WidthGrid;
@@ -130,7 +152,7 @@ public class SlotManager : MonoBehaviour
         else if (objPrefab.tag == "Road")
             roads[index] = slotSpawn;
         else if (objPrefab.tag == "SideEvent")
-            events[index] = objPrefab;
+            events[index] = slotSpawn;
     }
 
     /// <summary>
@@ -154,6 +176,10 @@ public class SlotManager : MonoBehaviour
                 {
                     socketBuildings[i].SetActive(false);
                     roads[i].SetActive(!isEvent);
+
+                    //var objectToHide = roads[i].GetComponent<IGridCoordinate>().GetObjectToHide();
+                    //if (objectToHide != null)
+                    //    objectToHide.SetActive(false);
                 }
             }
             currentSlot = roadPrefab.tag;
@@ -174,6 +200,10 @@ public class SlotManager : MonoBehaviour
                 {
                     roads[i].SetActive(false);
                     socketBuildings[i].SetActive(!isEvent);
+
+                    //var objectToHide = socketBuildings[i].GetComponent<IGridCoordinate>().GetObjectToHide();
+                    //if (objectToHide != null)
+                    //    objectToHide.SetActive(false);
                 }
             }
             currentSlot = socketBuildingPrefab.tag;
@@ -188,6 +218,10 @@ public class SlotManager : MonoBehaviour
 
                 if (!occupied)
                     slot.SetActive(false);
+
+                //var objectToHide = slot.GetComponent<IGridCoordinate>().GetObjectToHide();
+                //if (objectToHide != null)
+                //    objectToHide.SetActive(false);
             }
 
             currentSlot = "Teleport";
@@ -202,7 +236,8 @@ public class SlotManager : MonoBehaviour
     {
         for (int i = 0; i < socketBuildings.Length; i++)
         {
-            socketBuildings[i].GetComponent<SocketBuilding>().showInteractableHoverMeshes = isHoverable;
+            if (socketBuildings[i] != null)
+                socketBuildings[i].GetComponent<SocketBuilding>().showInteractableHoverMeshes = isHoverable;
         }
     }
 

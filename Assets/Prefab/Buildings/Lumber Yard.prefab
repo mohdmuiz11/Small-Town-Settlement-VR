@@ -179,7 +179,12 @@ MonoBehaviour:
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
   _buildingType: 3
-  _buildingDescription: A place to collect woods.
+  _buildingDescription: 'A place to collect woods.
+
+    Requires 25 woods and 15
+    stones.
+
+    Take 2 days to build'
   _buildingThumbnail: {fileID: 21300000, guid: 8d6fa9fe112081142ae53a8780a7a5ef, type: 3}
   playerTravelPos: {fileID: 4626710414505378541}
   _resourceRequired: 0000000001000000

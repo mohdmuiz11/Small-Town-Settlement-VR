@@ -40,6 +40,7 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
     [SerializeField] private int actualX;
     [SerializeField] private int actualZ;
     [SerializeField] private Building _buildingStats;
+    [SerializeField] private GameObject uiHide;
 
     // Private vars
     private GridSystem gridSystem;
@@ -72,6 +73,11 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
         actualZ = z;
     }
 
+    public GameObject GetObjectToHide()
+    {
+        return uiHide;
+    }
+
     protected override void Awake()
     {
         base.Awake();
@@ -86,8 +92,15 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
     {
         // scale to fit inside a slot
         transform.localScale = Vector3.one * gridSystem.WidthGrid;
-        if (_eventType == SideEventType.Forest)
-            GenerateRandomObjects();
+        if (prefabs.Length != 0)
+        {
+            if (_eventType == SideEventType.Start)
+                GenerateRandomObjects(true);
+            else
+                GenerateRandomObjects(false);
+        }
+        if (_eventType == SideEventType.Start)
+            StartCoroutine(GameObject.Find("GameManager").GetComponent<GameManager>().StartGame(playerTravelPos));
         HasPlaced = true;
     }
 
@@ -137,7 +150,7 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
     }
 
     // Everything in randomized
-    private void GenerateRandomObjects()
+    private void GenerateRandomObjects(bool rotate = false)
     {
         // Random spawn and place to store pos
         treeAmount = Random.Range(minSpawn, maxSpawn);
@@ -188,7 +201,10 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
 
             // Apply rotation, position, and size
             prefab.transform.localPosition = new Vector3(posList[i+1].x, 0, posList[i+1].y);
-            prefab.transform.eulerAngles = new Vector3(0, rot, 0);
+            if (rotate)
+                prefab.transform.eulerAngles = new Vector3(rot, rot, rot);
+            else
+                prefab.transform.eulerAngles = new Vector3(0, rot, 0);
             prefab.transform.localScale = Vector3.one * (sizePrefab / 10) * sizeFactor;
         }
     }
@@ -201,4 +217,11 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
 
         return new Vector2(posX, posZ);
     }
+}
+
+[System.Serializable]
+public class LocationSideEvent
+{
+    public SideEvent sideEvent;
+    public Vector2 location;
 }

@@ -9,6 +9,8 @@ public class GridSystem : MonoBehaviour
     // Variables for game inspector
     [Header("World settings")]
     [SerializeField] private float worldSize = 100;
+    [SerializeField] private GameObject fixedObjectGroup;
+    [SerializeField] private GameObject hideWater;
 
     [Header("Interaction Layers")]
     [SerializeField] private InteractionLayerMask selectRoadLayer = 0; // for roads
@@ -223,6 +225,8 @@ public class GridSystem : MonoBehaviour
         gameObject.transform.position = Vector3.zero;
         gameObject.transform.localScale = new Vector3(worldSize, worldSize, worldSize);
         buildModeObject.SetActive(false);
+        hideWater.gameObject.SetActive(false);
+        fixedObjectGroup.SetActive(true);
         SetControllerInteractionLayer(selectTpLayer);
         playerTransform.position = playerTravelPos.position;
         hasTraveled = true;
@@ -237,6 +241,8 @@ public class GridSystem : MonoBehaviour
         playerTransform.rotation = playerOriginRot;
         gameObject.transform.position = new Vector3(0, tableHeight, 0);
         gameObject.transform.localScale = Vector3.one;
+        fixedObjectGroup.SetActive(false);
+        hideWater.gameObject.SetActive(true);
         buildModeObject.SetActive(true);
         hasTraveled = false;
     }

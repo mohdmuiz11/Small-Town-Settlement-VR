@@ -74,7 +74,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.22745098}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -308,6 +308,7 @@ MonoBehaviour:
   anchor: {fileID: 6804633762695451142}
   actualX: 0
   actualZ: 0
+  uiHide: {fileID: 7408838282866163434}
 --- !u!1 &8765930876193279429
 GameObject:
   m_ObjectHideFlags: 0

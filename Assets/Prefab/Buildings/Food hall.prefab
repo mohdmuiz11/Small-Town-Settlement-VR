@@ -179,13 +179,17 @@ MonoBehaviour:
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
   _buildingType: 6
-  _buildingDescription: Required to build other advanced buildings beside town hall.
-    Can also be used to build better tools for other people to get resources faster.
+  _buildingDescription: 'A building that cooks raw food to to become cooked food.
+
+    Requires
+    30 woods, 15 reeds and 10 stones.
+
+    Takes 4 days to build'
   _buildingThumbnail: {fileID: 21300000, guid: 852cbdcbbdb02d640bf2d6b373eb3366, type: 3}
   playerTravelPos: {fileID: 4626710414505378541}
-  _resourceRequired: 0000000001000000
-  _resourceAmount: 140000000a000000
-  durationBuild: 2
+  _resourceRequired: 000000000100000002000000
+  _resourceAmount: 1e0000000a0000000f000000
+  durationBuild: 4
   originalPos: {x: 0, y: 0, z: 0}
 --- !u!1 &6413475331396118443
 GameObject:
@@ -501,19 +505,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 6709816879989113213}
   m_PrefabAsset: {fileID: 0}
---- !u!135 &7110371912344624019
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5899547523129211948}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 3.4537706
-  m_Center: {x: 0.04296795, y: 3.5367384, z: -0.087640196}
 --- !u!65 &2930820035118714747
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -527,6 +518,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 6.1255813, y: 1.2299926, z: 9.509778}
   m_Center: {x: -0.01642534, y: 0.65712655, z: 0.016423896}
+--- !u!135 &7110371912344624019
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5899547523129211948}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 3.4537706
+  m_Center: {x: 0.04296795, y: 3.5367384, z: -0.087640196}
 --- !u!4 &6527043638614468246 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: d61c6659d8acd3e42bf9de695459f748,

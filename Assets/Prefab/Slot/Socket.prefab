@@ -318,3 +318,4 @@ MonoBehaviour:
   m_RecycleDelayTime: 0.2
   actualX: 0
   actualZ: 0
+  uiHide: {fileID: 4819158871507539013}

@@ -149,6 +149,8 @@ MonoBehaviour:
   playerTravelPos: {fileID: 4626710414505378541}
   actualX: 0
   actualZ: 0
+  _buildingStats: {fileID: 0}
+  teleportable: 0
 --- !u!65 &5355607100171946693
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -225,7 +227,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -2505642851634945670, guid: 06042f3599160c845a9c1b433a67f9d9, type: 3}
+  - {fileID: 2100000, guid: bd26760b47db07b42bd85aebd8eed42f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
