@@ -185,6 +185,7 @@ MonoBehaviour:
   _resourceRequired: 0000000001000000
   _resourceAmount: 190000000f000000
   durationBuild: 2
+  originalPos: {x: 0, y: 0, z: 0}
 --- !u!1 &6413475331396118443
 GameObject:
   m_ObjectHideFlags: 0
@@ -516,8 +517,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 4.3705025, y: 0.8070488, z: 1}
-  m_Center: {x: 0, y: -0.36660877, z: 0}
+  m_Size: {x: 5.7082834, y: 1.0563703, z: 5.046671}
+  m_Center: {x: 0.66888875, y: -0.49126956, z: 0.6675881}
 --- !u!135 &4560304981368180042
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -529,5 +530,5 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 2.1883292
-  m_Center: {x: 0, y: 1.3796058, z: 0}
+  m_Radius: 2.2506597
+  m_Center: {x: 0, y: 1.3172755, z: 0}
