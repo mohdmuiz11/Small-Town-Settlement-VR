@@ -3,7 +3,9 @@ guid: a7210db3bc852194887e1094712c3ac7
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - transitionCanvas: {fileID: 732153610608677276, guid: 63a94adefdf467f4b97d1e776b370d98,
+      type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

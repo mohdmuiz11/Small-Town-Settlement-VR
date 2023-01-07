@@ -17,11 +17,11 @@ public class GameManager : MonoBehaviour
     [Header("Starting resources")]
     [SerializeField] private int cookedFood = 15;
     [SerializeField] private int wood = 25; // depending on player wanted to collect
-    [SerializeField] private NPC[] listNPCs;  
+    [SerializeField] private NPC[] listNPCs;
 
     [Header("Misc")]
+    [SerializeField] private TransitionProperties[] transitions;
     [SerializeField] private GameObject[] interiorDesign;
-    [SerializeField] private Image transitionImage;
     [SerializeField] private GameUI gameUI;
     [SerializeField] private Transform locationBuilding;
     [SerializeField] private bool isTalkingToNPC; //useful toggle to focus on NPC dialogues later
@@ -65,9 +65,8 @@ public class GameManager : MonoBehaviour
         //Debug.Log(CheckResources(ResourceType.Wood) + " " + ResourceType.Wood.ToString());
         actionPoint = maxActionPoint;
 
-        transition = new Transition(this);
-
-        transition.StartTransition(FadeType.FadeOut, transitionImage, 1, 3);
+        transition = GetComponent<Transition>();
+        transition.StartTransition(transitions[0]);
     }
 
     

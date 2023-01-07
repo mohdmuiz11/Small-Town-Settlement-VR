@@ -1,15 +1,28 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class Transition
-{
-    private MonoBehaviour monoBehaviour;
 
-    public Transition(MonoBehaviour monoBehaviour)
-    {
-        this.monoBehaviour = monoBehaviour;
-    }
+/// <summary>
+/// Edit properties of Transition class
+/// </summary>
+[System.Serializable]
+public class TransitionProperties
+{
+    public FadeType fadeType;
+    public float fadeDuration;
+    public float delay;
+    public int nextScene;
+}
+
+/// <summary>
+/// Class to manage transition
+/// </summary>
+public class Transition : MonoBehaviour
+{
+    [SerializeField] private GameObject transitionCanvas;
+    private GameObject instance;
 
     /// <summary>
     /// Start the transition
@@ -18,42 +31,46 @@ public class Transition
     /// <param name="color"></param>
     /// <param name="fadeDuration"></param>
     /// <param name="delay"></param>
-    public void StartTransition(FadeType fadeType, Image image, float fadeDuration, float delay)
+    public void StartTransition(TransitionProperties prop)
     {
-        Debug.Log("Bruh");
-        if (fadeType == FadeType.FadeIn)
-            monoBehaviour.StartCoroutine(FadeInTransition(image, fadeDuration, delay));
-        else if (fadeType == FadeType.FadeOut)
-            monoBehaviour.StartCoroutine(FadeOutTransition(image, fadeDuration, delay));
+        var camera = GameObject.Find("Main Camera").GetComponent<Camera>();
+        instance = Instantiate(transitionCanvas, camera.transform);
+        instance.transform.SetParent(camera.transform);
+        instance.GetComponent<Canvas>().worldCamera = camera;
+        Image image = instance.GetComponentInChildren<Image>();
+
+        if (prop.fadeType == FadeType.FadeOutIn)
+            StartCoroutine(FadeBothTransition(image, prop.fadeDuration, prop.delay));
         else
-            monoBehaviour.StartCoroutine(FadeOutInTransition(image, fadeDuration, delay));
+            StartCoroutine(FadeIndividualTransition(prop.fadeType, image, prop.fadeDuration, prop.delay, prop.nextScene));
     }
 
-    IEnumerator FadeOutTransition(Image image, float fadeDuration, float delay)
+    IEnumerator FadeIndividualTransition(FadeType fadeType, Image image, float fadeDuration, float delay, int scene)
     {
-        yield return new WaitForSeconds(delay);
+        if (fadeType == FadeType.FadeOut)
+            yield return new WaitForSeconds(delay);
         float elapsedTime = 0;
         while (elapsedTime < fadeDuration)
         {
             elapsedTime += Time.deltaTime;
-            float alpha = 1 - (elapsedTime / fadeDuration);
+            float alpha;
+            if (fadeType == FadeType.FadeIn)
+                alpha = elapsedTime / fadeDuration;
+            else
+                alpha = 1 - (elapsedTime / fadeDuration);
             image.color = new Color(0, 0, 0, alpha);
             yield return null;
         }
-    }
-    IEnumerator FadeInTransition(Image image, float fadeDuration, float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        float elapsedTime = 0;
-        while (elapsedTime < fadeDuration)
+        if (fadeType == FadeType.FadeIn)
         {
-            elapsedTime += Time.deltaTime;
-            float alpha = elapsedTime / fadeDuration;
-            image.color = new Color(0, 0, 0, alpha);
-            yield return null;
+            yield return new WaitForSeconds(delay);
+            SceneManager.LoadScene(scene);
         }
+        else
+            Destroy(instance);
     }
-    IEnumerator FadeOutInTransition(Image image, float fadeDuration, float delay)
+
+    IEnumerator FadeBothTransition(Image image, float fadeDuration, float delay)
     {
         float elapsedTime = 0;
         while (elapsedTime < fadeDuration)
@@ -73,6 +90,7 @@ public class Transition
             image.color = new Color(0, 0, 0, alpha);
             yield return null;
         }
+        Destroy(instance);
     }
 }
 
