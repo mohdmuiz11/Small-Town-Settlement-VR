@@ -3170,15 +3170,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lensFlare: {fileID: 38268588}
   transitions:
-  - fadeType: 1
+  - fadeType: 2
     fadeDuration: 1
     delay: 0.5
     nextScene: 0
-  - fadeType: 0
+  - fadeType: 1
     fadeDuration: 1
     delay: 0.5
     nextScene: 1
-  - fadeType: 0
+  - fadeType: 1
     fadeDuration: 1
     delay: 0.5
     nextScene: 2

@@ -15,7 +15,7 @@ public class GridSystem : MonoBehaviour
     [Header("Interaction Layers")]
     [SerializeField] private InteractionLayerMask selectRoadLayer = 0; // for roads
     [SerializeField] private InteractionLayerMask selectTpLayer = 0; // teleportation in building
-    private InteractionLayerMask selectDefaultLayer = 0; // default int layer for both controller
+    public InteractionLayerMask selectDefaultLayer { get; private set; } // default int layer for both controller
 
     [Header("Controller settings")]
     [SerializeField] private float defaultLineWidth = 0.02f;
@@ -96,10 +96,10 @@ public class GridSystem : MonoBehaviour
     }
 
     // Set interaction layer for both controllers, easy peasy
-    private void SetControllerInteractionLayer(InteractionLayerMask layerMask)
+    public void SetControllerInteractionLayer(InteractionLayerMask layerMask)
     {
         // Dirty fix: left controller has no purpose other than teleportation
-        if (layerMask == selectTpLayer)
+        if (layerMask == selectTpLayer || layerMask.value == 0)
             leftControllerInteractor.interactionLayers = layerMask;
         else
             leftControllerInteractor.interactionLayers = selectDefaultLayer;
@@ -229,6 +229,7 @@ public class GridSystem : MonoBehaviour
         fixedObjectGroup.SetActive(true);
         SetControllerInteractionLayer(selectTpLayer);
         playerTransform.position = playerTravelPos.position;
+        playerTransform.rotation = playerTravelPos.rotation;
         hasTraveled = true;
     }
 

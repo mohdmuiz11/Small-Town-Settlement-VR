@@ -28,7 +28,7 @@ public class SlotManager : MonoBehaviour
 
     // Initiate lists of slots and interactables
     private List<GameObject> slots = new(); // literally everything
-    private GameObject[] events;
+    public GameObject[] events { get; private set; }
     private GameObject[] socketBuildings;
     private GameObject[] roads;
     //private GameObject[] sideEvents;
@@ -166,20 +166,19 @@ public class SlotManager : MonoBehaviour
         {
             for (int i = 0; i < socketBuildings.Length; i++)
             {
-                // check for side event
-                bool isEvent = false;
-                if (events[i] != null)
-                    isEvent = true;
-
-                bool occupied = socketBuildings[i].GetComponent<IGridCoordinate>().HasPlaced;
-                if (!occupied)
+                if (socketBuildings[i] != null)
                 {
-                    socketBuildings[i].SetActive(false);
-                    roads[i].SetActive(!isEvent);
+                    // check for side event
+                    bool isEvent = false;
+                    if (events[i] != null)
+                        isEvent = true;
 
-                    //var objectToHide = roads[i].GetComponent<IGridCoordinate>().GetObjectToHide();
-                    //if (objectToHide != null)
-                    //    objectToHide.SetActive(false);
+                    bool occupied = socketBuildings[i].GetComponent<IGridCoordinate>().HasPlaced;
+                    if (!occupied)
+                    {
+                        socketBuildings[i].SetActive(false);
+                        roads[i].SetActive(!isEvent);
+                    }
                 }
             }
             currentSlot = roadPrefab.tag;
@@ -190,20 +189,19 @@ public class SlotManager : MonoBehaviour
         {
             for (int i = 0; i < roads.Length; i++)
             {
-                // check for side event
-                bool isEvent = false;
-                if (events[i] != null)
-                    isEvent = true;
-
-                bool occupied = roads[i].GetComponent<IGridCoordinate>().HasPlaced;
-                if (!occupied)
+                if (roads[i] != null)
                 {
-                    roads[i].SetActive(false);
-                    socketBuildings[i].SetActive(!isEvent);
+                    // check for side event
+                    bool isEvent = false;
+                    if (events[i] != null)
+                        isEvent = true;
 
-                    //var objectToHide = socketBuildings[i].GetComponent<IGridCoordinate>().GetObjectToHide();
-                    //if (objectToHide != null)
-                    //    objectToHide.SetActive(false);
+                    bool occupied = roads[i].GetComponent<IGridCoordinate>().HasPlaced;
+                    if (!occupied)
+                    {
+                        roads[i].SetActive(false);
+                        socketBuildings[i].SetActive(!isEvent);
+                    }
                 }
             }
             currentSlot = socketBuildingPrefab.tag;
@@ -218,10 +216,6 @@ public class SlotManager : MonoBehaviour
 
                 if (!occupied)
                     slot.SetActive(false);
-
-                //var objectToHide = slot.GetComponent<IGridCoordinate>().GetObjectToHide();
-                //if (objectToHide != null)
-                //    objectToHide.SetActive(false);
             }
 
             currentSlot = "Teleport";
@@ -306,10 +300,13 @@ public class SlotManager : MonoBehaviour
     {
         for (int i = 0; i < roads.Length; i++)
         {
-            Road road = roads[i].GetComponent<Road>();
+            if (roads[i] != null)
+            {
+                Road road = roads[i].GetComponent<Road>();
 
-            if (road.HasPlaced)
-                road.RoadUpdate();
+                if (road.HasPlaced)
+                    road.RoadUpdate();
+            }
         }
     }
 

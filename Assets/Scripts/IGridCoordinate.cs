@@ -18,5 +18,4 @@ public interface IGridCoordinate
     /// <param name="x">The horizontal coordinate</param>
     /// <param name="z">The vertical coordinate</param>
     void SetCoordinate(int x, int z);
-    GameObject GetObjectToHide();
 }

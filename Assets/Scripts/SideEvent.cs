@@ -40,13 +40,14 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
     [SerializeField] private int actualX;
     [SerializeField] private int actualZ;
     [SerializeField] private Building _buildingStats;
-    [SerializeField] private GameObject uiHide;
+    [SerializeField] private GameObject campSite;
 
     // Private vars
     private GridSystem gridSystem;
     private BoxCollider boxCollider;
     private GameUI gameUI;
     private bool buildingIsPlaced;
+    private List<GameObject> listSpawned = new();
 
     public bool teleportable;
 
@@ -56,7 +57,7 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
     public bool HasPlaced { get; private set; }
 
     // half public vars
-    public int treeAmount { get; private set; }
+    public int objAmount { get; private set; }
     public SideEventType eventType { get { return _eventType; } }
     public ResourceTask[] resourcesGain { get { return _resourcesGain; } }
     public string description { get { return _description; } }
@@ -73,9 +74,9 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
         actualZ = z;
     }
 
-    public GameObject GetObjectToHide()
+    public void BuildCampsite()
     {
-        return uiHide;
+        campSite.SetActive(true);
     }
 
     protected override void Awake()
@@ -153,14 +154,14 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
     private void GenerateRandomObjects(bool rotate = false)
     {
         // Random spawn and place to store pos
-        treeAmount = Random.Range(minSpawn, maxSpawn);
+        objAmount = Random.Range(minSpawn, maxSpawn);
         
-        float setDistance = 1f / (treeAmount + 1f) * (1f - marginSlot);
+        float setDistance = 1f / (objAmount + 1f) * (1f - marginSlot);
         //Debug.Log(setDistance + " " + spawnSize);
         List<Vector2> posList = new List<Vector2>();
         posList.Add(Vector2.zero);
 
-        for (int i = 0; i < treeAmount; i++)
+        for (int i = 0; i < objAmount; i++)
         {
             // Spawn object first
             int ri = Random.Range(0, prefabs.Length);
@@ -206,6 +207,8 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
             else
                 prefab.transform.eulerAngles = new Vector3(0, rot, 0);
             prefab.transform.localScale = Vector3.one * (sizePrefab / 10) * sizeFactor;
+
+            listSpawned.Add(prefab);
         }
     }
 
@@ -216,6 +219,15 @@ public class SideEvent : XRBaseInteractable, IGridCoordinate
         float posZ = Random.Range(-0.5f + marginSlot, 0.5f - marginSlot);
 
         return new Vector2(posX, posZ);
+    }
+
+    public void DeleteAllObjects()
+    {
+        foreach (var item in listSpawned)
+        {
+            Destroy(item);
+        }
+        listSpawned.Clear();
     }
 }
 

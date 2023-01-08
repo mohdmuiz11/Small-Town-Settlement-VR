@@ -38,12 +38,14 @@ public class GameManager : MonoBehaviour
     private SlotManager slotManager;
     private GridSystem gridSystem;
     private Transition transition;
+    private DialogueManager dialogueManager;
 
     void Awake()
     {
         // Object reference
         slotManager = GameObject.Find("GRID System").GetComponent<SlotManager>();
         gridSystem = slotManager.GetComponent<GridSystem>();
+        dialogueManager = GameObject.Find("DialogueManager").GetComponent<DialogueManager>();
 
         // Add resources
         _currentResources.Add(ResourceType.Wood, 25);
@@ -152,6 +154,42 @@ public class GameManager : MonoBehaviour
         // Teleport player to a desired location
         gridSystem.SetInteractionMode(2);
         gridSystem.ResizeWorld(targetPos);
+
+        // Run dialogue index 0
+        dialogueManager.RunDialogue(0);
+    }
+
+    /// <summary>
+    /// Build campsite in the start of the game
+    /// </summary>
+    public void BuildCampSite()
+    {
+        for (int i = 0; i < slotManager.events.Length; i++)
+        {
+            GameObject eventObj = slotManager.events[i];
+            if (eventObj != null)
+            {
+                SideEvent startEvent = eventObj.GetComponent<SideEvent>();
+                if (startEvent.eventType == SideEventType.Start)
+                {
+                    startEvent.BuildCampsite();
+                    dialogueManager.RunDialogue(2);
+                    break;
+                }
+            }
+        }
+    }
+
+    public void FirstTimeTable()
+    {
+        StartCoroutine(GoToTent());
+    }
+
+    IEnumerator GoToTent()
+    {
+        yield return new WaitForSeconds(transitions[0].delay / 2);
+        gridSystem.SetOriginalSize();
+        gridSystem.SetInteractionMode(0);
     }
 
     /// <summary>

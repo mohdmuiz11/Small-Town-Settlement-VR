@@ -8,9 +8,7 @@ public class SocketBuilding : XRSocketInteractor, IGridCoordinate
 {
     // For debug purposes
     [SerializeField] private int actualX;
-    [SerializeField] private int actualZ;
-    [SerializeField] private GameObject uiHide;
-    
+    [SerializeField] private int actualZ;    
 
     //Store coordinate of the grid
     public int PosX { get; private set; }
@@ -38,11 +36,6 @@ public class SocketBuilding : XRSocketInteractor, IGridCoordinate
         PosZ = z;
         actualX = x;
         actualZ = z;
-    }
-
-    public GameObject GetObjectToHide()
-    {
-        return uiHide;
     }
 
     // get angle information from building angles

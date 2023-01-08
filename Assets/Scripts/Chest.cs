@@ -7,7 +7,9 @@ using UnityEngine;
 /// </summary>
 public class Chest : MonoBehaviour
 {
+    [SerializeField] private SideEvent sideEvent;
     private GameManager gameManager;
+    private int count = 0;
 
     private void Start()
     {
@@ -18,8 +20,14 @@ public class Chest : MonoBehaviour
     {
         if (other.CompareTag("WoodScraps"))
         {
+            count++;
             gameManager.ChangeValueResource(ResourceType.Wood, 1);
             Destroy(other.gameObject);
+            if (count >= 5)
+            {
+                sideEvent.DeleteAllObjects();
+                GameObject.Find("DialogueManager").GetComponent<DialogueManager>().RunDialogue(1);
+            }
         }
     }
 }

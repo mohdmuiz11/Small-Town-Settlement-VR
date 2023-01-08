@@ -61,7 +61,7 @@ public class Transition : MonoBehaviour
             image.color = new Color(0, 0, 0, alpha);
             yield return null;
         }
-        if (fadeType == FadeType.FadeIn)
+        if (fadeType == FadeType.FadeIn && (SceneManager.GetActiveScene() != SceneManager.GetSceneByBuildIndex(scene)))
         {
             yield return new WaitForSeconds(delay);
             SceneManager.LoadScene(scene);
@@ -76,17 +76,18 @@ public class Transition : MonoBehaviour
         while (elapsedTime < fadeDuration)
         {
             elapsedTime += Time.deltaTime;
-            float alpha = 1 - (elapsedTime / fadeDuration);
+            float alpha = elapsedTime / fadeDuration;
             image.color = new Color(0, 0, 0, alpha);
             yield return null;
         }
+
         yield return new WaitForSeconds(delay);
 
         elapsedTime = 0;
         while (elapsedTime < fadeDuration)
         {
             elapsedTime += Time.deltaTime;
-            float alpha = elapsedTime / fadeDuration;
+            float alpha = 1 - (elapsedTime / fadeDuration);
             image.color = new Color(0, 0, 0, alpha);
             yield return null;
         }
@@ -96,6 +97,7 @@ public class Transition : MonoBehaviour
 
 public enum FadeType
 {
+    None,
     FadeIn,
     FadeOut,
     FadeOutIn
