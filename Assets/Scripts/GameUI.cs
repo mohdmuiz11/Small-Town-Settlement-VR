@@ -217,16 +217,9 @@ public class GameUI : MonoBehaviour
                 Building building = row.Value;
 
                 //Debug.Log(building.BuildingName());
-
-                bool eligible = gameManager.CheckBuild(building);
                 Button button = rowInstance.GetComponentInChildren<Button>();
-
-                button.interactable = eligible;
-                if (eligible)
-                {
-                    buttonInfo.onClick.RemoveAllListeners();
-                    button.onClick.AddListener(() => ShowInfo(building));
-                }
+                buttonInfo.onClick.RemoveAllListeners();
+                button.onClick.AddListener(() => ShowInfo(building));
             }
         }
     }
@@ -334,9 +327,14 @@ public class GameUI : MonoBehaviour
         else if (gridSystem.interactionMode == 0)
         {
             // First button
-            mtButtons[0].GetComponentInChildren<TextMeshProUGUI>().text = "Road";
-            mtButtons[0].onClick.AddListener(() => gridSystem.SetInteractionMode(1));
-            mtButtons[0].interactable = true;
+            if (gameManager.hasBuildTownHall)
+            {
+                mtButtons[0].GetComponentInChildren<TextMeshProUGUI>().text = "Road";
+                mtButtons[0].onClick.AddListener(() => gridSystem.SetInteractionMode(1));
+                mtButtons[0].interactable = true;
+            }
+            else
+                mtButtons[0].interactable = false;
 
             // Second button
             mtButtons[1].GetComponentInChildren<TextMeshProUGUI>().text = "Manage";
@@ -494,6 +492,7 @@ public class GameUI : MonoBehaviour
     /// <param name="building">idk</param>
     public void ShowInfo(Building building)
     {
+        ShowInfo(false);
         canvasInfoUI.SetActive(true);
         titleInfo.text = EnumToReadableFormat(building.buildingType);
         descriptionInfo.text = building.buildingDescription;
@@ -501,26 +500,48 @@ public class GameUI : MonoBehaviour
 
         if (building.GetHasPlaced())
         {
-            // If the building is placed in a socket
-            buttonInfo.GetComponentInChildren<TextMeshProUGUI>().text = "Build?";
 
-            if (gameManager.actionPoint > 0)
-            {
-                buttonInfo.onClick.RemoveAllListeners();
-                buttonInfo.onClick.AddListener(building.TimeToBuild);
-            }
-            else
-                BlockUserAction("Not enough action point!");
+
+            // In the process of choosing a position to build
+            buttonInfo.GetComponentInChildren<TextMeshProUGUI>().text = "Build?";
+            buttonInfo.onClick.RemoveAllListeners();
+            buttonInfo.onClick.AddListener(building.TimeToBuild);
         }
         else
         {
+            // In the processing of creating a building
+            buttonInfo.GetComponentInChildren<TextMeshProUGUI>().text = "Confirm?";
+
+            // thanks chandragupta
+            bool canBuild = true;
+
             // Check if the blacksmith is busy
             if (gameManager.CheckNPCCurrentTask(NPCType.Blacksmith))
+            {
                 BlockUserAction("Blacksmith is busy!");
-            // In the process of choosing building to spawn
-            buttonInfo.GetComponentInChildren<TextMeshProUGUI>().text = "Confirm?";
-            buttonInfo.onClick.RemoveAllListeners();
-            buttonInfo.onClick.AddListener(() => gameManager.SpawnBuilding(building));
+                canBuild = false;
+            }
+            else if (building.requiresBuilderHut && !gameManager.hasBuildBuilderHut)
+            {
+                BlockUserAction("Required builder's hut!");
+                canBuild = false;
+            }
+            else if (!gameManager.CheckBuild(building))
+            {
+                BlockUserAction("Not enough resources!");
+                canBuild = false;
+            }
+            else if (gameManager.actionPoint <= 0)
+            {
+                BlockUserAction("Not enough action point!");
+                canBuild = false;
+            }
+
+            if (canBuild)
+            {
+                buttonInfo.onClick.RemoveAllListeners();
+                buttonInfo.onClick.AddListener(() => gameManager.SpawnBuilding(building));
+            }
         }
     }
 
@@ -590,7 +611,8 @@ public class GameUI : MonoBehaviour
     {
         if (warningBG != null && warningBG.activeSelf)
             warningBG.SetActive(false);
-        buttonInfo.gameObject.SetActive(true);
+        if (buttonInfo != null)
+            buttonInfo.gameObject.SetActive(true);
         buttonInfo.interactable = true;
         canvasInfoUI.SetActive(isVisible);
     }

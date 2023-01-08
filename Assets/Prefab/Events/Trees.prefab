@@ -134,6 +134,9 @@ MonoBehaviour:
   - resourceType: 3
     taskType: 5
     amount: 5
+  - resourceType: 4
+    taskType: 6
+    amount: 10
   prefabs:
   - {fileID: 3419081502229303117, guid: 3af269e8d93353447b89ae9d8a6e937c, type: 3}
   - {fileID: 8705032805967574307, guid: 56193cf3e6ff30245b95f233f1b095ec, type: 3}
@@ -150,6 +153,7 @@ MonoBehaviour:
   actualX: 0
   actualZ: 0
   _buildingStats: {fileID: 0}
+  campSite: {fileID: 0}
   teleportable: 0
 --- !u!65 &5355607100171946693
 BoxCollider:

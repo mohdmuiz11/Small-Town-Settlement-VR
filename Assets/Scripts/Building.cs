@@ -12,6 +12,7 @@ public class Building : XRGrabInteractable
     [SerializeField] [TextArea(5, 20)] private string _buildingDescription;
     [SerializeField] private Sprite _buildingThumbnail;
     [SerializeField] private Transform playerTravelPos;
+    [SerializeField] private bool _requiresBuilderHut;
 
     [Header("Resource management")]
     [SerializeField] private ResourceType[] _resourceRequired;
@@ -38,6 +39,7 @@ public class Building : XRGrabInteractable
     public float Angle { get; private set; }
     public bool isInConstruction { get; private set; }
     public bool hasBuild { get; private set; }
+    public bool requiresBuilderHut { get { return _requiresBuilderHut; } }
 
     protected override void Awake()
     {
@@ -64,7 +66,7 @@ public class Building : XRGrabInteractable
         duration = durationBuild;
         gameUI.isNotPlaced = false;
         gameUI.ShowStats(this, duration);
-        gameUI.UpdateNextAction();
+        gameManager.NextAction();
     }
 
     /// <summary>
@@ -90,6 +92,10 @@ public class Building : XRGrabInteractable
             }
             else if (duration == 0)
             {
+                if (buildingType == BuildingType.Town_Hall)
+                    gameManager.hasBuildTownHall = true;
+                else if (buildingType == BuildingType.Workshop)
+                    gameManager.hasBuildBuilderHut = true;
                 gameUI.DestroyStats(this);
                 hasBuild = true;
                 gameManager.ClearNPCTask(NPCType.Blacksmith);

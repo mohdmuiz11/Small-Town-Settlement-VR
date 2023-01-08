@@ -187,6 +187,7 @@ MonoBehaviour:
     Takess 2 days to build'
   _buildingThumbnail: {fileID: 21300000, guid: 4e2e45ef5b130184aab650bde278bfd0, type: 3}
   playerTravelPos: {fileID: 4626710414505378541}
+  _requiresBuilderHut: 1
   _resourceRequired: 0000000002000000
   _resourceAmount: 140000000a000000
   durationBuild: 2

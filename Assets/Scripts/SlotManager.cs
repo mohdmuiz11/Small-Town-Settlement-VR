@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
 
 /// <summary>
 /// Manage slots in a grid system. Executed before anything else.
@@ -20,6 +21,8 @@ public class SlotManager : MonoBehaviour
     [SerializeField] private Vector2[] forestRangePopulate;
 
     [Header("Special events")]
+    [SerializeField] private Vector2[] limitedSlot;
+    [SerializeField] private Vector2[] fishingSlot;
     [SerializeField] private LocationSideEvent[] specialEvents;
 
     [Header("Available Buildings")]
@@ -36,6 +39,7 @@ public class SlotManager : MonoBehaviour
 
     // Other vars
     private string currentSlot; // by tag
+    private GameManager gameManager;
 
     /// <summary>
     /// Get width of a grid to have same scale as props.
@@ -48,6 +52,7 @@ public class SlotManager : MonoBehaviour
 
     private void Awake()
     {
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
         // Initiate arrays
         socketBuildings = new GameObject[gridCount * gridCount];
@@ -121,8 +126,31 @@ public class SlotManager : MonoBehaviour
                 // As long as it is not obstacle
                 if (!isObstacle)
                 {
+                    bool isLimited = gameManager.hasBuildTownHall;
                     // Spawn socket by default
-                    SpawnSlot(socketBuildingPrefab, pos, i, x, z, !isEvent);
+                    for (int p = 0; p < limitedSlot.Length; p++)
+                    {
+                        if (limitedSlot[p].x == x && limitedSlot[p].y == z)
+                        {
+                            isLimited = true;
+                            break;
+                        }
+                    }
+
+                    bool isFishing = false;
+                    for (int k = 0; k < fishingSlot.Length; k++)
+                    {
+                        if (fishingSlot[k].x == x && fishingSlot[k].y == z)
+                        {
+                            isFishing = true;
+                            break;
+                        }
+                    }
+
+                    if (isLimited)
+                        SpawnSlot(socketBuildingPrefab, pos, i, x, z, !isEvent, isFishing);
+                    else
+                        SpawnSlot(socketBuildingPrefab, pos, i, x, z, false, isFishing);
 
                     // Spawn road but inactive
                     SpawnSlot(roadPrefab, pos, i, x, z, false);
@@ -137,15 +165,21 @@ public class SlotManager : MonoBehaviour
     }
 
     // Spawn the slot and then set coordinate
-    private void SpawnSlot(GameObject objPrefab, Vector3 pos, int index, int x, int z, bool isVisible)
+    private void SpawnSlot(GameObject objPrefab, Vector3 pos, int index, int x, int z, bool isVisible, bool isFishing = false)
     {
         GameObject slotSpawn;
 
         slotSpawn = Instantiate(objPrefab, pos, objPrefab.transform.rotation, transform);
         slotSpawn.transform.localScale = new Vector3(WidthGrid, 0.1f, WidthGrid);
         slotSpawn.GetComponent<IGridCoordinate>().SetCoordinate(x, z);
+
+        if (isFishing)
+            slotSpawn.GetComponent<SocketBuilding>().interactionLayers = InteractionLayerMask.GetMask("Building", "Fishing", "Constructioned");
+
         slotSpawn.SetActive(isVisible);
-        slots.Add(slotSpawn);
+
+        if (objPrefab.tag == "Socket" || objPrefab.tag == "Road")
+            slots.Add(slotSpawn);
 
         if (objPrefab.tag == "Socket")
             socketBuildings[index] = slotSpawn;
@@ -159,10 +193,10 @@ public class SlotManager : MonoBehaviour
     /// Switch slot types. Available type = Road, Socket & Teleport.
     /// </summary>
     /// <param name="type">Type of slot in string. Case sensitive.</param>
-    public void SwitchSlot(string type, bool refresh = false)
+    public void SwitchSlot(string type)
     {
         // Switch from socket -> road
-        if (type == "Road" && currentSlot != roadPrefab.tag )
+        if (type == "Road")
         {
             for (int i = 0; i < socketBuildings.Length; i++)
             {
@@ -185,22 +219,41 @@ public class SlotManager : MonoBehaviour
         }
 
         // Switch from road -> socket
-        else if (type == "Socket" && (currentSlot != socketBuildingPrefab.tag || refresh))
+        else if (type == "Socket")
         {
             for (int i = 0; i < roads.Length; i++)
             {
+
                 if (roads[i] != null)
                 {
-                    // check for side event
-                    bool isEvent = false;
-                    if (events[i] != null)
-                        isEvent = true;
-
-                    bool occupied = roads[i].GetComponent<IGridCoordinate>().HasPlaced;
-                    if (!occupied)
+                    if (!gameManager.hasBuildTownHall)
                     {
-                        roads[i].SetActive(false);
-                        socketBuildings[i].SetActive(!isEvent);
+                        bool isLimited = false;
+                        for (int j = 0; j < limitedSlot.Length; j++)
+                        {
+                            IGridCoordinate someCoordinate = socketBuildings[i].GetComponent<IGridCoordinate>();
+                            if (someCoordinate.PosX == limitedSlot[j].x && someCoordinate.PosZ == limitedSlot[j].y)
+                            {
+                                isLimited = true;
+                                break;
+                            }
+                        }
+
+                        socketBuildings[i].SetActive(isLimited);
+                    }
+                    else
+                    {
+                        // check for side event
+                        bool isEvent = false;
+                        if (events[i] != null)
+                            isEvent = true;
+
+                        bool occupied = roads[i].GetComponent<IGridCoordinate>().HasPlaced;
+                        if (!occupied)
+                        {
+                            roads[i].SetActive(false);
+                            socketBuildings[i].SetActive(!isEvent);
+                        }
                     }
                 }
             }
@@ -208,7 +261,7 @@ public class SlotManager : MonoBehaviour
         }
 
         // Switch from socket/road -> teleport
-        else if (type == "Teleport" && currentSlot != "Teleport")
+        else if (type == "Teleport")
         {
             foreach (var slot in slots)
             {
@@ -322,6 +375,7 @@ public class SlotManager : MonoBehaviour
             Building building = buildings[i].GetComponent<Building>();
             building.UpdateNextDay();
         }
+        SwitchSlot(currentSlot);
     }
 
     /// <summary>

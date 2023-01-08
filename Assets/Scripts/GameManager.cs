@@ -14,9 +14,18 @@ public class GameManager : MonoBehaviour
     [SerializeField] [Range(0, 0.5f)] private float hungerIncreaseRate = 0.2f;
     [SerializeField] private Status[] _listStatus;
 
+    [Header("Effects settings")]
+    [SerializeField] private float wellbeingIncrease;
+    [SerializeField] private float moodIncrease;
+    [SerializeField] private int rawFoodToCook;
+    [SerializeField] private int herbToCook;
+
     [Header("Starting resources")]
     [SerializeField] private int cookedFood = 15;
     [SerializeField] private int wood = 25; // depending on player wanted to collect
+    [SerializeField] private bool skipTutorial; //skip tutorial
+    [HideInInspector] public bool hasBuildTownHall;
+    [HideInInspector] public bool hasBuildBuilderHut;
     [SerializeField] private NPC[] listNPCs;
 
     [Header("Misc")]
@@ -39,6 +48,7 @@ public class GameManager : MonoBehaviour
     private GridSystem gridSystem;
     private Transition transition;
     private DialogueManager dialogueManager;
+    private bool hasTalkedAboutTownHall;
 
     void Awake()
     {
@@ -48,11 +58,11 @@ public class GameManager : MonoBehaviour
         dialogueManager = GameObject.Find("DialogueManager").GetComponent<DialogueManager>();
 
         // Add resources
-        _currentResources.Add(ResourceType.Wood, 25);
-        _currentResources.Add(ResourceType.Stone, 15);
-        _currentResources.Add(ResourceType.Reed, 10);
-        _currentResources.Add(ResourceType.Herb, 0);
-        _currentResources.Add(ResourceType.Raw_Food, 0);
+        _currentResources.Add(ResourceType.Wood, 40);
+        _currentResources.Add(ResourceType.Stone, 40);
+        _currentResources.Add(ResourceType.Reed, 40);
+        _currentResources.Add(ResourceType.Herb, 40);
+        _currentResources.Add(ResourceType.Raw_Food, 40);
         _currentResources.Add(ResourceType.Cooked_Food, cookedFood);
         _currentResources.Add(ResourceType.Delicious_Food, 0);
         _currentResources.Add(ResourceType.Cloth, 5);
@@ -91,14 +101,38 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void NextDay()
     {
+        // Add the resources
+        foreach (KeyValuePair<ResourceType, int> resource in pendingResources)
+        {
+            _currentResources[resource.Key] += resource.Value;
+        }
+
+        // Clear out pending resources
+        pendingResources.Clear();
+
+        // Cook food first
+        int foodCanCook = CheckResources(ResourceType.Raw_Food);
+        int herbsCanCook = CheckResources(ResourceType.Herb);
+        if (foodCanCook >= rawFoodToCook && herbsCanCook >= herbToCook)
+        {
+            _currentResources[ResourceType.Cooked_Food] += rawFoodToCook + herbToCook - 1;
+            _currentResources[ResourceType.Raw_Food] -= rawFoodToCook;
+            _currentResources[ResourceType.Herb] -= herbToCook;
+        }
+
         // Consume food
         int consumedDeliciousFood = _listStatus[2].CheckFood(CheckResources(ResourceType.Delicious_Food), listNPCs.Length, hungerIncreaseRate*2);
         _currentResources[ResourceType.Delicious_Food] -= consumedDeliciousFood;
+        _listStatus[0].currentAmount += moodIncrease * consumedDeliciousFood * 2;
+        _listStatus[1].currentAmount += wellbeingIncrease * consumedDeliciousFood * 2;
 
         // if delicious food doesn't cover all NPCs
         if (consumedDeliciousFood < listNPCs.Length)
         {
-            _currentResources[ResourceType.Cooked_Food] -= _listStatus[2].CheckFood(CheckResources(ResourceType.Cooked_Food), listNPCs.Length - consumedDeliciousFood, hungerIncreaseRate);
+            int amount = _listStatus[2].CheckFood(CheckResources(ResourceType.Cooked_Food), listNPCs.Length - consumedDeliciousFood, hungerIncreaseRate);
+            _currentResources[ResourceType.Cooked_Food] -= amount;
+            _listStatus[0].currentAmount += moodIncrease * amount;
+            _listStatus[1].currentAmount += wellbeingIncrease * amount;
         }
 
         // Update current stats
@@ -121,12 +155,6 @@ public class GameManager : MonoBehaviour
             _listStatus[0].currentAmount -= 0.2f;
         }
 
-        // Add the resources
-        foreach (KeyValuePair<ResourceType, int> resource in pendingResources)
-        {
-            _currentResources[resource.Key] += resource.Value;
-        }
-
         // Clear NPC tasks
         for (int i = 0; i < listNPCs.Length; i++)
         {
@@ -140,6 +168,14 @@ public class GameManager : MonoBehaviour
         // Update for other classes
         NextAction(false);
         slotManager.UpdateNextDay();
+
+        if (hasBuildTownHall && !hasTalkedAboutTownHall)
+        {
+            gameUI.gameObject.SetActive(false);
+            dialogueManager.RunDialogue(4);
+            hasTalkedAboutTownHall = true;
+        }
+        
         dayElapsed++;
     }
 
@@ -151,12 +187,15 @@ public class GameManager : MonoBehaviour
         // cut delay by half before the player actually notice the change in BTS
         yield return new WaitForSeconds(transitions[0].delay / 2);
 
-        // Teleport player to a desired location
-        gridSystem.SetInteractionMode(2);
-        gridSystem.ResizeWorld(targetPos);
+        if (!skipTutorial)
+        {
+            // Teleport player to a desired location
+            gridSystem.SetInteractionMode(2);
+            gridSystem.ResizeWorld(targetPos);
 
-        // Run dialogue index 0
-        dialogueManager.RunDialogue(0);
+            // Run dialogue index 0
+            dialogueManager.RunDialogue(0);
+        }
     }
 
     /// <summary>
@@ -190,6 +229,14 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(transitions[0].delay / 2);
         gridSystem.SetOriginalSize();
         gridSystem.SetInteractionMode(0);
+        gameUI.gameObject.SetActive(false);
+        dialogueManager.RunDialogue(3);
+    }
+
+    public void GoToTownHall()
+    {
+        interiorDesign[0].gameObject.SetActive(false);
+        interiorDesign[1].gameObject.SetActive(true);
     }
 
     /// <summary>
@@ -277,7 +324,7 @@ public class GameManager : MonoBehaviour
         gameUI.isNotPlaced = true;
 
         // Go to next action
-        NextAction();
+        NextAction(false);
     }
 
     /// <summary>

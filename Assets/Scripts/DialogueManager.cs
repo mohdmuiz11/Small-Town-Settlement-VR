@@ -10,6 +10,8 @@ public class DialogueManager : MonoBehaviour
 {
     [Header("Dialogue settings")]
     [SerializeField] private TransitionProperties transition;
+    [SerializeField] private TransitionProperties transitionFadeIn;
+    [SerializeField] private TransitionProperties transitionFadeOut;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private Canvas dialogueCanvas;
     [SerializeField] private Canvas[] controlScheme;
@@ -20,7 +22,7 @@ public class DialogueManager : MonoBehaviour
     // Current context
     private GridSystem gridSystem;
     private Transform playerPosition;
-    private Canvas instance;
+    [SerializeField] private Canvas instance;
     private Dialogue dialogue;
     private Transition transitionComponent;
     private int currentTextIndex;
@@ -63,19 +65,6 @@ public class DialogueManager : MonoBehaviour
             button.interactable = false;
             if (!dialogue.doNotDestroyCanvasEnd)
                 StartCoroutine(DestroyCanvas());
-            if (!dialogue.disableTransitionEnd)
-            {
-                if (dialogue.overrideFadeType == FadeType.FadeIn)
-                {
-                    var customTransition = transition;
-                    customTransition.fadeType = dialogue.overrideFadeType;
-                    customTransition.delay = 0;
-                    customTransition.nextScene = SceneManager.GetActiveScene().buildIndex;
-                    transitionComponent.StartTransition(customTransition);
-                }
-                else
-                    transitionComponent.StartTransition(transition);
-            }
         }
         else // Insert text to dialogue canvas
             StartCoroutine(TransitionText(transition.fadeDuration / 2, dialogue.texts[currentTextIndex]));
@@ -88,15 +77,14 @@ public class DialogueManager : MonoBehaviour
         {
             if (dialogue.overrideFadeType == FadeType.FadeOut)
             {
-                var customTransition = transition;
-                customTransition.fadeType = dialogue.overrideFadeType;
-                customTransition.delay = 0;
-                customTransition.nextScene = SceneManager.GetActiveScene().buildIndex;
-                transitionComponent.StartTransition(customTransition);
+                transitionComponent.StartTransition(transitionFadeOut);
+                yield return null;
             }
             else
+            {
                 transitionComponent.StartTransition(transition);
-            yield return new WaitForSeconds(transition.fadeDuration);
+                yield return new WaitForSeconds(transition.fadeDuration);
+            }
         }
         else
             yield return null;
@@ -125,7 +113,16 @@ public class DialogueManager : MonoBehaviour
     // Destroy canvas
     IEnumerator DestroyCanvas()
     {
-        yield return new WaitForSeconds(transition.fadeDuration);
+        if (!dialogue.disableTransitionEnd)
+        {
+            if (dialogue.overrideFadeType == FadeType.FadeIn)
+                transitionComponent.StartTransition(transitionFadeIn);
+            else
+                transitionComponent.StartTransition(transition);
+            yield return new WaitForSeconds(transition.fadeDuration);
+        }
+        else
+            yield return null;
         gridSystem.SetControllerInteractionLayer(currentLayerMask);
         if (currentNPC != null)
         {

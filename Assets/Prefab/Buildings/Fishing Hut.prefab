@@ -71,7 +71,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_InteractionLayers:
-    m_Bits: 2
+    m_Bits: 256
   m_DistanceCalculationMode: 1
   m_SelectMode: 0
   m_CustomReticle: {fileID: 0}
@@ -190,7 +190,7 @@ MonoBehaviour:
   _resourceRequired: 000000000100000002000000
   _resourceAmount: 0a000000050000000a000000
   durationBuild: 2
-  originalPos: {x: 0, y: 0, z: 0}
+  originalPos: {x: 0.53999996, y: 0.816, z: -0.60800004}
 --- !u!1 &6413475331396118443
 GameObject:
   m_ObjectHideFlags: 0
