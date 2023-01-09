@@ -11,8 +11,7 @@ public class DialogueManager : MonoBehaviour
     [Header("Dialogue settings")]
     [SerializeField] private TransitionProperties transition;
     [SerializeField] private Camera mainCamera;
-    [SerializeField] private Canvas dialogueCanvas;
-    [SerializeField] private Canvas[] controlScheme;
+    [SerializeField] private DialogueCanvas dialogueCanvas;
 
     [Header("Contents")]
     [SerializeField] private Dialogue[] dialogues;
@@ -20,7 +19,7 @@ public class DialogueManager : MonoBehaviour
     // Current context
     private GridSystem gridSystem;
     private Transform playerPosition;
-    [SerializeField] private Canvas instance;
+    [SerializeField] private DialogueCanvas instance;
     private Dialogue dialogue;
     private Transition transitionComponent;
     private int currentTextIndex;
@@ -67,7 +66,13 @@ public class DialogueManager : MonoBehaviour
 
     private void NextText()
     {
+        // Increment text index
         currentTextIndex++;
+
+        // Check if the control scheme is active
+        if (instance != null && instance.controlSchemeCanvas.gameObject.activeSelf)
+            instance.controlSchemeCanvas.gameObject.SetActive(false);
+
         // If the dialogue is finished
         if (currentTextIndex >= dialogue.texts.Length)
         {
@@ -76,7 +81,20 @@ public class DialogueManager : MonoBehaviour
                 StartCoroutine(DestroyCanvas());
         }
         else // Insert text to dialogue canvas
+        {
+            if (dialogue.controlScheme != null)
+            {
+                for (int i = 0; i < dialogue.controlScheme.Length; i++)
+                {
+                    if (currentTextIndex == dialogue.whenToShowControlScheme[i])
+                    {
+                        instance.controlSchemeCanvas.gameObject.SetActive(true);
+                        instance.imageToShow.sprite = dialogue.controlScheme[i];
+                    }
+                }
+            }
             StartCoroutine(TransitionText(transition.fadeDuration / 2, dialogue.texts[currentTextIndex]));
+        }
     }
 
     // Initiate canvas
@@ -100,7 +118,7 @@ public class DialogueManager : MonoBehaviour
         if (!dialogue.doNotInstanceStart)
         {
             instance = Instantiate(dialogueCanvas, dialogue.location, false);
-            instance.worldCamera = mainCamera;
+            instance.GetComponent<Canvas>().worldCamera = mainCamera;
             dialogueText = instance.GetComponentInChildren<TextMeshProUGUI>();
             button = instance.GetComponentInChildren<Button>();
             button.onClick.AddListener(NextText);
@@ -175,6 +193,10 @@ public class Dialogue
     public Transform location;
     public Transform forcePlayerPos;
     public bool hasRunDialogue;
+
+    [Header("Control Scheme")]
+    public Sprite[] controlScheme;
+    public int[] whenToShowControlScheme;
 
     [Header("Custom Settings")]
     public bool disableTransitionStart;

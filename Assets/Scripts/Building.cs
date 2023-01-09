@@ -92,15 +92,20 @@ public class Building : XRGrabInteractable
             }
             else if (duration == 0)
             {
+                // ah yes delicious spagetti
                 if (buildingType == BuildingType.Town_Hall)
                     gameManager.hasBuildTownHall = true;
                 else if (buildingType == BuildingType.Workshop)
                     gameManager.hasBuildBuilderHut = true;
+                else if (buildingType == BuildingType.Lumber_yard)
+                    gameManager.hasBuildLumberYard = true;
+                else if (buildingType == BuildingType.Hunter_hut)
+                    gameManager.hasBuildHunterHut = true;
+
+                // Send notification and destroy stats
+                gameManager.displayChanges += "The " + gameUI.EnumToReadableFormat(buildingType) + " has been built!\n";
                 gameUI.DestroyStats(this);
-                
-                // Send notification
-                if (!hasBuild && isInConstruction)
-                    gameManager.displayChanges += "The " + gameUI.EnumToReadableFormat(buildingType) + " has been built!\n";
+
                 hasBuild = true;
                 isInConstruction = false;
                 gameManager.ClearNPCTask(NPCType.Blacksmith);

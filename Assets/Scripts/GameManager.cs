@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,6 +21,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float moodIncrease;
     [SerializeField] private int rawFoodToCook;
     [SerializeField] private int herbToCook;
+    [SerializeField] private AudioSource seaSound;
 
     [Header("Starting resources")]
     [SerializeField] private int cookedFood = 15;
@@ -27,6 +29,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private bool skipTutorial; //skip tutorial
     [HideInInspector] public bool hasBuildTownHall;
     [HideInInspector] public bool hasBuildBuilderHut;
+    [HideInInspector] public bool hasBuildLumberYard;
+    [HideInInspector] public bool hasBuildHunterHut;
+    [HideInInspector] public bool hasBuildWorkshop;
     [SerializeField] private NPC[] listNPCs;
 
     [Header("Misc")]
@@ -34,6 +39,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject[] interiorDesign;
     [SerializeField] private GameUI gameUI;
     [SerializeField] private Transform locationBuilding;
+    [SerializeField] private Canvas pauseMenu;
+    [SerializeField] private Transform mainCamera;
     [SerializeField] private bool isTalkingToNPC; //useful toggle to focus on NPC dialogues later
 
     // private vars
@@ -49,7 +56,9 @@ public class GameManager : MonoBehaviour
     private GridSystem gridSystem;
     private Transition transition;
     private DialogueManager dialogueManager;
-    public string displayChanges;
+    private bool isPaused;
+    private bool checkGameUIActive;
+    [HideInInspector] public string displayChanges;
 
     void Awake()
     {
@@ -59,14 +68,14 @@ public class GameManager : MonoBehaviour
         dialogueManager = GameObject.Find("DialogueManager").GetComponent<DialogueManager>();
 
         // Add resources
-        _currentResources.Add(ResourceType.Wood, 40);
-        _currentResources.Add(ResourceType.Stone, 40);
-        _currentResources.Add(ResourceType.Reed, 40);
-        _currentResources.Add(ResourceType.Herb, 40);
-        _currentResources.Add(ResourceType.Raw_Food, 40);
+        _currentResources.Add(ResourceType.Wood, wood);
+        _currentResources.Add(ResourceType.Stone, 0);
+        _currentResources.Add(ResourceType.Reed, 0);
+        _currentResources.Add(ResourceType.Herb, 0);
+        _currentResources.Add(ResourceType.Raw_Food, 0);
         _currentResources.Add(ResourceType.Cooked_Food, cookedFood);
         _currentResources.Add(ResourceType.Delicious_Food, 0);
-        _currentResources.Add(ResourceType.Cloth, 5);
+        _currentResources.Add(ResourceType.Cloth, 0);
 
         // Set NPC all to idle
         for (int i = 0; i < listNPCs.Length; i++)
@@ -111,17 +120,28 @@ public class GameManager : MonoBehaviour
             // Add the resources
             foreach (KeyValuePair<ResourceType, int> resource in pendingResources)
             {
-                _currentResources[resource.Key] += resource.Value;
+                int factor = 1;
+                // Double the resource get for certain building. I know this is not the best code to do
+                if (hasBuildLumberYard && resource.Key == ResourceType.Wood)
+                    factor = 2;
+                if (hasBuildHunterHut && resource.Key == ResourceType.Raw_Food)
+                    factor = 2;
+                if (hasBuildHunterHut && resource.Key == ResourceType.Raw_Food)
+                    factor = 2;
+                if (hasBuildWorkshop && resource.Key == ResourceType.Stone)
+                    factor = 2;
+
+                _currentResources[resource.Key] += resource.Value * factor;
 
                 // This is just to make the text more readable
                 if (pendingResources.Count == 1)
                 {
-                    displayChanges += resource.Value + " " + gameUI.EnumToReadableFormat(resource.Key) + "s.\n";
+                    displayChanges += (resource.Value * factor) + " " + gameUI.EnumToReadableFormat(resource.Key) + "s.\n";
                 }
                 else if (resource.Key == pendingResources.Keys.Last())
-                    displayChanges += "and " + resource.Value + " " + gameUI.EnumToReadableFormat(resource.Key) + "s.\n";
+                    displayChanges += "and " + (resource.Value * factor) + " " + gameUI.EnumToReadableFormat(resource.Key) + "s.\n";
                 else
-                    displayChanges += resource.Value + " " + gameUI.EnumToReadableFormat(resource.Key) + "s, ";
+                    displayChanges += (resource.Value * factor) + " " + gameUI.EnumToReadableFormat(resource.Key) + "s, ";
             }
         }
 
@@ -192,10 +212,10 @@ public class GameManager : MonoBehaviour
         slotManager.UpdateNextDay();
 
         // Taking about town hall has been built or something...
-        if (hasBuildTownHall && dialogueManager.CheckDialogueHasRun(4))
+        if (hasBuildTownHall && !dialogueManager.CheckDialogueHasRun(6))
         {
             gameUI.gameObject.SetActive(false);
-            dialogueManager.RunDialogue(4);
+            dialogueManager.RunDialogue(6);
         }
         else
             gameUI.NotificationUIShow(); // display to notification UI
@@ -218,7 +238,16 @@ public class GameManager : MonoBehaviour
 
             // Run dialogue index 0
             dialogueManager.RunDialogue(0);
+            PlaySeaSound(true);
         }
+    }
+
+    public void PlaySeaSound(bool play)
+    {
+        if (play)
+            seaSound.Play();
+        else
+            seaSound.Stop();
     }
 
     /// <summary>
@@ -254,6 +283,15 @@ public class GameManager : MonoBehaviour
     {
         interiorDesign[0].gameObject.SetActive(false);
         interiorDesign[1].gameObject.SetActive(true);
+    }
+
+    public void ExplainHowToManage()
+    {
+        if (!dialogueManager.CheckDialogueHasRun(4))
+        {
+            gameUI.gameObject.SetActive(false);
+            dialogueManager.RunDialogue(4);
+        }
     }
 
     /// <summary>
@@ -342,6 +380,12 @@ public class GameManager : MonoBehaviour
 
         // Go to next action
         NextAction(false);
+        
+        if (!dialogueManager.CheckDialogueHasRun(5))
+        {
+            gameUI.gameObject.SetActive(false);
+            dialogueManager.RunDialogue(5);
+        }
     }
 
     /// <summary>
@@ -453,6 +497,45 @@ public class GameManager : MonoBehaviour
         }
 
         return taskNPC;
+    }
+
+    public void TogglePause()
+    {
+        // Check if Game UI is active before pausing
+        if (!isPaused)
+            checkGameUIActive = gameUI.gameObject.activeSelf;
+
+        // Toggle pause game
+        isPaused = !isPaused;
+        pauseMenu.gameObject.SetActive(isPaused);
+
+        if (isPaused)
+        {
+            pauseMenu.transform.position = new Vector3(mainCamera.position.x, 1.2f, mainCamera.position.z);
+            pauseMenu.transform.rotation = Quaternion.Euler(0, mainCamera.rotation.eulerAngles.y, 0);
+        }
+
+
+        // If the game UI is active before paused, reactivate the game UI
+        if (checkGameUIActive)
+            gameUI.gameObject.SetActive(!isPaused);
+    }
+
+    public void GoToOtherScene(int index)
+    {
+        transition.StartTransition(transitions[index]);
+        if (index == 2)
+            StartCoroutine(QuitGame());
+    }
+
+    IEnumerator QuitGame()
+    {
+        yield return new WaitForSeconds(transitions[2].fadeDuration);
+#if UNITY_EDITOR
+        EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
 }
 

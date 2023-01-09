@@ -23,7 +23,7 @@ public class Chest : MonoBehaviour
             count++;
             gameManager.ChangeValueResource(ResourceType.Wood, 1);
             Destroy(other.gameObject);
-            if (count >= 1)
+            if (count >= 3)
             {
                 sideEvent.DeleteAllObjects();
                 GameObject.Find("DialogueManager").GetComponent<DialogueManager>().RunDialogue(1);

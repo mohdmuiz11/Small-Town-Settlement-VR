@@ -347,6 +347,7 @@ public class GameUI : MonoBehaviour
             // Second button
             mtButtons[1].GetComponentInChildren<TextMeshProUGUI>().text = "Manage";
             mtButtons[1].onClick.AddListener(() => gridSystem.SetInteractionMode(2));
+            mtButtons[1].onClick.AddListener(gameManager.ExplainHowToManage);
             mtButtons[1].interactable = true;
 
             // Third button
@@ -622,7 +623,8 @@ public class GameUI : MonoBehaviour
         if (buttonInfo != null)
             buttonInfo.gameObject.SetActive(true);
         buttonInfo.interactable = true;
-        canvasInfoUI.SetActive(isVisible);
+        if (canvasInfoUI != null)
+            canvasInfoUI.SetActive(isVisible);
     }
 
     // -ve for left, +ve for right

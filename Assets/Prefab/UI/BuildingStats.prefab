@@ -224,6 +224,7 @@ GameObject:
   - component: {fileID: 7002840617158807713}
   - component: {fileID: 6961632125555896998}
   - component: {fileID: 3833106263763946313}
+  - component: {fileID: 5055273630999916229}
   m_Layer: 0
   m_Name: BuildingStats
   m_TagString: Untagged
@@ -333,3 +334,15 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RaycastTriggerInteraction: 1
+--- !u!114 &5055273630999916229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4222012655962228799}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d892be9fe62f29442bd13d705ac28f2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

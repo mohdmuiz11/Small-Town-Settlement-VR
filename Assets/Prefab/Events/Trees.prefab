@@ -120,7 +120,7 @@ MonoBehaviour:
   _eventType: 0
   _description: The forest is full of trees. Cutting down the trees will get woods,
     but can also used to get other resources such as raw food, herbs, and stones.
-  _thumbnail: {fileID: 0}
+  _thumbnail: {fileID: 21300000, guid: 3ac9b36d2ddcad04eac6d3a3ab92ebb1, type: 3}
   _resourcesGain:
   - resourceType: 0
     taskType: 2

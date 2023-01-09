@@ -12,6 +12,7 @@ TagManager:
   - Tree
   - WoodScraps
   - NPCPos
+  - Music
   layers:
   - Default
   - TransparentFX
