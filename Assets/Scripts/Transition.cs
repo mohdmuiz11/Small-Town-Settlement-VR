@@ -104,7 +104,6 @@ public class Transition : MonoBehaviour
 
 public enum FadeType
 {
-    None,
     FadeIn,
     FadeOut,
     FadeOutIn

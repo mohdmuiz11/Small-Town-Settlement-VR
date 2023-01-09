@@ -13,31 +13,26 @@ public class MainMenuHandler : MonoBehaviour
     {
         transition = GetComponent<Transition>();
         lensFlare.intensity = 0;
-        StartCoroutine(LensFlareDelay(true, 0));
+        StartCoroutine(LensFlareDelay(true));
         transition.StartTransition(transitions[0]);
     }
 
     public void ContinueGame()
     {
-        StartCoroutine(LensFlareDelay(false, 2));
+        StartCoroutine(LensFlareDelay(false));
         transition.StartTransition(transitions[2]);
     }
     public void NewGame()
     {
-        StartCoroutine(LensFlareDelay(false, 1));
+        StartCoroutine(LensFlareDelay(false));
         transition.StartTransition(transitions[1]);
     }
     public void QuitGame()
     {
-#if UNITY_STANDALONE
-        Application.Quit();
-#endif
-#if UNITY_EDITOR
-        EditorApplication.isPlaying = false;
-#endif
+        StartCoroutine(QuitGracefully());
     }
 
-    IEnumerator LensFlareDelay(bool start, int sceneNumber)
+    IEnumerator LensFlareDelay(bool start)
     {
         yield return new WaitForSeconds(transitions[0].delay);
         float elapsedTime = 0;
@@ -52,5 +47,15 @@ public class MainMenuHandler : MonoBehaviour
             lensFlare.intensity = alpha;
             yield return null;
         }
+    }
+
+    IEnumerator QuitGracefully()
+    {
+        yield return new WaitForSeconds(transitions[3].fadeDuration);
+#if UNITY_EDITOR
+        EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
 }

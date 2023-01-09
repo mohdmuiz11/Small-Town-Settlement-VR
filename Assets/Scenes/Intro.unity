@@ -7230,13 +7230,42 @@ PrefabInstance:
       objectReference: {fileID: 705901506}
     - target: {fileID: 6886927734192295534, guid: 6fe5c8688c0767d49a71a905fb6a7e23,
         type: 3}
-      propertyPath: transitions.Array.data[0].fadeType
+      propertyPath: sentences.Array.size
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6886927734192295534, guid: 6fe5c8688c0767d49a71a905fb6a7e23,
+        type: 3}
+      propertyPath: sentences.Array.data[7]
+      value: As the whole crew started to loose conscious, their life started to
+        flash before their own eyes. Is this it? Is this end?
+      objectReference: {fileID: 0}
+    - target: {fileID: 6886927734192295534, guid: 6fe5c8688c0767d49a71a905fb6a7e23,
+        type: 3}
+      propertyPath: sentences.Array.data[8]
+      value: Despite their best efforts, the ship was tossed about by the raging
+        storm, with waves crashing against the hull and the mast creaking under the
+        strain.
+      objectReference: {fileID: 0}
+    - target: {fileID: 6886927734192295534, guid: 6fe5c8688c0767d49a71a905fb6a7e23,
+        type: 3}
+      propertyPath: sentences.Array.data[9]
+      value: The wind howled and the rain pounded against the deck, making it nearly
+        impossible for the captain and the crew to see.
+      objectReference: {fileID: 0}
+    - target: {fileID: 6886927734192295534, guid: 6fe5c8688c0767d49a71a905fb6a7e23,
+        type: 3}
+      propertyPath: transitions.Array.data[1].delay
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6886927734192295534, guid: 6fe5c8688c0767d49a71a905fb6a7e23,
         type: 3}
-      propertyPath: transitions.Array.data[1].fadeType
+      propertyPath: transitions.Array.data[0].fadeType
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6886927734192295534, guid: 6fe5c8688c0767d49a71a905fb6a7e23,
+        type: 3}
+      propertyPath: transitions.Array.data[1].fadeType
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6fe5c8688c0767d49a71a905fb6a7e23, type: 3}

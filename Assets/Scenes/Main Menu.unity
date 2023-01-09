@@ -247,7 +247,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 38268584}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cc4d76f733087744991913c9d19d5274, type: 3}
   m_Name: 
@@ -3170,18 +3170,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lensFlare: {fileID: 38268588}
   transitions:
-  - fadeType: 2
+  - fadeType: 1
     fadeDuration: 1
     delay: 0.5
     nextScene: 0
-  - fadeType: 1
+  - fadeType: 0
     fadeDuration: 1
     delay: 0.5
     nextScene: 1
-  - fadeType: 1
+  - fadeType: 0
     fadeDuration: 1
     delay: 0.5
     nextScene: 2
+  - fadeType: 0
+    fadeDuration: 1
+    delay: 0.5
+    nextScene: 0
 --- !u!4 &1404880572
 Transform:
   m_ObjectHideFlags: 0
@@ -3211,6 +3215,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   transitionCanvas: {fileID: 732153610608677276, guid: 63a94adefdf467f4b97d1e776b370d98,
     type: 3}
+  instance: {fileID: 0}
 --- !u!1 &1425058889
 GameObject:
   m_ObjectHideFlags: 0

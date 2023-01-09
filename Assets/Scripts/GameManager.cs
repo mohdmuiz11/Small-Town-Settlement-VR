@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -48,7 +49,7 @@ public class GameManager : MonoBehaviour
     private GridSystem gridSystem;
     private Transition transition;
     private DialogueManager dialogueManager;
-    private bool hasTalkedAboutTownHall;
+    public string displayChanges;
 
     void Awake()
     {
@@ -94,6 +95,7 @@ public class GameManager : MonoBehaviour
             actionPoint--;
         if (updateEverything)
             gameUI.UpdateNextAction();
+        gameUI.NotificationUIShow(false);
     }
 
     /// <summary>
@@ -101,10 +103,26 @@ public class GameManager : MonoBehaviour
     /// </summary>
     public void NextDay()
     {
-        // Add the resources
-        foreach (KeyValuePair<ResourceType, int> resource in pendingResources)
+        // To be used with GameUI's notification UI
+        if (pendingResources.Any())
         {
-            _currentResources[resource.Key] += resource.Value;
+            displayChanges = "Added ";
+
+            // Add the resources
+            foreach (KeyValuePair<ResourceType, int> resource in pendingResources)
+            {
+                _currentResources[resource.Key] += resource.Value;
+
+                // This is just to make the text more readable
+                if (pendingResources.Count == 1)
+                {
+                    displayChanges += resource.Value + " " + gameUI.EnumToReadableFormat(resource.Key) + "s.\n";
+                }
+                else if (resource.Key == pendingResources.Keys.Last())
+                    displayChanges += "and " + resource.Value + " " + gameUI.EnumToReadableFormat(resource.Key) + "s.\n";
+                else
+                    displayChanges += resource.Value + " " + gameUI.EnumToReadableFormat(resource.Key) + "s, ";
+            }
         }
 
         // Clear out pending resources
@@ -118,7 +136,10 @@ public class GameManager : MonoBehaviour
             _currentResources[ResourceType.Cooked_Food] += rawFoodToCook + herbToCook - 1;
             _currentResources[ResourceType.Raw_Food] -= rawFoodToCook;
             _currentResources[ResourceType.Herb] -= herbToCook;
+            displayChanges += "Cooked " + (rawFoodToCook + herbToCook) + " foods.\n";
         }
+        else
+            displayChanges += "Not enough recipe to cook. (Requires " + rawFoodToCook + " raw foods, and " + herbToCook + " herbs)\n"; 
 
         // Consume food
         int consumedDeliciousFood = _listStatus[2].CheckFood(CheckResources(ResourceType.Delicious_Food), listNPCs.Length, hungerIncreaseRate*2);
@@ -133,6 +154,7 @@ public class GameManager : MonoBehaviour
             _currentResources[ResourceType.Cooked_Food] -= amount;
             _listStatus[0].currentAmount += moodIncrease * amount;
             _listStatus[1].currentAmount += wellbeingIncrease * amount;
+            displayChanges += "Consumed " + amount + " cooked food.\n";
         }
 
         // Update current stats
@@ -169,13 +191,14 @@ public class GameManager : MonoBehaviour
         NextAction(false);
         slotManager.UpdateNextDay();
 
-        if (hasBuildTownHall && !hasTalkedAboutTownHall)
+        // Taking about town hall has been built or something...
+        if (hasBuildTownHall && dialogueManager.CheckDialogueHasRun(4))
         {
             gameUI.gameObject.SetActive(false);
             dialogueManager.RunDialogue(4);
-            hasTalkedAboutTownHall = true;
         }
-        
+        else
+            gameUI.NotificationUIShow(); // display to notification UI
         dayElapsed++;
     }
 
@@ -221,12 +244,6 @@ public class GameManager : MonoBehaviour
 
     public void FirstTimeTable()
     {
-        StartCoroutine(GoToTent());
-    }
-
-    IEnumerator GoToTent()
-    {
-        yield return new WaitForSeconds(transitions[0].delay / 2);
         gridSystem.SetOriginalSize();
         gridSystem.SetInteractionMode(0);
         gameUI.gameObject.SetActive(false);

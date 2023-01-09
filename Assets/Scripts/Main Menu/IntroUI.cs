@@ -32,7 +32,6 @@ public class IntroUI : MonoBehaviour
     // vars
     private TextMeshProUGUI textComponent;
     private int currentSentence = 0;
-    private float elapsedTime = 0;
     private Transition transition;
     private float yStartPos;
     private float xStartPos;
@@ -80,6 +79,7 @@ public class IntroUI : MonoBehaviour
             //if (SceneManager.GetActiveScene().buildIndex == 1)
             //    SceneManager.LoadScene(2);
             //gameObject.SetActive(false);
+            nextButton.interactable = false;
             transition.StartTransition(transitions[1]);
         }
         else
@@ -101,6 +101,7 @@ public class IntroUI : MonoBehaviour
     {
         nextButton.interactable = false;
 
+        float elapsedTime = 0;
         // Fade out
         while (elapsedTime < fadeDuration)
         {

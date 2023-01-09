@@ -97,7 +97,12 @@ public class Building : XRGrabInteractable
                 else if (buildingType == BuildingType.Workshop)
                     gameManager.hasBuildBuilderHut = true;
                 gameUI.DestroyStats(this);
+                
+                // Send notification
+                if (!hasBuild && isInConstruction)
+                    gameManager.displayChanges += "The " + gameUI.EnumToReadableFormat(buildingType) + " has been built!\n";
                 hasBuild = true;
+                isInConstruction = false;
                 gameManager.ClearNPCTask(NPCType.Blacksmith);
             }
         }

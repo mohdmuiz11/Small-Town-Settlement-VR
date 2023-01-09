@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 using System.Linq;
+using System.Collections;
 
 public class GameUI : MonoBehaviour
 {
@@ -58,12 +59,19 @@ public class GameUI : MonoBehaviour
     [SerializeField] private GameObject[] mapObj;
     [SerializeField] private float turnDuration;
 
+    [Header("Notification UI settings")]
+    [SerializeField] private CanvasGroup notificationCanvas;
+    [SerializeField] private TextMeshProUGUI notificationText;
+    [SerializeField] private float notificationDelay;
+    [SerializeField] private float notificationFadeDuration;
+
     // Other vars
     private SlotManager slotManager;
     private GridSystem gridSystem;
     private GameManager gameManager;
     private float currentRot = 0;
     private SideEvent currentSideEventSelected;
+    public bool hideNotification = true;
     public bool isNotPlaced;
 
     // Start is called before the first frame update
@@ -173,7 +181,7 @@ public class GameUI : MonoBehaviour
     /// Return the name of the any enum types to user readable format
     /// </summary>
     /// <returns>String format</returns>
-    private string EnumToReadableFormat(System.Enum @enum)
+    public string EnumToReadableFormat(System.Enum @enum)
     {
         // thanks chandragupta
         string str = @enum.ToString(); // convert to string
@@ -627,6 +635,42 @@ public class GameUI : MonoBehaviour
             iTween.RotateTo(mapObj[i], iTween.Hash("y", currentRot, "time", turnDuration, "easetype", "easeInOutCubic"));
         }
 
+    }
+
+    /// <summary>
+    /// To be shown of what actually changes after pressing next day
+    /// </summary>
+    /// <param name="text">Next day bruh</param>
+    public void NotificationUIShow()
+    {
+        notificationText.text = gameManager.displayChanges;
+        gameManager.displayChanges = "";
+        NotificationUIShow(true);
+        StartCoroutine(SlowFadeNotification());
+    }
+
+    /// <summary>
+    /// To hide or show the notification canvas
+    /// </summary>
+    /// <param name="isHidden">True to show, false to hide</param>
+    public void NotificationUIShow(bool isHidden)
+    {
+        hideNotification = !isHidden;
+        notificationCanvas.gameObject.SetActive(isHidden);
+    }
+
+    IEnumerator SlowFadeNotification()
+    {
+        yield return new WaitForSeconds(notificationDelay);
+        float elapsedTime = 0;
+        while ((elapsedTime < notificationFadeDuration) && !hideNotification)
+        {
+            elapsedTime += Time.deltaTime;
+            float alpha = 1 - (elapsedTime / notificationFadeDuration);
+            notificationCanvas.alpha = alpha;
+            yield return null;
+        }
+        NotificationUIShow(false);
     }
 }
 

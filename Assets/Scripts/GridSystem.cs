@@ -31,6 +31,7 @@ public class GridSystem : MonoBehaviour
     private XRInteractorLineVisual rightHandLV;
     private Gradient originalValidGradient;
     private Gradient originalInvalidGradient;
+    private Gradient originalBlockedGradient;
 
     // Private vars
     private GameManager gameManager;
@@ -86,6 +87,7 @@ public class GridSystem : MonoBehaviour
         Debug.Log(controllerDefaultModel.ToString());
         originalValidGradient = rightHandLV.validColorGradient;
         originalInvalidGradient = rightHandLV.invalidColorGradient;
+        originalBlockedGradient = rightHandLV.blockedColorGradient;
         usingGrabber = true;
         EnableGrabber(!usingGrabber);
     }
@@ -155,6 +157,7 @@ public class GridSystem : MonoBehaviour
             // ayo
             rightHandLV.validColorGradient = originalValidGradient;
             rightHandLV.invalidColorGradient = originalInvalidGradient;
+            rightHandLV.blockedColorGradient = originalBlockedGradient;
             rightHandLV.lineWidth = defaultLineWidth;
         }
         usingGrabber = enabled;

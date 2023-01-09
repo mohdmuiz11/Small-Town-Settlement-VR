@@ -10,8 +10,6 @@ public class DialogueManager : MonoBehaviour
 {
     [Header("Dialogue settings")]
     [SerializeField] private TransitionProperties transition;
-    [SerializeField] private TransitionProperties transitionFadeIn;
-    [SerializeField] private TransitionProperties transitionFadeOut;
     [SerializeField] private Camera mainCamera;
     [SerializeField] private Canvas dialogueCanvas;
     [SerializeField] private Canvas[] controlScheme;
@@ -52,8 +50,19 @@ public class DialogueManager : MonoBehaviour
         // Set controller to not interact with anything
         gridSystem.SetControllerInteractionLayer(0);
 
-        // Set up dialogue
+        // Set up dialogue and set hasRunDialogue to true
         StartCoroutine(InitateCanvas());
+        dialogue.hasRunDialogue = true;
+    }
+
+
+    /// <summary>
+    /// Check if the certain dialogue has run
+    /// </summary>
+    /// <param name="index">Index of dialogue</param>
+    public bool CheckDialogueHasRun(int index)
+    {
+        return dialogues[index].hasRunDialogue;
     }
 
     private void NextText()
@@ -75,16 +84,8 @@ public class DialogueManager : MonoBehaviour
     {
         if (!dialogue.disableTransitionStart)
         {
-            if (dialogue.overrideFadeType == FadeType.FadeOut)
-            {
-                transitionComponent.StartTransition(transitionFadeOut);
-                yield return null;
-            }
-            else
-            {
-                transitionComponent.StartTransition(transition);
-                yield return new WaitForSeconds(transition.fadeDuration);
-            }
+            transitionComponent.StartTransition(transition);
+            yield return new WaitForSeconds(transition.fadeDuration);
         }
         else
             yield return null;
@@ -115,20 +116,19 @@ public class DialogueManager : MonoBehaviour
     {
         if (!dialogue.disableTransitionEnd)
         {
-            if (dialogue.overrideFadeType == FadeType.FadeIn)
-                transitionComponent.StartTransition(transitionFadeIn);
-            else
-                transitionComponent.StartTransition(transition);
+            transitionComponent.StartTransition(transition);
             yield return new WaitForSeconds(transition.fadeDuration);
         }
         else
             yield return null;
         gridSystem.SetControllerInteractionLayer(currentLayerMask);
+
         if (currentNPC != null)
         {
             Destroy(currentNPC.gameObject);
             currentNPC = null;
         }
+
         Destroy(instance.gameObject);
         
         // Run actions if any
@@ -174,9 +174,9 @@ public class Dialogue
     public Transform npcLocation;
     public Transform location;
     public Transform forcePlayerPos;
+    public bool hasRunDialogue;
 
     [Header("Custom Settings")]
-    public FadeType overrideFadeType;
     public bool disableTransitionStart;
     public bool disableTransitionEnd;
     public bool doNotInstanceStart;

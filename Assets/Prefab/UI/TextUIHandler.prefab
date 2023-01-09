@@ -164,6 +164,13 @@ MonoBehaviour:
     suddenly appeared on the horizon.
   - The wind howled and the rain pounded against the deck, making it nearly impossible
     for the captain and the crew to see.
+  - Despite their best efforts, the ship was tossed about by the raging storm, with
+    waves crashing against the hull and the mast creaking under the strain.
+  - The captain knew they had to do something to save the ship, but it was too late.
+  - With a loud crack, the mast snapped and the ship was thrown off course, tumbling
+    into the depths of the sea.
+  - The captain and the crewmates held onto anything they could as the ship went
+    down, their screams drowned out by the roiling waves.
 --- !u!114 &5686955250868983067
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,6 +185,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   transitionCanvas: {fileID: 732153610608677276, guid: 63a94adefdf467f4b97d1e776b370d98,
     type: 3}
+  instance: {fileID: 0}
 --- !u!1 &6886927734265737224
 GameObject:
   m_ObjectHideFlags: 0
