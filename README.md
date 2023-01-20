@@ -49,4 +49,4 @@ Below are the contributors for the project.
 | **@mohdmuiz11** | Mohammad Mu'izzuddin | Unity Programmer |
 | **@doctorsquare-pog** | Imran Haqeem | 3D modelling and assets |
 
-**Supervisor:** [Asst. Prof. Dr. Nurazlin binti Zainal Azmi](https://www.iium.edu.my/directory/show/10163), Lecturer pf Kulliyah of Information and Communication Technology
+**Supervisor:** [Asst. Prof. Dr. Nurazlin binti Zainal Azmi](https://www.iium.edu.my/directory/show/10163), Lecturer of Kulliyah of Information and Communication Technology
