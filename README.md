@@ -41,3 +41,12 @@ The following features are planned for future development:
 - Add more features (eg: culture, farming, weather)
 
 This project is part of our Final Year Project in Kulliyyah of Information and Communication Technology, IIUM. To see the full report, click [here](https://docs.google.com/document/d/1MjXnOokWWkWo_s0p_5D1avOs2DC0pmgG/edit?usp=sharing&ouid=102531622528573220978&rtpof=true&sd=true).
+
+## Contributors
+Below are the contributors for the project. 
+| GitHub Handle | Name | Role |
+| --- | --- | --- |
+| **@mohdmuiz11** | Mohammad Mu'izzuddin | Unity Programmer |
+| **@doctorsquare-pog** | Imran Haqeem | 3D modelling and assets |
+
+**Supervisor:** [Asst. Prof. Dr. Nurazlin binti Zainal Azmi](https://www.iium.edu.my/directory/show/10163), Lecturer pf Kulliyah of Information and Communication Technology
