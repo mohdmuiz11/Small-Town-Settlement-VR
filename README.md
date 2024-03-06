@@ -42,6 +42,7 @@ The following features are planned for future development:
 - Add more features (eg: culture, farming, weather)
 
 This project is part of our Final Year Project in Kulliyyah of Information and Communication Technology, IIUM.
+IEEE paper link here: https://ieeexplore.ieee.org/document/10425521
 
 ## Contributors
 Below are the contributors for the project. 
